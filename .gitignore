@@ -1,0 +1,11 @@
+# Ignore all archives
+*.7z
+*.zip
+*.rar
+
+# Ignore Windows scripts
+*.bat
+
+# dogpantz files
+dailyvim
+dognote
