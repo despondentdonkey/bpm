@@ -1,0 +1,12 @@
+/*
+    Renderable and maybe other render related stuff
+
+    instead of each object having a render function an object will instead have their own renderList containing
+    _renderable instances. Check objects for more info
+*/
+
+function _renderable()
+    depth
+        setDepth //sets depth and sets depthChanged to 'true'
+    depthChanged //Used by the state to resort the render list
+    render(graphicsContext)

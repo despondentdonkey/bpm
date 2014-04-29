@@ -22,6 +22,9 @@ function _state(context)
     objectsToRemove[]
         // objects to remove on next frame
 
+    renderList[]
+        // array of _renderable
+
     init()
         currentState = this
 
@@ -32,8 +35,13 @@ function _state(context)
             remove object from context
 
     render()
-        for each object in objects
-            render object
+        for each obj<_renderable> in renderList
+            if obj.depthChanged === true
+                sort renderList by depth
+                break
+
+        for each obj<_renderable> in renderList
+            obj.render()
 
     add()
         add object to objectsToAdd
