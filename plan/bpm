@@ -1,0 +1,51 @@
+/*
+    bpm.js
+        holds main game logic
+
+        don't think we need a States file, since all logic is basically stored in the states.
+
+*/
+
+define[objects] objects
+    return {
+        currentState: currentState
+    }
+
+var currentState;
+
+function _state(context)
+    // context = what to draw to: webgl, canvas, or html
+    objects[]
+        // array of _gameObjects
+    objectsToAdd[]
+        // objects to add on next frame
+    objectsToRemove[]
+        // objects to remove on next frame
+
+    init()
+        currentState = this
+
+    update()
+        for each object in objectsToAdd
+            add object to context
+        for each object in objectsToRemove
+            remove object from context
+
+    render()
+        for each object in objects
+            render object
+
+    add()
+        add object to objectsToAdd
+
+    remove()
+        add object to objectsToRemove
+
+function _menu()
+    // not sure if necessary
+
+mixin(MainMenu, _state, _menu)
+function MainMenu()
+    init()
+        MainMenu.prototype.init()
+        // make buttons n stuff

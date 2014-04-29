@@ -1,0 +1,11 @@
+Code-Style Conventions
+
+
+Traits:
+    Functions that are mixed into prototypes via the mixin() function
+
+    function _trait() {
+        ...
+    }
+
+    use underscore to determine traits, as lower case starting letters are not /that/ clear

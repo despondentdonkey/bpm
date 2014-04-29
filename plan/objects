@@ -1,0 +1,18 @@
+/*
+
+    Objects
+        Holds all game objects
+
+*/
+
+define[]
+    return {
+    }
+
+function _gameObject()
+
+function Pin()
+
+function Shooter()
+
+function Bubble()

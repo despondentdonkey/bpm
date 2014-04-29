@@ -1,0 +1,22 @@
+/*
+    BPM Psuedo-code
+
+    Main:
+        Starting point
+        Starts loop when necessary code is loaded.
+
+*/
+
+define[bpm.js] bpm
+
+function eventLoop()
+
+function addEventListener()
+
+function removeEventListener()
+
+
+while running
+    bpm.currentState.update();
+    bpm.currentState.render();
+    eventLoop()

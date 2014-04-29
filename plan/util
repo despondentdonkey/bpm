@@ -1,0 +1,28 @@
+/*
+    Util.js
+
+    Utility functions for readability/functionality
+*/
+
+function has(x, y)
+    // x == obj or array
+    // y == value to search for
+    if x is obj
+        if y in obj keys
+            return true
+    elif x is array
+        if y in array
+            return true
+    else
+        throw TypeError
+
+    return false
+
+function mixin(Proto, args...)
+    /*
+        Accepts mult args
+        args are functions
+    */
+
+    for each a in args
+        a.call[Proto]
