@@ -15,17 +15,10 @@ define[]
     }
 
 function _gameObject()
-    renderList[] // array of _renderable
     state //the state this object belongs to
 
     onCreate //Called when added to the state
     onRemove //Called when removed from the state
-        Remove all _renderable instances in renderList from the states renderList
-
-    addRender(_renderable)
-        Adds to renderList
-        Adds to states renderList
-    removeRender(a _renderable that is in renderList)
 
 
 function Pin()
