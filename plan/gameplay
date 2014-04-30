@@ -1,0 +1,273 @@
+=== Current Gameplay ===
+
+    Bubble types:
+        Score
+        Bad
+        Goal*
+        Ammo*
+        Double
+        Combo
+        Reflect*
+        Bomb
+        Action*
+
+        *Probably not going to be used due to gameplay change
+
+    Upgrades:
+        Pins+
+        Bubbles+
+            Remove Bad Bubbles
+
+    Gameplay layout:
+        Pop bubbles to get money
+        Use money to purchase upgrades which help pop more bubbles, or whatever
+        Repeat
+
+=== Game Walkthrough ===
+
+    Basic: player pops bubbles gets a feel for game.
+
+    The mayor will award you a free upgrade after a few minutes or so.
+
+    Blacksmith is the pins and weapons upgrade area. He also makes pins and gives them to you (regen mechanism). He gives you ammo shipments every once in a while which will refill your pins full (or to a certain amount).
+
+    The mayor area will allow you to buy building upgrades.
+
+=== New Gameplay Idea ===
+
+    Rating ideas:
+        Use the following format to rate ideas
+        Spencer's Rating | Parker's Rating
+        All ratings out of 9 (single digit is easier in vim)
+        Example:
+            9 | 0 - implement kitten raids
+        When posing an idea, put unrated ratings as 'x'
+
+        Rating value meanings (idea):
+            <5 = Don't like it or don't want it in the game
+                - give reasons in a comment like this
+            5  = Maybe, possibly requires more description or discussion
+                - also give reasons for this
+            >5 = Like it, it should go into the final idea pile
+                - No reasons necessary, but add comments if you want
+
+        9 | 9 = automatic transfer to final area
+
+    Important! - Need ideas for the following
+        Mechanic that requires skill
+            - Upgrade "combos"
+                a. upgrades that benefit each other to unleash more power.
+                b. requires strategy to pull off most efficient combos
+        Focus (idle, action, etc)
+            8 | 9 - Idle
+        End game
+            5 | 5 - Boss battle with bubble man
+        Milestones
+            - Upgrades
+
+    Name Ideas:
+        Bubble Pop Frenzy
+        SuperBubble
+        - should wait until the story has been finished.
+
+    Game Story:
+        Bubbles grow aware or adapt to the situation by equipping themselves with armor.
+
+    Bubble types:
+        Bubbles: default bubbles, arm themselves later on
+        Warrior bubbles: hit amnmo to either destroy or reflect it. dies from aoe damage or by being shot in the back
+        Noble: Not sure about these ones yet
+
+    Gameplay ideas:
+        Quests
+            possible example: kill 5 special bubbles
+            on quest completion it will trigger a bonus reward and trigger mania mode or whatever
+                mania mode will be a time period that lasts as long as the bonus, it will probably give increased bubble spawn rate or something
+                once mania mode is over a new quest will start
+            quest types:
+                escort - defend something while they do something?
+                kill x amount of something
+
+            Chain quests?
+                This would work in with our story somehow. Each quest will be unique in that it has something to do with the story.
+                    bubbles are distracting - kill 40 of them
+                    you need better killing tools - kill enough bubbles to purchase 2 upgrades
+                    do bubbles understand? - select a weapon upgrade, an ammo element, and some passive abilities to combat armored bubbles
+                    on the offensive - kill 5 warrior bubbles
+                    etc
+
+        == Elemental psuedo-classes ==
+            Weapon ideas:
+                shotgun - aoe spread
+                machine gun - fast single shots
+                laser - slow powerful shots
+                mega pin shooter - idk
+
+        == Elemental psuedo-classes end ==
+
+        == Bubble spawning ==
+
+            5 | 5 - Bubbles spawn from the corners
+                - I think this might be too predictable and/or boring
+                    -P: So will they just appear randomly on the screen (probably will be animated if so), or will they come into view from outside?
+                    -S: Hmmm, good question. I think I like them appearing randomly more. We should do something that makes sense
+                        and in the realm of physical possibility if possible. So, with that take on it, they should come into view from outside.
+                        Let's do a vote. Add anything else you can think of.
+            7 | 5 - Come into view from outside
+                -P: Problem with this could be collisions. We'd have to disable collisions until the bubbles have arrived in the area.
+                -S: Speaking of which, should bubbles even collide with each other? These minor details are annoying :P but at the same time, they bring up
+                    ideas that we would never have thought of before.
+                -P: I think we've talked about that before. I believe the reason for not having bubble collision was that the performance would be intense. There's going to be a ton of bubbles on screen.
+            6 | 6 - Appear Randomly with animation
+
+        == Bubble spawning end ==
+
+        5 | 5 - Walls will begin to spawn after a while.
+            - Where will they spawn?
+                - Based on an algorithm to determine a proper spot
+                    a. declare what's not allowed, then it will fill in randomly
+                    b. OR, we could make predefined levels in Tiled that transition (less cool)
+
+                    -P: I very much prefer option b. We can also change bubble spawn points within each level which will give us greater control in level design. So i'm thinking that once you reach a certain point on the upgrades a new level will spawn and new upgrades which would accomodate that level. But a problem i'm seeing is with field upgrades like the auto shooter. What happens to those when a new level spawns? I'm kinda having second thoughts about walls.
+                    -S: I agree; option a would probably be buggy as hell. What do you mean? I don't see any issues with the field upgrades. If anything, it makes it harder to idle, which is a good thing. It also makes shots harder to pull off, which increases the skill level - also a good thing. We can always implement different mechanics though.
+                    -P: So let's say you have an auto shooter at x:5, y:5, then in one of the levels a wall is at that position. What happens to the auto shooter? Will it just be suffocated by the wall forever? Do we refund it?
+                    -S: Yeah, I wasn't really understanding how you were picturing auto shooters. (See my reply in the Upgrade ideas -> Sell Tool section) Walls aren't a huge priority, so let's hold off on this until we plan other parts of the game. Dropped my rating to 5.
+
+        9 | 7 - Bonus Buffs: So when something triggers a bonus (not sure what will trigger a bonus though), a wheel will appear and give you a random buff for a limited time
+            +50% gold
+            +50% bubble spawn speed
+            Infinite pins
+            When a bubble pops it damages nearby bubbles
+
+            They are triggered when:
+                ...
+
+            -S: Bonuses should be triggered on level ups or other significant accomplishments (like super ultra mega combos). Love the idea though. We should make crazy "manic" animations and effects. I'd really like to stress the "Mania" part of the game and make it feel really arcade-like and Japanese-y.
+            -P: Oh now that you brought that up. I think we should change the name. Google 'Bubble Pop Mania' and you'll see what I mean.
+            -S: LOL. Yes, I agree. Adding name section to this plan. I still like this idea though.
+            -P: Okay I'll add it to the final gameplay area when we've come up with how exactly they get triggered.
+
+    Upgrade ideas:
+        Sell tool: allows you to sell an auto shooter or any upgrade placed on the field.
+            -S: Are Auto Shooters objects that you place on the field in addition to the main shooter or is it a unique weapon to act as a replacement?
+            -P: Auto shooters would be new objects, they wouldn't replace the main shooter.
+        9 | 9 - Auto Shooter: When purchased use the mouse to place it on the map, then click, then use the mouse to set the angle, and click again. Shoots one pin on a certain interval.
+            -S: Should you pre-set the angle or should it automatically choose (randomly or algorithmically?). I think it should shoot at random angles.
+            9 | 9 - Auto Shooter Speed+
+            8 | 2 - Auto Shooter Intelligence
+                - Algorithmically determines the best angle to shoot, upgrades increase intelligence
+                -P: Not sure, I think that if they will always change their angle to shoot, they should just spin in a circle and then shoot randomly. I also think the graphic for it should be circular so that we can have an upgrade which will allow it to shoot more than one pin, this would make it look less retarded if it were circle shaped. So yeah I think it should be random.
+                -S: Alrighty, mark your rating lower if you wanna drop it or keep it at a 5 if you wanna reconsider it later.
+
+        6 | 6 - Pin Life+
+            - I think there are better pin upgrades we can come up with. Perhaps pin life should be associated with the weapon?
+            -P: Yeah I personally wouldn't want to upgrade pin life, seems boring. What do you mean weapon?
+            -S: See the upgrade section for elaboration on the weapon idea.
+
+        8 | 5 - Abilities:
+            Upgrade the following abilities. You can only have 3 (?) active abilities enabled at a time. Passive abilities are always enabled.
+
+            Passive:
+                Stuff like Bubble Spawner, Pin Life, Bubble Spawn Rate, etc.
+
+            Active:
+                (All brainstorming ideas)
+                Electric Pins
+                Fire Pins
+                Immortal Pins
+                Shrapnel Pins
+
+            Weapons:
+                - Switch out your boring old pin shooter for upgraded awesomeness! Weapons provide various perks, like not shooting pins, but lasers or fire.
+                - Unlocked through building upgrades (various weapons factories or something). See idling->buildings for details.
+                - Combine the weapons mechanic with the pin abilities for max combo craziness.
+                Flamethrower
+                Chicken Launcher
+                Bubble Decimator
+
+                -P: What do these do though? So the weapon is the shooter?
+
+            Choose 1 weapon, 3 abilities, and all of your passive abilities to choose your "class". The fun part about this is that the combinations are limitless.
+            We can plan out a bunch of different combinations, but also leave it open to let players find their own powerful combos.
+
+            -P: This is all a bit too vague. Come up with an example of how one of these combinations would work and what exactly they'd be improving.
+
+    Resource limitations:
+        -S: How are we going to handle resources? Just amount of pins? How do you get more pins? What if we made it so you have to buy pins using the currency obtained through popping bubbles and buildings. We could also have an upgrade to auto-buy pins when you run out. Of course, we'd make it easy to restock your pins. Any other resource restraints?
+        -P: Pins should regen over time so we can have that upgrade available.
+        x | x - ammo for each weapon regens over time by a percentage which can be upgraded.
+
+    Idle Ideas:
+        0 | 5 - Detect idling
+        0 | 5 - When idling:
+            pins regen slower
+            bubbles regen slower
+            shooter shoots immediately when pins available
+        -P: I don't think we need to do this. If you're not interacting with the game then that itself is already a great penalty.
+        -S: What do you mean? How does idling start? Do you have to set it to idle before idling? This idea comes from the Anti Idle game.
+        -P: The idling would happen naturally. The auto shooter would just keep shooting, and your buildings or whatever would generate income. The penalty for idling though is that you cannot use the main shooter. And the main shooter is way OP compared to the auto shooters.
+        -S: Alright, that works. We'll just use the specs of the auto shooter to balance out the game. Idling needs a HEAVY penalty.
+
+        8 | 6 - Production buildings
+            - Sort of as a side game, but implemented like cookie clicker
+            -S: These production buildings could unlock the ability to unlock new upgrades. Like the technology tree in Civ.
+            -P: How would that work though? You just buy the building then you unlock the upgrade? Also how do buildings work in Cookie Clicker? Do they just give you more production? I think buildings are more for the idle part of the game.
+            - ideas:
+                1. Bubble-wrap Co.
+                    a. produces bubble wrap, gives you $x per minute
+                2. Bubble-wrap popping Co.
+                    a. pops produced bubble wrap, gives you x pops per minute
+                3. Maybe the Bubble Spawners could be buildings.
+                4. Weapon factories to unlock new weapons
+                5. Science labs to unlock new elemental pin upgrades (lightning, fire, etc)
+                6. Manufacturing plants to unlock new physical pin upgrades (shrapnel, etc)
+
+    UI Layout:
+        Initial Menu (when game is first loaded)
+            3 save slots, pick an empty one to start a new game, or pick an existing save
+            Settings
+
+        During Game
+            Small bar UI (like existing UI, but let's keep it as minimal as possible)
+            'Shop' Button
+                Opens 30% transparent, black overlay window
+                game continues to play in background
+
+=== New Gamplay Final ===
+
+    Gameplay:
+        Pins regenerate after certain time
+        Bubbles continuously respawn
+        Upgrades screen will always be present, may be able to toggle view
+
+        Score bubbles will be called bubbles. Double, combo, bomb bubbles will either be removed or be something different.
+            Bubbles will continually arm themselves with stronger armor throughout the game.
+                wood, stone, steel, black iron (just black steel), gold, platinum, diamond
+            x | x - once bubbles start showing signs of intelligence we could show them will little brains which get bigger as they get smarter.
+            Bubbles will eventually (either from a large amount of bubbles or a time based pattern) summon a large boss bubble to help them. This will be integrated into the story.
+
+        Elemental psuedo-classes
+            Once bubbles start arming themselves elemental classes will start to be available
+            You choose a weapon ability (this gets triggered when you shoot a pin, or basically when you click )
+            a pin element (a bonus effect that happens when a pin either pops a bubble or collides with it)
+            and an x amount of passive abilities
+
+            and possibly additional upgrades for each thing.
+
+            A more in depth explanation of the abilities should be discussed after hp bubbles have been fully designed and approved.
+
+    Upgrades:
+        Pin Storage+
+        Pin Regen Speed+
+        Pin Regen Amount+
+        Bubble Spawn Speed+
+        Bubble Max Count+
+
+=== Other ===
+
+    Things to consider:
+        Boredom
+        Replay value
+        Interest (What makes me want to play this besides the gameplay?)
+        Look and feel
+        Skill Factor
