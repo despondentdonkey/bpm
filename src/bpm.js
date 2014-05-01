@@ -1,4 +1,4 @@
-define(['time'], function(time) {
+define(['time', 'gfx'], function(time, gfx) {
     // Override default requestAnimationFrame for maximum compatibility.
     var requestAnimationFrame = window.requestAnimationFrame
                            || window.mozRequestAnimationFrame
@@ -7,7 +7,7 @@ define(['time'], function(time) {
                            || function(func) { setTimeout(func, 1000/60) };
 
     function run() {
-        // initialize stuff here
+        gfx.init(800, 600);
         update();
     }
 
@@ -16,7 +16,7 @@ define(['time'], function(time) {
 
         time.update();
 
-        // rendering should take place here
+        gfx.render();
 
         requestAnimationFrame(update);
     }
