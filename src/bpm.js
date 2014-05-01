@@ -12,7 +12,7 @@ define(['time', 'gfx', 'res'], function(time, gfx, res) {
 
             // Bubble render test
             var baseTex = new PIXI.BaseTexture(res.bubble);
-            var tex = new PIXI.Texture(a);
+            var tex = new PIXI.Texture(baseTex);
             var spr = new PIXI.Sprite(tex);
             gfx.stage.addChild(spr);
 
