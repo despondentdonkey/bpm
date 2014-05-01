@@ -15,11 +15,6 @@ define(function() {
     }
 
     return {
-        width: this.width,
-        height: this.height,
-        stage: this.stage,
-        renderer: this.renderer,
-
         init: init,
         render: render,
     };

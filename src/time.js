@@ -35,7 +35,5 @@ define(function() {
     return {
         get: get,
         update: update,
-        fps: this.fps,
-        delta: this.delta,
     };
 });
