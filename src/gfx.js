@@ -1,4 +1,4 @@
-define(['../lib/pixi.dev'], function() {
+define(['lib/pixi.dev'], function() {
     function init(width, height) {
         this.width = width;
         this.height = height;
