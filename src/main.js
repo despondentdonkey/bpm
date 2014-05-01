@@ -4,6 +4,8 @@ require.config({
     }
 });
 
+requirejs(['lib/pixi.dev', 'lib/lode']);
+
 requirejs(['bpm'], function(bpm) {
     bpm.run();
 });

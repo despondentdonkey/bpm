@@ -1,4 +1,4 @@
-define(['time', 'gfx'], function(time, gfx) {
+define(['time', 'gfx', 'res'], function(time, gfx, res) {
     // Override default requestAnimationFrame for maximum compatibility.
     var requestAnimationFrame = window.requestAnimationFrame
                            || window.mozRequestAnimationFrame
@@ -7,8 +7,17 @@ define(['time', 'gfx'], function(time, gfx) {
                            || function(func) { setTimeout(func, 1000/60) };
 
     function run() {
-        gfx.init(800, 600);
-        update();
+        res.load(function() {
+            gfx.init(800, 600);
+
+            // Bubble render test
+            var baseTex = new PIXI.BaseTexture(res.bubble);
+            var tex = new PIXI.Texture(a);
+            var spr = new PIXI.Sprite(tex);
+            gfx.stage.addChild(spr);
+
+            update();
+        });
     }
 
     function update() {
