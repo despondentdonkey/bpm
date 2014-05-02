@@ -18,11 +18,14 @@ function has(x, y)
 
     return false
 
-function mixin(Proto, args...)
-    /*
-        Accepts mult args
-        args are functions
-    */
 
-    for each a in args
-        a.call[Proto]
+/*
+    Predicate Tests
+        Pretty self-explanatory tests that return a Bool
+*/
+
+function isFunction(target)
+
+function isObject(target)
+
+function isNumber(target)
