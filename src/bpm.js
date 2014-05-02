@@ -11,9 +11,7 @@ define(['time', 'gfx', 'res'], function(time, gfx, res) {
             gfx.init(800, 600);
 
             // Bubble render test
-            var baseTex = new PIXI.BaseTexture(res.bubble);
-            var tex = new PIXI.Texture(baseTex);
-            var spr = new PIXI.Sprite(tex);
+            var spr = new PIXI.Sprite(res.bubbleTex);
             gfx.stage.addChild(spr);
 
             update();
