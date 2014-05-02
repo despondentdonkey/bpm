@@ -1,11 +1,10 @@
 define(['objects', 'gfx'], function(objects, gfx) {
-    function State() {}
-
-    State.prototype.objects = [];
-    State.prototype.objectsToAdd = [];
-    State.prototype.objectsToRemove = [];
-
-    State.prototype.displayObjects = [];
+    function State() {
+        this.displayObjects = [];
+        this.objects = [];
+        this.objectsToAdd = [];
+        this.objectsToRemove = [];
+    }
 
     State.prototype._update = function(delta) {
         // Add queued objects
@@ -56,7 +55,9 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
 
     Test.prototype = new State();
-    function Test() {}
+    function Test() {
+        State.call(this);
+    }
 
     Test.prototype.init = function() {
         var a = new objects.Bubble(128, 128);
