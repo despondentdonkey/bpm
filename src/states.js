@@ -63,8 +63,9 @@ define(['objects', 'gfx'], function(objects, gfx) {
         var a = new objects.Bubble(128, 128);
         this.add(a);
 
+        var tint = Math.random() * 0xFFFFFF;
         for (var i=0; i<1000; ++i) {
-            this.add(new objects.Bubble(Math.random() * gfx.width, Math.random() * gfx.height));
+            this.add(new objects.Bubble(Math.random() * gfx.width, Math.random() * gfx.height, tint));
         }
     };
 

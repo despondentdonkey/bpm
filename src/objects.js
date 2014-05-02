@@ -34,15 +34,18 @@ define(['res'], function(res) {
 
 
     Bubble.prototype = new GameObject();
-    function Bubble(x, y) {
+    function Bubble(x, y, tint) {
         GameObject.call(this);
         this.x = x; this.y = y; this.xmod=0; this.ymod=0;
+        this.tint = tint;
     }
 
     Bubble.prototype.onAdd = function(state) {
         // Bubble render test
         var bub = new PIXI.Sprite(res.tex.bubble);
         var glare = new PIXI.Sprite(res.tex.glare);
+
+        bub.tint = this.tint;
 
         this.addDisplay(bub);
         this.addDisplay(glare);
