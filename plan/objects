@@ -3,6 +3,11 @@
     Objects
         Holds all game objects
 
+    An example of how an object would render an image:
+        Graphic g; //Assume Graphic is a _renderable that renders an image
+        g.setDepth(-10);
+        myObj.addRender(g);
+        //Then when myObj is removed 'g' is also removed automatically
 */
 
 define[]
@@ -10,6 +15,11 @@ define[]
     }
 
 function _gameObject()
+    state //the state this object belongs to
+
+    onCreate //Called when added to the state
+    onRemove //Called when removed from the state
+
 
 function Pin()
 
