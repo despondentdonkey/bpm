@@ -1,9 +1,9 @@
 define(['res'], function(res) {
 
-    function GameObject() {}
-
-    GameObject.prototype.displayObjects = [];
-    GameObject.prototype.state = null;
+    function GameObject() {
+        this.displayObjects = [];
+        this.state = null;
+    }
 
     GameObject.prototype._onAdd = function(state) {
         this.state = state;
@@ -34,7 +34,10 @@ define(['res'], function(res) {
 
 
     Bubble.prototype = new GameObject();
-    function Bubble() {}
+    function Bubble(x, y) {
+        GameObject.call(this);
+        this.x = x; this.y = y; this.xmod=0; this.ymod=0;
+    }
 
     Bubble.prototype.onAdd = function(state) {
         // Bubble render test
@@ -43,6 +46,19 @@ define(['res'], function(res) {
 
         this.addDisplay(bub);
         this.addDisplay(glare);
+    };
+
+    Bubble.prototype.update = function(delta) {
+        this.xmod += 0.02;
+        this.ymod += 0.01;
+        for (var i in this.displayObjects) {
+            var obj = this.displayObjects[i];
+            obj.position.x = this.x + Math.cos(this.xmod) * 20;
+            obj.position.y = this.y + Math.sin(this.ymod) * 20;
+            obj.rotation = Math.tan(this.xmod/3);
+            obj.scale.x = Math.cos(this.xmod) * 1.5;
+            obj.scale.y = Math.sin(this.ymod) * 1.5;
+        }
     };
 
     return {

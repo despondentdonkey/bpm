@@ -59,14 +59,12 @@ define(['objects', 'gfx'], function(objects, gfx) {
     function Test() {}
 
     Test.prototype.init = function() {
-        var a = new objects.Bubble();
+        var a = new objects.Bubble(128, 128);
         this.add(a);
 
-        var thisState = this;
-        setTimeout(function() {
-            console.log("TEST REMOVAL");
-            thisState.remove(a);
-        }, 1000);
+        for (var i=0; i<1000; ++i) {
+            this.add(new objects.Bubble(Math.random() * gfx.width, Math.random() * gfx.height));
+        }
     };
 
     return {
