@@ -1,4 +1,4 @@
-define(['time', 'gfx', 'res'], function(time, gfx, res) {
+define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
     // Override default requestAnimationFrame for maximum compatibility.
     var requestAnimationFrame = window.requestAnimationFrame
                            || window.mozRequestAnimationFrame
@@ -6,20 +6,25 @@ define(['time', 'gfx', 'res'], function(time, gfx, res) {
                            || window.msRequestAnimationFrame
                            || function(func) { setTimeout(func, 1000/60) };
 
+    var currentState;
+    var currentStateInit = false;
+
     function run() {
+        setState(new states.Test());
         res.load(function() {
             gfx.init(800, 600);
-
-            // Bubble render test
-            var spr = new PIXI.Sprite(res.bubbleTex);
-            gfx.stage.addChild(spr);
-
             update();
         });
     }
 
     function update() {
-        // state stuff here
+        if (currentState) {
+            if (!currentStateInit) {
+                currentState.init();
+                currentStateInit = true;
+            }
+            currentState._update(time.delta);
+        }
 
         time.update();
 
@@ -28,8 +33,14 @@ define(['time', 'gfx', 'res'], function(time, gfx, res) {
         requestAnimationFrame(update);
     }
 
+    function setState(state) {
+        currentState = state;
+        currentStateInit = false;
+    }
+
     return {
         requestAnimationFrame: requestAnimationFrame,
         run: run,
+        setState: setState,
     };
 });
