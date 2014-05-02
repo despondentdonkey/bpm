@@ -38,8 +38,8 @@ define(['res'], function(res) {
 
     Bubble.prototype.onAdd = function(state) {
         // Bubble render test
-        var bub = new PIXI.Sprite(res.bubbleTex);
-        var glare = new PIXI.Sprite(res.glareTex);
+        var bub = new PIXI.Sprite(res.tex.bubble);
+        var glare = new PIXI.Sprite(res.tex.glare);
 
         this.addDisplay(bub);
         this.addDisplay(glare);

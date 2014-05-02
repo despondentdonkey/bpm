@@ -1,23 +1,21 @@
 define(function() {
     var result = {
         load: load,
+        tex: {},
     };
 
     var texturesToCreate = {};
 
-    function loadImages(loader, rootDir, addToTexQueue, urls) {
+    function loadImages(loader, rootDir, urls) {
         for (key in urls) {
             var img = loader.loadImage(rootDir + urls[key]);
-            result[key + 'Img'] = img;
-            if (addToTexQueue) {
-                texturesToCreate[key + 'Tex'] = img;
-            }
+            texturesToCreate[key] = img;
         }
     }
 
     function createQueuedTextures() {
         for (key in texturesToCreate) {
-            result[key] = new PIXI.Texture(new PIXI.BaseTexture(texturesToCreate[key]));
+            result.tex[key] = new PIXI.Texture(new PIXI.BaseTexture(texturesToCreate[key]));
         }
         texturesToCreate = {};
     }
@@ -25,7 +23,7 @@ define(function() {
     function load(onComplete) {
         this.loader = LODE.createLoader();
 
-        loadImages(this.loader, 'res/', true, {
+        loadImages(this.loader, 'res/', {
             bubble: 'bubble.png',
             glare: 'bubble-glare.png',
         });
