@@ -74,41 +74,50 @@ define(['objects', 'gfx'], function(objects, gfx) {
     State.prototype.update = function(delta) {};
 
 
-    BubbleTest.prototype = new State();
-    function BubbleTest() {
+    BubbleRenderTest.prototype = new State();
+    function BubbleRenderTest() {
         State.call(this);
         this.batch = new PIXI.SpriteBatch();
     }
 
-    BubbleTest.prototype.init = function() {
+    BubbleRenderTest.prototype.init = function() {
         this.addDisplay(this.batch);
-        var a = new objects.Bubble(128, 128);
+        var a = new objects.BubbleTest(128, 128);
         this.add(a);
 
-        var b = new objects.Bubble(300, 100);
+        var b = new objects.BubbleTest(300, 100);
         this.add(b);
 
         var tint = Math.random() * 0xFFFFFF;
         for (var i=0; i<10000; ++i) {
-            this.add(new objects.Bubble(Math.random() * gfx.width, Math.random() * gfx.height, tint));
+            this.add(new objects.BubbleTest(Math.random() * gfx.width, Math.random() * gfx.height, tint));
         }
     };
 
 
-    Test.prototype = new State();
-    function Test() {
+    PinRenderTest.prototype = new State();
+    function PinRenderTest() {
         State.call(this);
         this.batch = new PIXI.SpriteBatch();
+        this.pinBatch = new PIXI.SpriteBatch();
     }
 
-    Test.prototype.init = function() {
+    PinRenderTest.prototype.init = function() {
         this.addDisplay(this.batch);
-        var a = new objects.Bubble(128, 128);
+        this.addDisplay(this.pinBatch);
+        var a = new objects.BubbleTest(gfx.width/2, gfx.height/2);
         this.add(a);
+
+        for (var i=0; i<10000; ++i) {
+            var x = gfx.width/2 + Math.cos(i) * gfx.width/4;
+            var y = gfx.height/2 + Math.sin(i) * gfx.width/4;
+            var pin = new objects.PinTest(x, y, 0);
+            this.add(pin);
+        }
     };
 
     return {
-        BubbleTest: BubbleTest,
-        Test: Test,
+        BubbleRenderTest: BubbleRenderTest,
+        PinRenderTest: PinRenderTest,
     };
 });

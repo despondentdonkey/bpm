@@ -10,12 +10,8 @@ define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
     var currentStateInit = false;
 
     function run() {
-        setState(new states.BubbleTest());
-
-        setTimeout(function() {
-            setState(new states.Test());
-            console.log("STATE SWITCHED!");
-        }, 4000);
+        //setState(new states.BubbleRenderTest());
+        setState(new states.PinRenderTest());
 
         res.load(function() {
             gfx.init(800, 600);

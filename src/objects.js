@@ -37,15 +37,15 @@ define(['res'], function(res) {
     GameObject.prototype.update = function(delta) {};
 
 
-    Bubble.prototype = new GameObject();
-    function Bubble(x, y, tint) {
+    BubbleTest.prototype = new GameObject();
+    function BubbleTest(x, y, tint) {
         GameObject.call(this);
         this.x = x; this.y = y; this.xmod=0; this.ymod=0;
         this.tint = tint;
     }
 
-    Bubble.prototype.onAdd = function(state) {
-        // Bubble render test
+    BubbleTest.prototype.onAdd = function(state) {
+        // BubbleTest render test
         var bub = new PIXI.Sprite(res.tex.bubble);
         var glare = new PIXI.Sprite(res.tex.glare);
 
@@ -57,7 +57,7 @@ define(['res'], function(res) {
         //this.addDisplay(glare);
     };
 
-    Bubble.prototype.update = function(delta) {
+    BubbleTest.prototype.update = function(delta) {
         this.xmod += 0.02;
         this.ymod += 0.01;
         for (var i in this.displayObjects) {
@@ -70,7 +70,34 @@ define(['res'], function(res) {
         }
     };
 
+
+    PinTest.prototype = new GameObject();
+    function PinTest(x, y, angle) {
+        GameObject.call(this);
+        this.x = x; this.y = y;
+        this.angle = angle;
+        this.onAdd = function(state) {
+            var pin = new PIXI.Sprite(res.tex.pin);
+            pin.anchor.x = 0.5;
+            pin.anchor.y = 0.5;
+            this.addDisplay(pin, state.pinBatch);
+        };
+
+        this.update = function(delta) {
+            this.angle += 0.1;
+            this.x += Math.cos(this.angle);
+            this.y += -Math.sin(this.angle);
+            for (var i in this.displayObjects) {
+                var obj = this.displayObjects[i];
+                obj.position.x = this.x;
+                obj.position.y = this.y;
+                obj.rotation = -this.angle;
+            }
+        };
+    }
+
     return {
-        Bubble: Bubble,
+        BubbleTest: BubbleTest,
+        PinTest: PinTest,
     };
 });

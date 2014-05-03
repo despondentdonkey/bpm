@@ -26,6 +26,7 @@ define(function() {
         loadImages(this.loader, 'res/gfx/', {
             bubble: 'bubbles/bubble.png',
             glare: 'bubbles/bubble-glare.png',
+            pin: 'pin.png'
         });
 
         this.loader.load(function() {
