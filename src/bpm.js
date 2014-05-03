@@ -13,8 +13,10 @@ define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
         //setState(new states.BubbleRenderTest());
         setState(new states.PinRenderTest());
 
+        var bpm = this;
         res.load(function() {
             gfx.init(800, 600);
+            dbg.addStateButtons(bpm, states);
             update();
         });
     }
