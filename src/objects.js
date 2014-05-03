@@ -7,7 +7,7 @@ define(['res'], function(res) {
 
     GameObject.prototype._onAdd = function(state) {
         this.state = state;
-        this.onAdd();
+        this.onAdd(state);
     };
 
     GameObject.prototype._onRemove = function(state) {
@@ -15,7 +15,7 @@ define(['res'], function(res) {
             this.removeDisplay(this.displayObjects[0]);
         }
         this.state = null;
-        this.onRemove();
+        this.onRemove(state);
     };
 
     GameObject.prototype._update = function(delta) {
