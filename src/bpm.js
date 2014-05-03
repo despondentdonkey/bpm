@@ -10,7 +10,13 @@ define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
     var currentStateInit = false;
 
     function run() {
-        setState(new states.Test());
+        setState(new states.BubbleTest());
+
+        setTimeout(function() {
+            setState(new states.Test());
+            console.log("STATE SWITCHED!");
+        }, 2000);
+
         res.load(function() {
             gfx.init(800, 600);
             update();
@@ -34,6 +40,9 @@ define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
     }
 
     function setState(state) {
+        if (currentState) {
+            currentState._onSwitch();
+        }
         currentState = state;
         currentStateInit = false;
     }

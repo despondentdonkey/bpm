@@ -6,6 +6,21 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.objectsToRemove = [];
     }
 
+    // When this state has been switched
+    State.prototype._onSwitch = function() {
+        // Remove all objects
+        for (var i in this.objects) {
+            this.objects[i]._onRemove(this);
+        }
+
+        // Remove any additional displays
+        for (var i in this.displayObjects) {
+            this.removeDisplay(this.displayObjects[i]);
+        }
+
+        this.onSwitch();
+    };
+
     State.prototype._update = function(delta) {
         // Add queued objects
         for (var i=0; i<this.objectsToAdd.length; ++i) {
@@ -55,17 +70,18 @@ define(['objects', 'gfx'], function(objects, gfx) {
     };
 
     State.prototype.init = function() {};
+    State.prototype.onSwitch = function() {};
     State.prototype.update = function(delta) {};
 
 
-    Test.prototype = new State();
-    function Test() {
+    BubbleTest.prototype = new State();
+    function BubbleTest() {
         State.call(this);
         this.batch = new PIXI.SpriteBatch();
     }
 
-    Test.prototype.init = function() {
-        gfx.stage.addChild(this.batch);
+    BubbleTest.prototype.init = function() {
+        this.addDisplay(this.batch);
         var a = new objects.Bubble(128, 128);
         this.add(a);
 
@@ -78,7 +94,21 @@ define(['objects', 'gfx'], function(objects, gfx) {
         }
     };
 
+
+    Test.prototype = new State();
+    function Test() {
+        State.call(this);
+        this.batch = new PIXI.SpriteBatch();
+    }
+
+    Test.prototype.init = function() {
+        this.addDisplay(this.batch);
+        var a = new objects.Bubble(128, 128);
+        this.add(a);
+    };
+
     return {
+        BubbleTest: BubbleTest,
         Test: Test,
     };
 });
