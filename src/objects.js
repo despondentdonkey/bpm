@@ -22,9 +22,9 @@ define(['res'], function(res) {
         this.update(delta);
     };
 
-    GameObject.prototype.addDisplay = function(display) {
+    GameObject.prototype.addDisplay = function(display, container) {
         this.displayObjects.push(display);
-        this.state.addDisplay(display);
+        this.state.addDisplay(display, container);
     };
 
     GameObject.prototype.removeDisplay = function(display) {
@@ -51,8 +51,8 @@ define(['res'], function(res) {
 
         bub.tint = this.tint;
 
-        this.addDisplay(bub);
-        this.addDisplay(glare);
+        this.addDisplay(bub, state.batch);
+        //this.addDisplay(glare);
     };
 
     Bubble.prototype.update = function(delta) {

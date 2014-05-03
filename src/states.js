@@ -40,14 +40,18 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.objectsToRemove.push(obj);
     };
 
-    State.prototype.addDisplay = function(display) {
+    State.prototype.addDisplay = function(display, container) {
         this.displayObjects.push(display);
-        gfx.stage.addChild(display);
+        if (container) {
+            container.addChild(display);
+        } else {
+            gfx.stage.addChild(display);
+        }
     };
 
     State.prototype.removeDisplay = function(display) {
         this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
-        gfx.stage.removeChild(display);
+        display.parent.removeChild(display);
     };
 
     State.prototype.init = function() {};
@@ -57,14 +61,19 @@ define(['objects', 'gfx'], function(objects, gfx) {
     Test.prototype = new State();
     function Test() {
         State.call(this);
+        this.batch = new PIXI.SpriteBatch();
     }
 
     Test.prototype.init = function() {
+        gfx.stage.addChild(this.batch);
         var a = new objects.Bubble(128, 128);
         this.add(a);
 
+        var b = new objects.Bubble(300, 100);
+        this.add(b);
+
         var tint = Math.random() * 0xFFFFFF;
-        for (var i=0; i<1000; ++i) {
+        for (var i=0; i<10000; ++i) {
             this.add(new objects.Bubble(Math.random() * gfx.width, Math.random() * gfx.height, tint));
         }
     };
