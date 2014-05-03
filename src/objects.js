@@ -50,6 +50,8 @@ define(['res'], function(res) {
         var glare = new PIXI.Sprite(res.tex.glare);
 
         bub.tint = this.tint;
+        bub.anchor.x = 0.5;
+        bub.anchor.y = 0.5;
 
         this.addDisplay(bub, state.batch);
         //this.addDisplay(glare);

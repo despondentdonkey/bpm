@@ -15,7 +15,7 @@ define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
         setTimeout(function() {
             setState(new states.Test());
             console.log("STATE SWITCHED!");
-        }, 2000);
+        }, 4000);
 
         res.load(function() {
             gfx.init(800, 600);
