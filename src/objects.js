@@ -18,6 +18,10 @@ define(['res'], function(res) {
         this.onRemove();
     };
 
+    GameObject.prototype._update = function(delta) {
+        this.update(delta);
+    };
+
     GameObject.prototype.addDisplay = function(display) {
         this.displayObjects.push(display);
         this.state.addDisplay(display);

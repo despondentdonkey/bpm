@@ -26,7 +26,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         }
 
         for (var i=0; i<this.objects.length; ++i) {
-            this.objects[i].update(delta);
+            this.objects[i]._update(delta);
         }
 
         this.update(delta);
