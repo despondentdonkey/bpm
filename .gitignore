@@ -13,7 +13,7 @@ dognote
 #project files
 .bowerrc
 bower.json
-lib/jasmine/.*
+node_modules/*
 
 # resources
 res/*.*
