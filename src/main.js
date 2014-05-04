@@ -4,7 +4,7 @@ requirejs.config({
     }
 });
 
-requirejs(['lib/lode', 'debug', 'utils']);
+requirejs(['lib/pixi', 'lib/sfx', 'lib/lode', 'debug', 'utils']);
 
 requirejs(['bpm'], function(bpm) {
     bpm.run();
