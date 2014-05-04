@@ -9,3 +9,13 @@
 # dogpantz files
 dailyvim
 dognote
+
+#project files
+.bowerrc
+bower.json
+lib/jasmine/.*
+
+# resources
+res/*.*
+res/gfx/*.*
+res/sfx/*.*
