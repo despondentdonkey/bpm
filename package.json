@@ -6,6 +6,8 @@
 
     "dependencies": {},
     "devDependencies": {
+        "grunt": "~0.4.1",
+        "grunt-shell": "~0.7",
         "karma": "~0.12",
         "karma-chrome-launcher": "~0.1",
         "karma-firefox-launcher": "~0.1",
