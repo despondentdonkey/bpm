@@ -4,7 +4,7 @@ requirejs.config({
     }
 });
 
-requirejs(['lib/lode', 'debug']);
+requirejs(['lib/lode', 'debug', 'utils']);
 
 requirejs(['bpm'], function(bpm) {
     bpm.run();

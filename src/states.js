@@ -74,7 +74,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
     State.prototype.update = function(delta) {};
 
 
-    BubbleRenderTest.prototype = new State();
+    inherit(BubbleRenderTest, State);
     function BubbleRenderTest() {
         State.call(this);
         this.batch = new PIXI.SpriteBatch();
@@ -95,7 +95,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
     };
 
 
-    PinRenderTest.prototype = new State();
+    inherit(PinRenderTest, State);
     function PinRenderTest() {
         State.call(this);
         this.batch = new PIXI.SpriteBatch();

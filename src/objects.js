@@ -37,7 +37,7 @@ define(['res'], function(res) {
     GameObject.prototype.update = function(delta) {};
 
 
-    BubbleTest.prototype = new GameObject();
+    inherit(BubbleTest, GameObject);
     function BubbleTest(x, y, tint) {
         GameObject.call(this);
         this.x = x; this.y = y; this.xmod=0; this.ymod=0;
@@ -71,7 +71,7 @@ define(['res'], function(res) {
     };
 
 
-    PinTest.prototype = new GameObject();
+    inherit(PinTest, GameObject);
     function PinTest(x, y, angle) {
         GameObject.call(this);
         this.x = x; this.y = y;
@@ -95,6 +95,7 @@ define(['res'], function(res) {
             }
         };
     }
+
 
     return {
         BubbleTest: BubbleTest,
