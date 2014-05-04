@@ -3,6 +3,7 @@ define(['res', 'gfx'], function(res, gfx) {
     function GameObject() {
         this.displayObjects = [];
         this.state = null;
+        this.idList = [];
     }
 
     GameObject.prototype._onAdd = function(state) {
@@ -30,6 +31,51 @@ define(['res', 'gfx'], function(res, gfx) {
     GameObject.prototype.removeDisplay = function(display) {
         this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
         this.state.removeDisplay(display);
+    };
+
+    GameObject.prototype.addId = function(id) {
+        if (typeof id === 'string') {
+            if (!this.hasId(id)) {
+                this.idList.push(id);
+            }
+        } else if (id instanceof Array) {
+            for (var i in id) {
+                this.addId(id[i]);
+            }
+        }
+    };
+
+    GameObject.prototype.hasId = function(id) {
+        if (typeof id === 'string') {
+            for (var i in this.idList) {
+                if (this.idList[i] === id) {
+                    return true;
+                }
+            }
+        } else if (id instanceof Array) {
+            for (var i in id) {
+                if (!this.hasId(id[i])) {
+                    return false;
+                }
+            }
+
+            if (id.length >= 1) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    GameObject.prototype.removeId = function(id) {
+        if (typeof id === 'string') {
+            if (this.hasId(id)) {
+                this.idList.splice(this.idList.indexOf(id), 1);
+            }
+        } else if (id instanceof Array) {
+            for (var i in id) {
+                this.removeId(id[i]);
+            }
+        }
     };
 
     GameObject.prototype.onAdd = function(state) {}
