@@ -1,4 +1,4 @@
-define(['time', 'gfx', 'res'], function(time, gfx, res) {
+define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
     // Override default requestAnimationFrame for maximum compatibility.
     var requestAnimationFrame = window.requestAnimationFrame
                            || window.mozRequestAnimationFrame
@@ -6,22 +6,29 @@ define(['time', 'gfx', 'res'], function(time, gfx, res) {
                            || window.msRequestAnimationFrame
                            || function(func) { setTimeout(func, 1000/60) };
 
+    var currentState;
+    var currentStateInit = false;
+
     function run() {
+        //setState(new states.BubbleRenderTest());
+        setState(new states.PinRenderTest());
+
+        var bpm = this;
         res.load(function() {
             gfx.init(800, 600);
-
-            // Bubble render test
-            var baseTex = new PIXI.BaseTexture(res.bubble);
-            var tex = new PIXI.Texture(baseTex);
-            var spr = new PIXI.Sprite(tex);
-            gfx.stage.addChild(spr);
-
+            dbg.addStateButtons(bpm, states);
             update();
         });
     }
 
     function update() {
-        // state stuff here
+        if (currentState) {
+            if (!currentStateInit) {
+                currentState.init();
+                currentStateInit = true;
+            }
+            currentState._update(time.delta);
+        }
 
         time.update();
 
@@ -30,8 +37,17 @@ define(['time', 'gfx', 'res'], function(time, gfx, res) {
         requestAnimationFrame(update);
     }
 
+    function setState(state) {
+        if (currentState) {
+            currentState._onSwitch();
+        }
+        currentState = state;
+        currentStateInit = false;
+    }
+
     return {
         requestAnimationFrame: requestAnimationFrame,
         run: run,
+        setState: setState,
     };
 });

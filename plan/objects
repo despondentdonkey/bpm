@@ -26,3 +26,19 @@ function Pin()
 function Shooter()
 
 function Bubble()
+
+
+// Collision planning
+
+GameObject
+    x, y, width, height
+    idList = []
+    getCollisions(id ...) - returns objects with specified IDs that are colliding with this
+
+pin
+    check if colliding with 'bubble'
+
+bubble
+    id = 'bubble'
+    no collision checking // probably better performance
+    if offscreen: bounce
