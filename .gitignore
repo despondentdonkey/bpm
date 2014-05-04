@@ -10,12 +10,10 @@
 dailyvim
 dognote
 
-#project files
+# project files
 .bowerrc
 bower.json
 node_modules/*
 
 # resources
-res/*.*
-res/gfx/*.*
-res/sfx/*.*
+res/*
