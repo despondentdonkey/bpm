@@ -77,7 +77,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
     inherit(BubbleRenderTest, State);
     function BubbleRenderTest() {
         State.call(this);
-        this.batch = new PIXI.SpriteBatch();
+        this.batch = new gfx.pixi.SpriteBatch();
     }
 
     BubbleRenderTest.prototype.init = function() {
@@ -98,8 +98,8 @@ define(['objects', 'gfx'], function(objects, gfx) {
     inherit(PinRenderTest, State);
     function PinRenderTest() {
         State.call(this);
-        this.batch = new PIXI.SpriteBatch();
-        this.pinBatch = new PIXI.SpriteBatch();
+        this.batch = new gfx.pixi.SpriteBatch();
+        this.pinBatch = new gfx.pixi.SpriteBatch();
     }
 
     PinRenderTest.prototype.init = function() {

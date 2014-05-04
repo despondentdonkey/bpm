@@ -1,4 +1,4 @@
-define(function() {
+define(['gfx'], function(gfx) {
     var result = {
         load: load,
         tex: {},
@@ -15,7 +15,7 @@ define(function() {
 
     function createQueuedTextures() {
         for (var key in texturesToCreate) {
-            result.tex[key] = new PIXI.Texture(new PIXI.BaseTexture(texturesToCreate[key]));
+            result.tex[key] = new gfx.pixi.Texture(new gfx.pixi.BaseTexture(texturesToCreate[key]));
         }
         texturesToCreate = {};
     }

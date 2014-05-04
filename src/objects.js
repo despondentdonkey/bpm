@@ -1,4 +1,4 @@
-define(['res'], function(res) {
+define(['res', 'gfx'], function(res, gfx) {
 
     function GameObject() {
         this.displayObjects = [];
@@ -46,8 +46,8 @@ define(['res'], function(res) {
 
     BubbleTest.prototype.onAdd = function(state) {
         // BubbleTest render test
-        var bub = new PIXI.Sprite(res.tex.bubble);
-        var glare = new PIXI.Sprite(res.tex.glare);
+        var bub = new gfx.pixi.Sprite(res.tex.bubble);
+        var glare = new gfx.pixi.Sprite(res.tex.glare);
 
         bub.tint = this.tint;
         bub.anchor.x = 0.5;
@@ -77,7 +77,7 @@ define(['res'], function(res) {
         this.x = x; this.y = y;
         this.angle = angle;
         this.onAdd = function(state) {
-            var pin = new PIXI.Sprite(res.tex.pin);
+            var pin = new gfx.pixi.Sprite(res.tex.pin);
             pin.anchor.x = 0.5;
             pin.anchor.y = 0.5;
             this.addDisplay(pin, state.pinBatch);

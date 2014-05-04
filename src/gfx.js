@@ -1,12 +1,12 @@
-define(function() {
+define(['lib/pixi'], function(pixi) {
     function init(width, height) {
         this.width = width;
         this.height = height;
-        this.stage = new PIXI.Stage(0x505050);
-        this.renderer = PIXI.autoDetectRenderer(this.width, this.height);
+        this.stage = new pixi.Stage(0x505050);
+        this.renderer = pixi.autoDetectRenderer(this.width, this.height);
 
-        // Custom depth property for PIXI display objects.
-        Object.defineProperty(PIXI.DisplayObject.prototype, 'depth', {
+        // Custom depth property for pixi display objects.
+        Object.defineProperty(pixi.DisplayObject.prototype, 'depth', {
             get: function() { return this._bpmDepth; },
             set: function(val) { this._bpmDepth = val; },
         });
@@ -38,5 +38,6 @@ define(function() {
         init: init,
         sortDisplays: sortDisplays,
         render: render,
+        pixi: pixi
     };
 });
