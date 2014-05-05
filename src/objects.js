@@ -105,19 +105,29 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         }
     };
 
+    GameObject.prototype.getBounds = function() {
+        var width = this.width * this.anchor.x;
+        var height = this.height * this.anchor.y;
+        return {
+            x1: this.x - width,
+            y1: this.y - height,
+            x2: this.x + width,
+            y2: this.y + height,
+        };
+    };
+
     GameObject.prototype.getCollisions = function(id) {
         var result = [];
         for (var i=0; i<this.state.objects.length; ++i) {
             var obj = this.state.objects[i];
             if (obj !== this && obj.hasId(id)) {
-                var thisWidth = this.width * this.anchor.x;
-                var thisHeight = this.height * this.anchor.y;
-                var objWidth = obj.width * obj.anchor.x;
-                var objHeight = obj.height * obj.anchor.y;
-                if (this.x + thisWidth  > obj.x - objWidth
-                 && this.x - thisWidth  < obj.x + objWidth
-                 && this.y + thisHeight > obj.y - objHeight
-                 && this.y - thisHeight < obj.y + objHeight) {
+                var bounds = this.getBounds();
+                var objBounds = obj.getBounds();
+
+                 if (bounds.x1 < objBounds.x2
+                  && bounds.x2 > objBounds.x1
+                  && bounds.y1 < objBounds.y2
+                  && bounds.y2 > objBounds.y1) {
                     result.push(obj);
                 }
             }
