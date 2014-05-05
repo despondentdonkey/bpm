@@ -26,18 +26,22 @@ define(['objects', 'gfx'], function(objects, gfx) {
         for (var i=0; i<this.objectsToAdd.length; ++i) {
             var obj = this.objectsToAdd[i];
 
+
             this.objects.push(obj);
-            this.objectsToAdd.splice(this.objectsToAdd.indexOf(obj), 1);
+            this.objectsToAdd.splice(i, 1);
             obj._onAdd(this);
         }
 
         // Remove queued objects
         for (var i=0; i<this.objectsToRemove.length; ++i) {
             var obj = this.objectsToRemove[i];
+            var index = this.objects.indexOf(obj);
 
-            this.objects.splice(this.objects.indexOf(obj), 1);
-            this.objectsToRemove.splice(this.objectsToRemove.indexOf(obj), 1);
-            obj._onRemove(this);
+            if (index !== -1) {
+                this.objects.splice(index, 1);
+                this.objectsToRemove.splice(i, 1);
+                obj._onRemove(this);
+            }
         }
 
         for (var i=0; i<this.objects.length; ++i) {
@@ -149,7 +153,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.shooter = this.add(new objects.PinShooter());
         this.pin = this.add(new objects.PinTest(64,64,0));
 
-        for (var i=0; i<10; ++i) {
+        for (var i=0; i<1000; ++i) {
             this.add(new objects.Bubble(Math.random() * gfx.width, Math.random() * gfx.height));
         }
 
