@@ -49,10 +49,12 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
     State.prototype.add = function(obj) {
         this.objectsToAdd.push(obj);
+        return obj;
     };
 
     State.prototype.remove = function(obj) {
         this.objectsToRemove.push(obj);
+        return obj;
     };
 
     State.prototype.addDisplay = function(display, container) {
@@ -62,11 +64,13 @@ define(['objects', 'gfx'], function(objects, gfx) {
         } else {
             gfx.stage.addChild(display);
         }
+        return display;
     };
 
     State.prototype.removeDisplay = function(display) {
         this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
         display.parent.removeChild(display);
+        return display;
     };
 
     State.prototype.init = function() {};

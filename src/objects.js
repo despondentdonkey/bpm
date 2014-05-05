@@ -30,12 +30,12 @@ define(['res', 'gfx'], function(res, gfx) {
 
     GameObject.prototype.addDisplay = function(display, container) {
         this.displayObjects.push(display);
-        this.state.addDisplay(display, container);
+        return this.state.addDisplay(display, container);
     };
 
     GameObject.prototype.removeDisplay = function(display) {
         this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
-        this.state.removeDisplay(display);
+        return this.state.removeDisplay(display);
     };
 
     GameObject.prototype.addId = function(id) {
