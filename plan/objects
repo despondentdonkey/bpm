@@ -42,3 +42,15 @@ bubble
     id = 'bubble'
     no collision checking // probably better performance
     if offscreen: bounce
+
+
+With every getCollisions call you'll have to cycle through every game object which is not good when you have 10000 bubbles. So a way of increasing speed:
+    state
+        pinList
+
+    bubble
+        check for collision with pin
+            loop through pinList and find collision
+
+    This is much faster since you'd only be cycling through a small list of pins every frame.
+

@@ -116,8 +116,25 @@ define(['objects', 'gfx'], function(objects, gfx) {
         }
     };
 
+    inherit(CollisionTest, State);
+    function CollisionTest() {
+        State.call(this);
+        this.pinBatch = new gfx.pixi.SpriteBatch();
+    }
+
+    CollisionTest.prototype.init = function() {
+        this.addDisplay(this.pinBatch);
+        var pin = new objects.PinTest(64, 64, 0);
+        pin.collisionTest = true;
+        this.add(pin);
+
+        var pin2 = new objects.PinTest(64, 77, 0);
+        this.add(pin2);
+    };
+
     return {
         BubbleRenderTest: BubbleRenderTest,
         PinRenderTest: PinRenderTest,
+        CollisionTest: CollisionTest,
     };
 });

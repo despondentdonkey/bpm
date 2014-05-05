@@ -4,6 +4,11 @@ define(['res', 'gfx'], function(res, gfx) {
         this.displayObjects = [];
         this.state = null;
         this.idList = [];
+
+        this.x = 0;
+        this.y = 0;
+        this.width = 0;
+        this.height = 0;
     }
 
     GameObject.prototype._onAdd = function(state) {
@@ -78,6 +83,23 @@ define(['res', 'gfx'], function(res, gfx) {
         }
     };
 
+    GameObject.prototype.getCollisions = function(id) {
+        var result = [];
+        for (var i in this.state.objects) {
+            var obj = this.state.objects[i];
+            if (obj !== this && obj.hasId(id)) {
+                var thisx2 = this.x + this.width;
+                var thisy2 = this.y + this.height;
+                var objx2 = obj.x + obj.width;
+                var objy2 = obj.y + obj.height;
+                if (thisx2 > obj.x && this.x < objx2 && thisy2 > obj.y && this.y < objy2) {
+                    result.push(obj);
+                }
+            }
+        }
+        return result;
+    };
+
     GameObject.prototype.onAdd = function(state) {}
     GameObject.prototype.onRemove = function(state) {}
     GameObject.prototype.update = function(delta) {};
@@ -121,12 +143,16 @@ define(['res', 'gfx'], function(res, gfx) {
     function PinTest(x, y, angle) {
         GameObject.call(this);
         this.x = x; this.y = y;
+        this.width = 13; this.height = 12;
         this.angle = angle;
+        this.collisionTest = false;
+
         this.onAdd = function(state) {
             var pin = new gfx.pixi.Sprite(res.tex.pin);
             pin.anchor.x = 0.5;
             pin.anchor.y = 0.5;
             this.addDisplay(pin, state.pinBatch);
+            this.addId('pin');
         };
 
         this.update = function(delta) {
@@ -138,6 +164,14 @@ define(['res', 'gfx'], function(res, gfx) {
                 obj.position.x = this.x;
                 obj.position.y = this.y;
                 obj.rotation = -this.angle;
+            }
+
+            if (this.collisionTest) {
+                var col = this.getCollisions('pin');
+                for (var i in col) {
+                    var obj = col[i];
+                    console.log(obj);
+                }
             }
         };
     }
