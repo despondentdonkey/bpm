@@ -120,6 +120,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         }
     };
 
+
     inherit(CollisionTest, State);
     function CollisionTest() {
         State.call(this);
@@ -136,9 +137,33 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.add(pin2);
     };
 
+
+    inherit(Field, State);
+    function Field() {
+        State.call(this);
+        this.pinBatch = new gfx.pixi.SpriteBatch();
+    }
+
+    Field.prototype.init = function() {
+        this.pin = this.add(new objects.PinTest(64,64,0));
+        this.prim = this.addDisplay(new gfx.pixi.Graphics());
+        this.addDisplay(this.pinBatch);
+
+        this.prim.lineStyle(1, 0x00FF00);
+        this.prim.drawRect(0,0,this.pin.width,this.pin.height);
+        this.prim.depth = 1;
+        gfx.sortDisplays();
+    };
+
+    Field.prototype.update = function() {
+        this.prim.position.x = this.pin.x - this.pin.width*this.pin.anchor.x;
+        this.prim.position.y = this.pin.y - this.pin.height*this.pin.anchor.y;
+    };
+
     return {
         BubbleRenderTest: BubbleRenderTest,
         PinRenderTest: PinRenderTest,
         CollisionTest: CollisionTest,
+        Field: Field,
     };
 });

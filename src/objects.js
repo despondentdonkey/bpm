@@ -9,6 +9,10 @@ define(['res', 'gfx'], function(res, gfx) {
         this.y = 0;
         this.width = 0;
         this.height = 0;
+        this.anchor = {
+            x: 0.5,
+            y: 0.5
+        };
     }
 
     GameObject.prototype._onAdd = function(state) {
@@ -149,8 +153,8 @@ define(['res', 'gfx'], function(res, gfx) {
 
         this.onAdd = function(state) {
             var pin = new gfx.pixi.Sprite(res.tex.pin);
-            pin.anchor.x = 0.5;
-            pin.anchor.y = 0.5;
+            pin.anchor.x = this.anchor.x;
+            pin.anchor.y = this.anchor.y;
             this.addDisplay(pin, state.pinBatch);
             this.addId('pin');
         };

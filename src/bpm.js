@@ -11,7 +11,7 @@ define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
 
     function run() {
         //setState(new states.BubbleRenderTest());
-        setState(new states.CollisionTest());
+        setState(new states.Field());
 
         var bpm = this;
         res.load(function() {
