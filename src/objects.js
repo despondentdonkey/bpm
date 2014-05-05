@@ -190,8 +190,21 @@ define(['res', 'gfx'], function(res, gfx) {
     }
 
 
+    inherit(PinShooter, GameObject);
+    function PinShooter() {
+        GameObject.call(this);
+        this.x = gfx.width/2;
+        this.y = gfx.height/2;
+    }
+
+    PinShooter.prototype.onAdd = function() {
+        this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
+    };
+
+
     return {
         BubbleTest: BubbleTest,
         PinTest: PinTest,
+        PinShooter: PinShooter,
     };
 });

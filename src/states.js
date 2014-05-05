@@ -145,6 +145,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
     }
 
     Field.prototype.init = function() {
+        this.shooter = this.add(new objects.PinShooter());
         this.pin = this.add(new objects.PinTest(64,64,0));
         this.prim = this.addDisplay(new gfx.pixi.Graphics());
         this.addDisplay(this.pinBatch);
