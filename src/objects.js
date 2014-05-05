@@ -44,7 +44,7 @@ define(['res', 'gfx'], function(res, gfx) {
                 this.idList.push(id);
             }
         } else if (id instanceof Array) {
-            for (var i in id) {
+            for (var i=0; i<id.length; ++i) {
                 this.addId(id[i]);
             }
         }
@@ -52,13 +52,13 @@ define(['res', 'gfx'], function(res, gfx) {
 
     GameObject.prototype.hasId = function(id) {
         if (typeof id === 'string') {
-            for (var i in this.idList) {
+            for (var i=0; i<this.idList.length; ++i) {
                 if (this.idList[i] === id) {
                     return true;
                 }
             }
         } else if (id instanceof Array) {
-            for (var i in id) {
+            for (var i=0; i<id.length; ++i) {
                 if (!this.hasId(id[i])) {
                     return false;
                 }
@@ -77,7 +77,7 @@ define(['res', 'gfx'], function(res, gfx) {
                 this.idList.splice(this.idList.indexOf(id), 1);
             }
         } else if (id instanceof Array) {
-            for (var i in id) {
+            for (var i=0; i<id.length; ++i) {
                 this.removeId(id[i]);
             }
         }
@@ -85,7 +85,7 @@ define(['res', 'gfx'], function(res, gfx) {
 
     GameObject.prototype.getCollisions = function(id) {
         var result = [];
-        for (var i in this.state.objects) {
+        for (var i=0; i<this.state.objects.length; ++i) {
             var obj = this.state.objects[i];
             if (obj !== this && obj.hasId(id)) {
                 var thisx2 = this.x + this.width;
@@ -128,7 +128,7 @@ define(['res', 'gfx'], function(res, gfx) {
     BubbleTest.prototype.update = function(delta) {
         this.xmod += 0.02;
         this.ymod += 0.01;
-        for (var i in this.displayObjects) {
+        for (var i=0; i<this.displayObjects.length; ++i) {
             var obj = this.displayObjects[i];
             obj.position.x = this.x + Math.cos(this.xmod) * 20;
             obj.position.y = this.y + Math.sin(this.ymod) * 20;
@@ -159,7 +159,7 @@ define(['res', 'gfx'], function(res, gfx) {
             this.angle += 0.1;
             this.x += Math.cos(this.angle);
             this.y += -Math.sin(this.angle);
-            for (var i in this.displayObjects) {
+            for (var i=0; i<this.displayObjects.length; ++i) {
                 var obj = this.displayObjects[i];
                 obj.position.x = this.x;
                 obj.position.y = this.y;
@@ -168,7 +168,7 @@ define(['res', 'gfx'], function(res, gfx) {
 
             if (this.collisionTest) {
                 var col = this.getCollisions('pin');
-                for (var i in col) {
+                for (var i=0; i<col.length; ++i) {
                     var obj = col[i];
                     console.log(obj);
                 }

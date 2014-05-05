@@ -9,12 +9,12 @@ define(['objects', 'gfx'], function(objects, gfx) {
     // When this state has been switched
     State.prototype._onSwitch = function() {
         // Remove all objects
-        for (var i in this.objects) {
+        for (var i=0; i<this.objects.length; ++i) {
             this.objects[i]._onRemove(this);
         }
 
         // Remove any additional displays
-        for (var i in this.displayObjects) {
+        for (var i=0; i<this.displayObjects.length; ++i) {
             this.removeDisplay(this.displayObjects[i]);
         }
 
