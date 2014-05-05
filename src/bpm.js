@@ -1,4 +1,4 @@
-define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
+define(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, states, input) {
     // Override default requestAnimationFrame for maximum compatibility.
     var requestAnimationFrame = window.requestAnimationFrame
                            || window.mozRequestAnimationFrame
@@ -16,6 +16,7 @@ define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
         var bpm = this;
         res.load(function() {
             gfx.init(800, 600);
+            input.init(gfx.renderer.view);
             dbg.addStateButtons(bpm, states);
             update();
         });
@@ -30,6 +31,7 @@ define(['time', 'gfx', 'res', 'states'], function(time, gfx, res, states) {
             currentState._update(time.delta);
         }
 
+        input.update();
         time.update();
 
         gfx.render();
