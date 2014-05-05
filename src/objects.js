@@ -110,11 +110,14 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         for (var i=0; i<this.state.objects.length; ++i) {
             var obj = this.state.objects[i];
             if (obj !== this && obj.hasId(id)) {
-                var thisx2 = this.x + this.width;
-                var thisy2 = this.y + this.height;
-                var objx2 = obj.x + obj.width;
-                var objy2 = obj.y + obj.height;
-                if (thisx2 > obj.x && this.x < objx2 && thisy2 > obj.y && this.y < objy2) {
+                var thisWidth = this.width * this.anchor.x;
+                var thisHeight = this.height * this.anchor.y;
+                var objWidth = obj.width * obj.anchor.x;
+                var objHeight = obj.height * obj.anchor.y;
+                if (this.x + thisWidth  > obj.x - objWidth
+                 && this.x - thisWidth  < obj.x + objWidth
+                 && this.y + thisHeight > obj.y - objHeight
+                 && this.y - thisHeight < obj.y + objHeight) {
                     result.push(obj);
                 }
             }
@@ -215,20 +218,48 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         this.x = x;
         this.y = y;
         this.angle = angle;
+        this.speed = 0.2;
     }
 
     Pin.prototype.onAdd = function(state) {
         this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.pin), state.pinBatch);
+        this.width = this.graphic.width;
+        this.height = this.graphic.width;
     };
 
     Pin.prototype.update = function(delta) {
-        this.x += Math.cos(this.angle);
-        this.y += -Math.sin(this.angle);
+        var speed = this.speed * delta;
+        this.x += Math.cos(this.angle) * speed;
+        this.y += -Math.sin(this.angle) * speed;
+
+        var collisions = this.getCollisions('bubble');
+        for (var i=0; i<collisions.length; ++i) {
+            var obj = collisions[i];
+            this.state.remove(obj);
+        }
+    };
+
+
+    inherit(Bubble, GameObject);
+    function Bubble(x, y) {
+        GameObject.call(this);
+        this.x = x;
+        this.y = y;
+        this.addId('bubble');
+    }
+
+    Bubble.prototype.onAdd = function(state) {
+        this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
+        this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare));
+
+        this.width = this.graphic.width;
+        this.height = this.graphic.width;
     };
 
     return {
         BubbleTest: BubbleTest,
         PinTest: PinTest,
         PinShooter: PinShooter,
+        Bubble: Bubble,
     };
 });

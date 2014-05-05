@@ -142,14 +142,21 @@ define(['objects', 'gfx'], function(objects, gfx) {
     function Field() {
         State.call(this);
         this.pinBatch = new gfx.pixi.SpriteBatch();
+        this.bubbleBatch = new gfx.pixi.SpriteBatch();
     }
 
     Field.prototype.init = function() {
         this.shooter = this.add(new objects.PinShooter());
         this.pin = this.add(new objects.PinTest(64,64,0));
-        this.prim = this.addDisplay(new gfx.pixi.Graphics());
-        this.addDisplay(this.pinBatch);
 
+        for (var i=0; i<10; ++i) {
+            this.add(new objects.Bubble(Math.random() * gfx.width, Math.random() * gfx.height));
+        }
+
+        this.addDisplay(this.pinBatch);
+        this.addDisplay(this.bubbleBatch);
+
+        this.prim = this.addDisplay(new gfx.pixi.Graphics());
         this.prim.lineStyle(1, 0x00FF00);
         this.prim.drawRect(0,0,this.pin.width,this.pin.height);
         this.prim.depth = 1;
