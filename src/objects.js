@@ -1,4 +1,4 @@
-define(['res', 'gfx'], function(res, gfx) {
+define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     function GameObject() {
         this.displayObjects = [];
@@ -201,6 +201,30 @@ define(['res', 'gfx'], function(res, gfx) {
         this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
     };
 
+    PinShooter.prototype.update = function(delta) {
+        this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
+        if (input.mouse.isPressed(input.MOUSE_LEFT)) {
+            this.state.add(new Pin(this.x, this.y, this.angle));
+        }
+    };
+
+
+    inherit(Pin, GameObject);
+    function Pin(x, y, angle) {
+        GameObject.call(this);
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+    }
+
+    Pin.prototype.onAdd = function(state) {
+        this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.pin), state.pinBatch);
+    };
+
+    Pin.prototype.update = function(delta) {
+        this.x += Math.cos(this.angle);
+        this.y += -Math.sin(this.angle);
+    };
 
     return {
         BubbleTest: BubbleTest,
