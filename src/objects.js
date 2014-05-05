@@ -263,11 +263,14 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
 
     inherit(Bubble, GameObject);
-    function Bubble(x, y) {
+    function Bubble(x, y, angle) {
         GameObject.call(this);
         this.x = x;
         this.y = y;
         this.addId('bubble');
+        this.speed = 0.03;
+        this.speedX = Math.cos(angle  || 0);
+        this.speedY = -Math.sin(angle || 0);
     }
 
     Bubble.prototype.onAdd = function(state) {
@@ -276,6 +279,21 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
         this.width = this.graphic.width;
         this.height = this.graphic.width;
+    };
+
+    Bubble.prototype.update = function(delta) {
+        var speed = this.speed * delta;
+        this.x += this.speedX * speed;
+        this.y += this.speedY * speed;
+
+        var bounds = this.getBounds();
+        if (bounds.x1 < 0 || bounds.x2 > gfx.width) {
+            this.speedX = -this.speedX;
+        }
+
+        if (bounds.y1 < 0 || bounds.y2 > gfx.height) {
+            this.speedY = -this.speedY;
+        }
     };
 
     return {
