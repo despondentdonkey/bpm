@@ -9,10 +9,16 @@ define(['res', 'gfx'], function(res, gfx) {
         this.y = 0;
         this.width = 0;
         this.height = 0;
+        this.angle = 0;
+        this.scale = {
+            x: 1,
+            y: 1
+        }
         this.anchor = {
             x: 0.5,
             y: 0.5
         };
+        this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
     }
 
     GameObject.prototype._onAdd = function(state) {
@@ -30,6 +36,18 @@ define(['res', 'gfx'], function(res, gfx) {
 
     GameObject.prototype._update = function(delta) {
         this.update(delta);
+        if (this.syncDisplayProperties) {
+            for (var i=0; i<this.displayObjects.length; ++i) {
+                var obj = this.displayObjects[i];
+                obj.position.x = this.x;
+                obj.position.y = this.y;
+                obj.rotation = -this.angle;
+                obj.anchor.x = this.anchor.x;
+                obj.anchor.y = this.anchor.y;
+                obj.scale.x = this.scale.x;
+                obj.scale.y = this.scale.y;
+            }
+        }
     };
 
     GameObject.prototype.addDisplay = function(display, container) {
@@ -112,34 +130,31 @@ define(['res', 'gfx'], function(res, gfx) {
     inherit(BubbleTest, GameObject);
     function BubbleTest(x, y, tint) {
         GameObject.call(this);
-        this.x = x; this.y = y; this.xmod=0; this.ymod=0;
+        this.initialX = x; this.initialY = y;
+        this.xmod=0; this.ymod=0;
+        this.offsetX = 0; this.offsetY = 0;
         this.tint = tint;
     }
 
     BubbleTest.prototype.onAdd = function(state) {
         // BubbleTest render test
         var bub = new gfx.pixi.Sprite(res.tex.bubble);
-        var glare = new gfx.pixi.Sprite(res.tex.glare);
-
-        bub.tint = this.tint;
-        bub.anchor.x = 0.5;
-        bub.anchor.y = 0.5;
-
         this.addDisplay(bub, state.batch);
-        //this.addDisplay(glare);
     };
 
     BubbleTest.prototype.update = function(delta) {
         this.xmod += 0.02;
         this.ymod += 0.01;
-        for (var i=0; i<this.displayObjects.length; ++i) {
-            var obj = this.displayObjects[i];
-            obj.position.x = this.x + Math.cos(this.xmod) * 20;
-            obj.position.y = this.y + Math.sin(this.ymod) * 20;
-            obj.rotation = Math.tan(this.xmod/3);
-            obj.scale.x = Math.cos(this.xmod) * 1.5;
-            obj.scale.y = Math.sin(this.ymod) * 1.5;
-        }
+
+        this.offsetX = Math.cos(this.xmod) * 20;
+        this.offsetY = Math.sin(this.ymod) * 20;
+
+        this.x = this.initialX + this.offsetX;
+        this.y = this.initialY + this.offsetY;
+
+        this.angle = Math.tan(this.xmod/3);
+        this.scale.x = Math.cos(this.xmod) * 1.5;
+        this.scale.y = Math.sin(this.ymod) * 1.5;
     };
 
 
@@ -163,12 +178,6 @@ define(['res', 'gfx'], function(res, gfx) {
             this.angle += 0.1;
             this.x += Math.cos(this.angle);
             this.y += -Math.sin(this.angle);
-            for (var i=0; i<this.displayObjects.length; ++i) {
-                var obj = this.displayObjects[i];
-                obj.position.x = this.x;
-                obj.position.y = this.y;
-                obj.rotation = -this.angle;
-            }
 
             if (this.collisionTest) {
                 var col = this.getCollisions('pin');
