@@ -227,8 +227,9 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         GameObject.call(this);
         this.x = x;
         this.y = y;
-        this.angle = angle;
         this.speed = 0.2;
+        this.speedX = Math.cos(angle);
+        this.speedY = -Math.sin(angle);
     }
 
     Pin.prototype.onAdd = function(state) {
@@ -239,8 +240,19 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     Pin.prototype.update = function(delta) {
         var speed = this.speed * delta;
-        this.x += Math.cos(this.angle) * speed;
-        this.y += -Math.sin(this.angle) * speed;
+        this.x += this.speedX * speed;
+        this.y += this.speedY * speed;
+
+        this.angle = -Math.atan2(this.speedY, this.speedX);
+
+        var bounds = this.getBounds();
+        if (bounds.x1 < 0 || bounds.x2 > gfx.width) {
+            this.speedX = -this.speedX;
+        }
+
+        if (bounds.y1 < 0 || bounds.y2 > gfx.height) {
+            this.speedY = -this.speedY;
+        }
 
         var collisions = this.getCollisions('bubble');
         for (var i=0; i<collisions.length; ++i) {
