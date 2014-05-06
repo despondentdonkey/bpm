@@ -33,6 +33,8 @@ define(function() {
     }
 
     return {
+        delta: this.delta,
+        fps: this.delta,
         get: get,
         update: update,
     };
