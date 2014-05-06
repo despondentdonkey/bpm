@@ -26,11 +26,10 @@ define(['objects', 'gfx'], function(objects, gfx) {
         for (var i=0; i<this.objectsToAdd.length; ++i) {
             var obj = this.objectsToAdd[i];
 
-
             this.objects.push(obj);
-            this.objectsToAdd.splice(i, 1);
             obj._onAdd(this);
         }
+        this.objectsToAdd = [];
 
         // Remove queued objects
         for (var i=0; i<this.objectsToRemove.length; ++i) {
@@ -39,10 +38,10 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
             if (index !== -1) {
                 this.objects.splice(index, 1);
-                this.objectsToRemove.splice(i, 1);
                 obj._onRemove(this);
             }
         }
+        this.objectsToRemove = [];
 
         for (var i=0; i<this.objects.length; ++i) {
             this.objects[i]._update(delta);
