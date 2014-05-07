@@ -177,7 +177,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
     PinTest.prototype = new GameObject();
     PinTest.constructor = PinTest;
     function PinTest(x, y, angle) {
-        //GameObject.call(this);
+        GameObject.call(this);
         this.x = x; this.y = y;
         this.width = 13; this.height = 12;
         this.angle = angle;
@@ -200,7 +200,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
                 var col = this.getCollisions('pin');
                 for (var i=0; i<col.length; ++i) {
                     var obj = col[i];
-                    console.log(obj);
+                    //console.log(obj);
                 }
             }
         };

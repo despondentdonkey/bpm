@@ -4,81 +4,83 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.objects = [];
         this.objectsToAdd = [];
         this.objectsToRemove = [];
-    }
 
-    // When this state has been switched
-    State.prototype._onSwitch = function() {
-        // Remove all objects
-        for (var i=0; i<this.objects.length; ++i) {
-            this.objects[i]._onRemove(this);
-        }
-
-        // Remove any additional displays
-        for (var i=0; i<this.displayObjects.length; ++i) {
-            this.removeDisplay(this.displayObjects[i]);
-        }
-
-        this.onSwitch();
-    };
-
-    State.prototype._update = function(delta) {
-        // Add queued objects
-        for (var i=0; i<this.objectsToAdd.length; ++i) {
-            var obj = this.objectsToAdd[i];
-
-            this.objects.push(obj);
-            obj._onAdd(this);
-        }
-        this.objectsToAdd = [];
-
-        // Remove queued objects
-        for (var i=0; i<this.objectsToRemove.length; ++i) {
-            var obj = this.objectsToRemove[i];
-            var index = this.objects.indexOf(obj);
-
-            if (index !== -1) {
-                this.objects.splice(index, 1);
-                obj._onRemove(this);
+        // When this state has been switched
+        this._onSwitch = function() {
+            // Remove all objects
+            for (var i=0; i<this.objects.length; ++i) {
+                this.objects[i]._onRemove(this);
             }
-        }
-        this.objectsToRemove = [];
 
-        for (var i=0; i<this.objects.length; ++i) {
-            this.objects[i]._update(delta);
-        }
+            // Remove any additional displays
+            for (var i=0; i<this.displayObjects.length; ++i) {
+                this.removeDisplay(this.displayObjects[i]);
+            }
 
-        this.update(delta);
-    };
+            this.onSwitch();
+        };
 
-    State.prototype.add = function(obj) {
-        this.objectsToAdd.push(obj);
-        return obj;
-    };
+        this._update = function(delta) {
+            // Add queued objects
+            for (var i=0; i<this.objectsToAdd.length; ++i) {
+                var obj = this.objectsToAdd[i];
 
-    State.prototype.remove = function(obj) {
-        this.objectsToRemove.push(obj);
-        return obj;
-    };
+                this.objects.push(obj);
+                obj._onAdd(this);
+            }
+            this.objectsToAdd = [];
 
-    State.prototype.addDisplay = function(display, container) {
-        this.displayObjects.push(display);
-        if (container) {
-            container.addChild(display);
-        } else {
-            gfx.stage.addChild(display);
-        }
-        return display;
-    };
+            // Remove queued objects
+            for (var i=0; i<this.objectsToRemove.length; ++i) {
+                var obj = this.objectsToRemove[i];
+                var index = this.objects.indexOf(obj);
 
-    State.prototype.removeDisplay = function(display) {
-        this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
-        display.parent.removeChild(display);
-        return display;
-    };
+                if (index !== -1) {
+                    this.objects.splice(index, 1);
+                    obj._onRemove(this);
+                }
+            }
+            this.objectsToRemove = [];
 
-    State.prototype.init = function() {};
-    State.prototype.onSwitch = function() {};
-    State.prototype.update = function(delta) {};
+            for (var i=0; i<this.objects.length; ++i) {
+                this.objects[i]._update(delta);
+            }
+
+            window.objects = this.objects;
+
+            this.update(delta);
+        };
+
+        this.add = function(obj) {
+            this.objectsToAdd.push(obj);
+            return obj;
+        };
+
+        this.remove = function(obj) {
+            this.objectsToRemove.push(obj);
+            return obj;
+        };
+
+        this.addDisplay = function(display, container) {
+            this.displayObjects.push(display);
+            if (container) {
+                container.addChild(display);
+            } else {
+                gfx.stage.addChild(display);
+            }
+            return display;
+        };
+
+        this.removeDisplay = function(display) {
+            this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
+            display.parent.removeChild(display);
+            return display;
+        };
+
+        this.init = function() {};
+        this.onSwitch = function() {};
+        this.update = function(delta) {};
+    }
 
 
     inherit(BubbleRenderTest, State);
@@ -96,7 +98,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.add(b);
 
         var tint = Math.random() * 0xFFFFFF;
-        for (var i=0; i<10000; ++i) {
+        for (var i=0; i<1000; ++i) {
             this.add(new objects.BubbleTest(Math.random() * gfx.width, Math.random() * gfx.height, tint));
         }
     };
@@ -124,20 +126,22 @@ define(['objects', 'gfx'], function(objects, gfx) {
     };
 
 
-    inherit(CollisionTest, State);
+    //inherit(CollisionTest, State);
+    CollisionTest.prototype = new State();
+    CollisionTest.constructor = CollisionTest;
     function CollisionTest() {
-        State.call(this);
+        //State.call(this);
         this.pinBatch = new gfx.pixi.SpriteBatch();
-    }
 
-    CollisionTest.prototype.init = function() {
-        this.addDisplay(this.pinBatch);
-        var pin = new objects.PinTest(64, 64, 0);
-        pin.collisionTest = true;
-        this.add(pin);
+        this.init = function() {
+            this.addDisplay(this.pinBatch);
+            var pin = new objects.PinTest(64, 64, 0);
+            pin.collisionTest = true;
+            this.add(pin);
 
-        var pin2 = new objects.PinTest(64, 77, 0);
-        this.add(pin2);
+            var pin2 = new objects.PinTest(64, 77, 0);
+            this.add(pin2);
+        }
     };
 
 
