@@ -1,7 +1,7 @@
 define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     function GameObject() {
-        this._onAdd = function(state) {
+        this._init = function(state) {
             this.displayObjects = [];
             this.state = null;
             this.idList = [];
@@ -21,15 +21,15 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             };
             this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
             this.state = state;
-            this.onAdd(state);
+            this.init(state);
         };
 
-        this._onRemove = function(state) {
+        this._destroy = function(state) {
             while (this.displayObjects.length > 0) {
                 this.removeDisplay(this.displayObjects[0]);
             }
             this.state = null;
-            this.onRemove(state);
+            this.destroy(state);
         };
 
         this._update = function(delta) {
@@ -133,8 +133,8 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             return result;
         };
 
-        this.onAdd = function(state) {}
-        this.onRemove = function(state) {}
+        this.init = function(state) {}
+        this.destroy = function(state) {}
         this.update = function(delta) {};
     }
 
@@ -147,7 +147,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         this.offsetX = 0; this.offsetY = 0;
         this.tint = tint;
 
-        this.onAdd = function(state) {
+        this.init = function(state) {
             // BubbleTest render test
             var bub = new gfx.pixi.Sprite(res.tex.bubble);
             this.addDisplay(bub, state.batch);
@@ -172,7 +172,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     inherit(PinTest, GameObject);
     function PinTest(x, y, angle) {
-        this.onAdd = function(state) {
+        this.init = function(state) {
             this.x = x; this.y = y;
             this.width = 13; this.height = 12;
             this.angle = angle;
@@ -202,7 +202,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     inherit(PinShooter, GameObject);
     function PinShooter() {
-        this.onAdd = function() {
+        this.init = function() {
             this.x = gfx.width/2;
             this.y = gfx.height/2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
@@ -218,7 +218,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     inherit(Pin, GameObject);
     function Pin(x, y, angle) {
-        this.onAdd = function(state) {
+        this.init = function(state) {
             this.x = x;
             this.y = y;
             this.speed = 0.2;
@@ -256,7 +256,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     inherit(Bubble, GameObject);
     function Bubble(x, y, angle) {
-        this.onAdd = function(state) {
+        this.init = function(state) {
             this.x = x;
             this.y = y;
             this.addId('bubble');

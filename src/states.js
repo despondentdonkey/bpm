@@ -12,7 +12,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this._destroy = function() {
             // Remove all objects
             for (var i=0; i<this.objects.length; ++i) {
-                this.objects[i]._onRemove(this);
+                this.objects[i]._destroy(this);
             }
 
             // Remove any additional displays
@@ -29,7 +29,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
                 var obj = this.objectsToAdd[i];
 
                 this.objects.push(obj);
-                obj._onAdd(this);
+                obj._init(this);
             }
             this.objectsToAdd = [];
 
@@ -40,7 +40,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
                 if (index !== -1) {
                     this.objects.splice(index, 1);
-                    obj._onRemove(this);
+                    obj._destroy(this);
                 }
             }
             this.objectsToRemove = [];
