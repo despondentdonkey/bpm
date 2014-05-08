@@ -181,11 +181,14 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
     PinTest.constructor = PinTest;
     function PinTest(x, y, angle) {
         console.log(this);
-        GameObject.call(this);
-        this.x = x; this.y = y;
-        this.width = 13; this.height = 12;
-        this.angle = angle;
-        this.collisionTest = false;
+        //GameObject.call(this);
+        this.init = function() {
+            PinTest.prototype.init.call(this);
+            this.x = x; this.y = y;
+            this.width = 13; this.height = 12;
+            this.angle = angle;
+            this.collisionTest = false;
+        };
 
         this.onAdd = function(state) {
             var pin = new gfx.pixi.Sprite(res.tex.pin);
