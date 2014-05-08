@@ -1,9 +1,12 @@
 define(['objects', 'gfx'], function(objects, gfx) {
     function State() {
-        this.displayObjects = [];
-        this.objects = [];
-        this.objectsToAdd = [];
-        this.objectsToRemove = [];
+
+        this.init = function() {
+            this.displayObjects = [];
+            this.objects = [];
+            this.objectsToAdd = [];
+            this.objectsToRemove = [];
+        };
 
         var removeObjects = _.bind(function() {
             // Remove queued objects
@@ -84,7 +87,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
             return display;
         };
 
-        this.init = function() {};
         this.onSwitch = function() {};
         this.update = function(delta) {};
     }
