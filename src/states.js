@@ -9,12 +9,12 @@ define(['objects', 'gfx'], function(objects, gfx) {
     // When this state has been switched
     State.prototype._onSwitch = function() {
         // Remove all objects
-        for (var i in this.objects) {
+        for (var i=0; i<this.objects.length; ++i) {
             this.objects[i]._onRemove(this);
         }
 
         // Remove any additional displays
-        for (var i in this.displayObjects) {
+        for (var i=0; i<this.displayObjects.length; ++i) {
             this.removeDisplay(this.displayObjects[i]);
         }
 
@@ -27,18 +27,21 @@ define(['objects', 'gfx'], function(objects, gfx) {
             var obj = this.objectsToAdd[i];
 
             this.objects.push(obj);
-            this.objectsToAdd.splice(this.objectsToAdd.indexOf(obj), 1);
             obj._onAdd(this);
         }
+        this.objectsToAdd = [];
 
         // Remove queued objects
         for (var i=0; i<this.objectsToRemove.length; ++i) {
             var obj = this.objectsToRemove[i];
+            var index = this.objects.indexOf(obj);
 
-            this.objects.splice(this.objects.indexOf(obj), 1);
-            this.objectsToRemove.splice(this.objectsToRemove.indexOf(obj), 1);
-            obj._onRemove(this);
+            if (index !== -1) {
+                this.objects.splice(index, 1);
+                obj._onRemove(this);
+            }
         }
+        this.objectsToRemove = [];
 
         for (var i=0; i<this.objects.length; ++i) {
             this.objects[i]._update(delta);
@@ -49,10 +52,12 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
     State.prototype.add = function(obj) {
         this.objectsToAdd.push(obj);
+        return obj;
     };
 
     State.prototype.remove = function(obj) {
         this.objectsToRemove.push(obj);
+        return obj;
     };
 
     State.prototype.addDisplay = function(display, container) {
@@ -62,11 +67,13 @@ define(['objects', 'gfx'], function(objects, gfx) {
         } else {
             gfx.stage.addChild(display);
         }
+        return display;
     };
 
     State.prototype.removeDisplay = function(display) {
         this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
         display.parent.removeChild(display);
+        return display;
     };
 
     State.prototype.init = function() {};
@@ -116,8 +123,59 @@ define(['objects', 'gfx'], function(objects, gfx) {
         }
     };
 
+
+    inherit(CollisionTest, State);
+    function CollisionTest() {
+        State.call(this);
+        this.pinBatch = new gfx.pixi.SpriteBatch();
+    }
+
+    CollisionTest.prototype.init = function() {
+        this.addDisplay(this.pinBatch);
+        var pin = new objects.PinTest(64, 64, 0);
+        pin.collisionTest = true;
+        this.add(pin);
+
+        var pin2 = new objects.PinTest(64, 77, 0);
+        this.add(pin2);
+    };
+
+
+    inherit(Field, State);
+    function Field() {
+        State.call(this);
+        this.pinBatch = new gfx.pixi.SpriteBatch();
+        this.bubbleBatch = new gfx.pixi.SpriteBatch();
+    }
+
+    Field.prototype.init = function() {
+        this.shooter = this.add(new objects.PinShooter());
+        this.pin = this.add(new objects.PinTest(64,64,0));
+
+        for (var i=0; i<1000; ++i) {
+            // Bubbles will spawn slightly outside of view causing weirdness. Use a random range for position gen.
+            this.add(new objects.Bubble((Math.random() * gfx.width) - 32, (Math.random() * gfx.height) - 32, Math.random() * 360));
+        }
+
+        this.addDisplay(this.pinBatch);
+        this.addDisplay(this.bubbleBatch);
+
+        this.prim = this.addDisplay(new gfx.pixi.Graphics());
+        this.prim.lineStyle(1, 0x00FF00);
+        this.prim.drawRect(0,0,this.pin.width,this.pin.height);
+        this.prim.depth = 1;
+        gfx.sortDisplays();
+    };
+
+    Field.prototype.update = function() {
+        this.prim.position.x = this.pin.x - this.pin.width*this.pin.anchor.x;
+        this.prim.position.y = this.pin.y - this.pin.height*this.pin.anchor.y;
+    };
+
     return {
         BubbleRenderTest: BubbleRenderTest,
         PinRenderTest: PinRenderTest,
+        CollisionTest: CollisionTest,
+        Field: Field,
     };
 });
