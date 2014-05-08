@@ -5,12 +5,31 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.objectsToAdd = [];
         this.objectsToRemove = [];
 
+        var removeObjects = _.bind(function() {
+            // Remove queued objects
+            for (var i=0; i<this.objectsToRemove.length; ++i) {
+                var obj = this.objectsToRemove[i];
+                var index = this.objects.indexOf(obj);
+
+                if (index !== -1) {
+                    this.objects.splice(index, 1);
+                    obj._onRemove(this);
+                }
+            }
+            this.objectsToRemove = [];
+        }, this);
+
         // When this state has been switched
         this._onSwitch = function() {
             // Remove all objects
             for (var i=0; i<this.objects.length; ++i) {
                 this.objects[i]._onRemove(this);
+                console.log(this.objects[i]);
             }
+            this.objectsToRemove = this.objects;
+            console.log(this.objectsToRemove);
+            removeObjects();
+            console.log(this.objectsToRemove);
 
             // Remove any additional displays
             for (var i=0; i<this.displayObjects.length; ++i) {
@@ -30,23 +49,11 @@ define(['objects', 'gfx'], function(objects, gfx) {
             }
             this.objectsToAdd = [];
 
-            // Remove queued objects
-            for (var i=0; i<this.objectsToRemove.length; ++i) {
-                var obj = this.objectsToRemove[i];
-                var index = this.objects.indexOf(obj);
-
-                if (index !== -1) {
-                    this.objects.splice(index, 1);
-                    obj._onRemove(this);
-                }
-            }
-            this.objectsToRemove = [];
+            removeObjects();
 
             for (var i=0; i<this.objects.length; ++i) {
                 this.objects[i]._update(delta);
             }
-
-            window.objects = this.objects;
 
             this.update(delta);
         };
@@ -83,47 +90,49 @@ define(['objects', 'gfx'], function(objects, gfx) {
     }
 
 
-    inherit(BubbleRenderTest, State);
+    //inherit(BubbleRenderTest, State);
+    BubbleRenderTest.prototype = new State();
+    BubbleRenderTest.constructor = BubbleRenderTest;
     function BubbleRenderTest() {
-        State.call(this);
+        //State.call(this);
         this.batch = new gfx.pixi.SpriteBatch();
-    }
 
-    BubbleRenderTest.prototype.init = function() {
-        this.addDisplay(this.batch);
-        var a = new objects.BubbleTest(128, 128);
-        this.add(a);
+        this.init = function() {
+            this.addDisplay(this.batch);
+            var a = new objects.BubbleTest(128, 128);
+            this.add(a);
 
-        var b = new objects.BubbleTest(300, 100);
-        this.add(b);
+            var b = new objects.BubbleTest(300, 100);
+            this.add(b);
 
         var tint = Math.random() * 0xFFFFFF;
-        for (var i=0; i<1000; ++i) {
+        for (var i=0; i<1000; ++i)
             this.add(new objects.BubbleTest(Math.random() * gfx.width, Math.random() * gfx.height, tint));
         }
     };
 
 
-    inherit(PinRenderTest, State);
+    //inherit(PinRenderTest, State);
+    PinRenderTest.prototype = new State();
+    PinRenderTest.constructor = PinRenderTest;
     function PinRenderTest() {
-        State.call(this);
         this.batch = new gfx.pixi.SpriteBatch();
         this.pinBatch = new gfx.pixi.SpriteBatch();
+
+        this.init = function() {
+            this.addDisplay(this.batch);
+            this.addDisplay(this.pinBatch);
+            var a = new objects.BubbleTest(gfx.width/2, gfx.height/2);
+            this.add(a);
+
+            for (var i=0; i<10000; ++i) {
+                var x = gfx.width/2 + Math.cos(i) * gfx.width/4;
+                var y = gfx.height/2 + Math.sin(i) * gfx.width/4;
+                var pin = new objects.PinTest(x, y, 0);
+                this.add(pin);
+            }
+        };
     }
-
-    PinRenderTest.prototype.init = function() {
-        this.addDisplay(this.batch);
-        this.addDisplay(this.pinBatch);
-        var a = new objects.BubbleTest(gfx.width/2, gfx.height/2);
-        this.add(a);
-
-        for (var i=0; i<10000; ++i) {
-            var x = gfx.width/2 + Math.cos(i) * gfx.width/4;
-            var y = gfx.height/2 + Math.sin(i) * gfx.width/4;
-            var pin = new objects.PinTest(x, y, 0);
-            this.add(pin);
-        }
-    };
 
 
     //inherit(CollisionTest, State);

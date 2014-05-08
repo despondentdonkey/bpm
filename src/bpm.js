@@ -10,8 +10,8 @@ define(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, state
     var currentStateInit = false;
 
     function run() {
-        //setState(new states.BubbleRenderTest());
-        setState(new states.Field());
+        setState(new states.CollisionTest());
+        //setState(new states.Field());
 
         var bpm = this;
         res.load(function() {

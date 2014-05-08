@@ -177,6 +177,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
     PinTest.prototype = new GameObject();
     PinTest.constructor = PinTest;
     function PinTest(x, y, angle) {
+        console.log(this);
         GameObject.call(this);
         this.x = x; this.y = y;
         this.width = 13; this.height = 12;
