@@ -1,4 +1,4 @@
-function inherit(sub, base) {
-    sub.prototype = Object.create(base.prototype);
-    sub.prototype.constructor = sub;
+function inherit(Sub, Base) {
+    Sub.prototype = new Base();
+    Sub.prototype.constructor = Sub;
 }
