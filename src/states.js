@@ -1,13 +1,11 @@
 define(['objects', 'gfx'], function(objects, gfx) {
     function State() {
-
         this.init = function() {
             this.displayObjects = [];
             this.objects = [];
             this.objectsToAdd = [];
             this.objectsToRemove = [];
         };
-
 
         // When this state has been switched
         this._onSwitch = function() {
@@ -84,15 +82,13 @@ define(['objects', 'gfx'], function(objects, gfx) {
     }
 
 
-    //inherit(BubbleRenderTest, State);
-    BubbleRenderTest.prototype = new State();
-    BubbleRenderTest.constructor = BubbleRenderTest;
+    inherit(BubbleRenderTest, State);
     function BubbleRenderTest() {
-        //State.call(this);
-        this.batch = new gfx.pixi.SpriteBatch();
-
         this.init = function() {
-            BubbleRenderTest.prototype.init();
+            BubbleRenderTest.prototype.init.call(this);
+
+            this.batch = new gfx.pixi.SpriteBatch();
+
             this.addDisplay(this.batch);
             var a = new objects.BubbleTest(128, 128);
             this.add(a);
@@ -100,22 +96,22 @@ define(['objects', 'gfx'], function(objects, gfx) {
             var b = new objects.BubbleTest(300, 100);
             this.add(b);
 
-        var tint = Math.random() * 0xFFFFFF;
-        for (var i=0; i<1000; ++i)
-            this.add(new objects.BubbleTest(Math.random() * gfx.width, Math.random() * gfx.height, tint));
-        }
-    };
+            var tint = Math.random() * 0xFFFFFF;
+            for (var i=0; i<1000; ++i) {
+                this.add(new objects.BubbleTest(Math.random() * gfx.width, Math.random() * gfx.height, tint));
+            }
+        };
+    }
 
 
-    //inherit(PinRenderTest, State);
-    PinRenderTest.prototype = new State();
-    PinRenderTest.constructor = PinRenderTest;
+    inherit(PinRenderTest, State);
     function PinRenderTest() {
-        this.batch = new gfx.pixi.SpriteBatch();
-        this.pinBatch = new gfx.pixi.SpriteBatch();
-
         this.init = function() {
-            PinRenderTest.prototype.init();
+            PinRenderTest.prototype.init.call(this);
+
+            this.batch = new gfx.pixi.SpriteBatch();
+            this.pinBatch = new gfx.pixi.SpriteBatch();
+
             this.addDisplay(this.batch);
             this.addDisplay(this.pinBatch);
             var a = new objects.BubbleTest(gfx.width/2, gfx.height/2);
@@ -131,15 +127,13 @@ define(['objects', 'gfx'], function(objects, gfx) {
     }
 
 
-    //inherit(CollisionTest, State);
-    CollisionTest.prototype = new State();
-    CollisionTest.constructor = CollisionTest;
+    inherit(CollisionTest, State);
     function CollisionTest() {
-        //State.call(this);
-        this.pinBatch = new gfx.pixi.SpriteBatch();
-
         this.init = function() {
-            CollisionTest.prototype.init();
+            CollisionTest.prototype.init.call(this);
+
+            this.pinBatch = new gfx.pixi.SpriteBatch();
+
             this.addDisplay(this.pinBatch);
             var pin = new objects.PinTest(64, 64, 0);
             pin.collisionTest = true;
@@ -147,40 +141,42 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
             var pin2 = new objects.PinTest(64, 77, 0);
             this.add(pin2);
-        }
-    };
-
-
-    inherit(Field, State);
-    function Field() {
-        State.call(this);
-        this.pinBatch = new gfx.pixi.SpriteBatch();
-        this.bubbleBatch = new gfx.pixi.SpriteBatch();
+        };
     }
 
-    Field.prototype.init = function() {
-        this.shooter = this.add(new objects.PinShooter());
-        this.pin = this.add(new objects.PinTest(64,64,0));
 
-        for (var i=0; i<1000; ++i) {
-            // Bubbles will spawn slightly outside of view causing weirdness. Use a random range for position gen.
-            this.add(new objects.Bubble((Math.random() * gfx.width) - 32, (Math.random() * gfx.height) - 32, Math.random() * 360));
-        }
+    // Won't work yet until the rest of the objects have been converted to the new inheritance.
+    inherit(Field, State);
+    function Field() {
+        this.init = function() {
+            Field.prototype.init.call(this);
 
-        this.addDisplay(this.pinBatch);
-        this.addDisplay(this.bubbleBatch);
+            this.pinBatch = new gfx.pixi.SpriteBatch();
+            this.bubbleBatch = new gfx.pixi.SpriteBatch();
 
-        this.prim = this.addDisplay(new gfx.pixi.Graphics());
-        this.prim.lineStyle(1, 0x00FF00);
-        this.prim.drawRect(0,0,this.pin.width,this.pin.height);
-        this.prim.depth = 1;
-        gfx.sortDisplays();
-    };
+            this.shooter = this.add(new objects.PinShooter());
+            this.pin = this.add(new objects.PinTest(64,64,0));
 
-    Field.prototype.update = function() {
-        this.prim.position.x = this.pin.x - this.pin.width*this.pin.anchor.x;
-        this.prim.position.y = this.pin.y - this.pin.height*this.pin.anchor.y;
-    };
+            for (var i=0; i<1000; ++i) {
+                // Bubbles will spawn slightly outside of view causing weirdness. Use a random range for position gen.
+                this.add(new objects.Bubble((Math.random() * gfx.width) - 32, (Math.random() * gfx.height) - 32, Math.random() * 360));
+            }
+
+            this.addDisplay(this.pinBatch);
+            this.addDisplay(this.bubbleBatch);
+
+            this.prim = this.addDisplay(new gfx.pixi.Graphics());
+            this.prim.lineStyle(1, 0x00FF00);
+            this.prim.drawRect(0,0,this.pin.width,this.pin.height);
+            this.prim.depth = 1;
+            gfx.sortDisplays();
+        };
+
+        this.update = function() {
+            this.prim.position.x = this.pin.x - this.pin.width*this.pin.anchor.x;
+            this.prim.position.y = this.pin.y - this.pin.height*this.pin.anchor.y;
+        };
+    }
 
     return {
         BubbleRenderTest: BubbleRenderTest,
