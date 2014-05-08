@@ -130,7 +130,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
     CollisionTest.prototype = new State();
     CollisionTest.constructor = CollisionTest;
     function CollisionTest() {
-        //State.call(this);
+        State.call(this);
         this.pinBatch = new gfx.pixi.SpriteBatch();
 
         this.init = function() {
