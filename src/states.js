@@ -13,18 +13,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
             for (var i=0; i<this.objects.length; ++i) {
                 this.objects[i]._onRemove(this);
             }
-            this.objectsToRemove = this.objects;
-            // Remove queued objects
-            for (var i=0; i<this.objectsToRemove.length; ++i) {
-                var obj = this.objectsToRemove[i];
-                var index = this.objects.indexOf(obj);
-
-                if (index !== -1) {
-                    this.objects.splice(index, 1);
-                    obj._onRemove(this);
-                }
-            }
-            this.objectsToRemove = [];
 
             // Remove any additional displays
             for (var i=0; i<this.displayObjects.length; ++i) {
@@ -43,6 +31,18 @@ define(['objects', 'gfx'], function(objects, gfx) {
                 obj._onAdd(this);
             }
             this.objectsToAdd = [];
+
+            // Remove queued objects
+            for (var i=0; i<this.objectsToRemove.length; ++i) {
+                var obj = this.objectsToRemove[i];
+                var index = this.objects.indexOf(obj);
+
+                if (index !== -1) {
+                    this.objects.splice(index, 1);
+                    obj._onRemove(this);
+                }
+            }
+            this.objectsToRemove = [];
 
             for (var i=0; i<this.objects.length; ++i) {
                 this.objects[i]._update(delta);
