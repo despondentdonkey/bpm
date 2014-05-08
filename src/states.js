@@ -153,8 +153,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
             this.pin = this.add(new objects.PinTest(64,64,0));
 
             for (var i=0; i<1000; ++i) {
-                // Bubbles will spawn slightly outside of view causing weirdness. Use a random range for position gen.
-                this.add(new objects.Bubble((Math.random() * gfx.width) - 32, (Math.random() * gfx.height) - 32, Math.random() * 360));
+                this.add(new objects.Bubble(randomRange(32, gfx.width-32), randomRange(32, gfx.height-32), Math.random() * 360));
             }
 
             this.addDisplay(this.pinBatch);

@@ -237,11 +237,11 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             this.angle = -Math.atan2(this.speedY, this.speedX);
 
             var bounds = this.getBounds();
-            if (bounds.x1 < 0 || bounds.x2 > gfx.width) {
+            if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
                 this.speedX = -this.speedX;
             }
 
-            if (bounds.y1 < 0 || bounds.y2 > gfx.height) {
+            if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
                 this.speedY = -this.speedY;
             }
 
@@ -277,11 +277,11 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             this.y += this.speedY * speed;
 
             var bounds = this.getBounds();
-            if (bounds.x1 < 0 || bounds.x2 > gfx.width) {
+            if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
                 this.speedX = -this.speedX;
             }
 
-            if (bounds.y1 < 0 || bounds.y2 > gfx.height) {
+            if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
                 this.speedY = -this.speedY;
             }
         };
