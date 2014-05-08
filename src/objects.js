@@ -23,6 +23,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         };
 
         this._onAdd = function(state) {
+            this.init();
             this.state = state;
             this.onAdd(state);
         };
