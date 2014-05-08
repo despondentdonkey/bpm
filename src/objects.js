@@ -1,7 +1,7 @@
 define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     function GameObject() {
-        this.init = function() {
+        this._onAdd = function(state) {
             this.displayObjects = [];
             this.state = null;
             this.idList = [];
@@ -20,10 +20,6 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
                 y: 0.5
             };
             this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
-        };
-
-        this._onAdd = function(state) {
-            this.init();
             this.state = state;
             this.onAdd(state);
         };
@@ -180,14 +176,12 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
     PinTest.prototype = new GameObject();
     PinTest.constructor = PinTest;
     function PinTest(x, y, angle) {
-        console.log(this);
-        GameObject.call(this);
-        this.x = x; this.y = y;
-        this.width = 13; this.height = 12;
-        this.angle = angle;
-        this.collisionTest = false;
-
         this.onAdd = function(state) {
+            this.x = x; this.y = y;
+            this.width = 13; this.height = 12;
+            this.angle = angle;
+            this.collisionTest = false;
+
             var pin = new gfx.pixi.Sprite(res.tex.pin);
             pin.anchor.x = this.anchor.x;
             pin.anchor.y = this.anchor.y;
