@@ -139,9 +139,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
     }
 
 
-    //inherit(BubbleTest, GameObject);
-    BubbleTest.prototype = new GameObject();
-    BubbleTest.constructor = BubbleTest;
+    inherit(BubbleTest, GameObject);
     function BubbleTest(x, y, tint) {
         //GameObject.call(this);
         this.initialX = x; this.initialY = y;
@@ -172,9 +170,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
     }
 
 
-    //inherit(PinTest, GameObject);
-    PinTest.prototype = new GameObject();
-    PinTest.constructor = PinTest;
+    inherit(PinTest, GameObject);
     function PinTest(x, y, angle) {
         this.onAdd = function(state) {
             this.x = x; this.y = y;
