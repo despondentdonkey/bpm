@@ -143,7 +143,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
     }
 
 
-    // Won't work yet until the rest of the objects have been converted to the new inheritance.
     inherit(Field, State);
     function Field() {
         this.init = function() {
