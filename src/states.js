@@ -1,10 +1,11 @@
 define(['objects', 'gfx'], function(objects, gfx) {
     function State() {
-        this.init = function() {
+        this._init = function() {
             this.displayObjects = [];
             this.objects = [];
             this.objectsToAdd = [];
             this.objectsToRemove = [];
+            this.init();
         };
 
         // When this state has been switched
@@ -78,6 +79,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         };
 
         this.onSwitch = function() {};
+        this.init = function() {};
         this.update = function(delta) {};
     }
 
@@ -107,8 +109,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
     inherit(PinRenderTest, State);
     function PinRenderTest() {
         this.init = function() {
-            PinRenderTest.prototype.init.call(this);
-
             this.batch = new gfx.pixi.SpriteBatch();
             this.pinBatch = new gfx.pixi.SpriteBatch();
 
@@ -130,8 +130,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
     inherit(CollisionTest, State);
     function CollisionTest() {
         this.init = function() {
-            CollisionTest.prototype.init.call(this);
-
             this.pinBatch = new gfx.pixi.SpriteBatch();
 
             this.addDisplay(this.pinBatch);
@@ -149,8 +147,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
     inherit(Field, State);
     function Field() {
         this.init = function() {
-            Field.prototype.init.call(this);
-
             this.pinBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
 

@@ -25,7 +25,7 @@ define(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, state
     function update() {
         if (currentState) {
             if (!currentStateInit) {
-                currentState.init();
+                currentState._init();
                 currentStateInit = true;
             }
             currentState._update(time.delta);
