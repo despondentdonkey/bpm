@@ -122,6 +122,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.pinBatch = new gfx.pixi.SpriteBatch();
 
         this.init = function() {
+            PinRenderTest.prototype.init();
             this.addDisplay(this.batch);
             this.addDisplay(this.pinBatch);
             var a = new objects.BubbleTest(gfx.width/2, gfx.height/2);
@@ -145,6 +146,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.pinBatch = new gfx.pixi.SpriteBatch();
 
         this.init = function() {
+            CollisionTest.prototype.init();
             this.addDisplay(this.pinBatch);
             var pin = new objects.PinTest(64, 64, 0);
             pin.collisionTest = true;
