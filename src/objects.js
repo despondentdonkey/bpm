@@ -1,24 +1,26 @@
 define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     function GameObject() {
-        this.displayObjects = [];
-        this.state = null;
-        this.idList = [];
+        this.init = function() {
+            this.displayObjects = [];
+            this.state = null;
+            this.idList = [];
 
-        this.x = 0;
-        this.y = 0;
-        this.width = 0;
-        this.height = 0;
-        this.angle = 0;
-        this.scale = {
-            x: 1,
-            y: 1
-        }
-        this.anchor = {
-            x: 0.5,
-            y: 0.5
+            this.x = 0;
+            this.y = 0;
+            this.width = 0;
+            this.height = 0;
+            this.angle = 0;
+            this.scale = {
+                x: 1,
+                y: 1
+            }
+            this.anchor = {
+                x: 0.5,
+                y: 0.5
+            };
+            this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
         };
-        this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
 
         this._onAdd = function(state) {
             this.state = state;

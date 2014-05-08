@@ -8,7 +8,14 @@ define(['objects', 'gfx'], function(objects, gfx) {
             this.objectsToRemove = [];
         };
 
-        var removeObjects = _.bind(function() {
+
+        // When this state has been switched
+        this._onSwitch = function() {
+            // Remove all objects
+            for (var i=0; i<this.objects.length; ++i) {
+                this.objects[i]._onRemove(this);
+            }
+            this.objectsToRemove = this.objects;
             // Remove queued objects
             for (var i=0; i<this.objectsToRemove.length; ++i) {
                 var obj = this.objectsToRemove[i];
@@ -20,19 +27,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
                 }
             }
             this.objectsToRemove = [];
-        }, this);
-
-        // When this state has been switched
-        this._onSwitch = function() {
-            // Remove all objects
-            for (var i=0; i<this.objects.length; ++i) {
-                this.objects[i]._onRemove(this);
-                console.log(this.objects[i]);
-            }
-            this.objectsToRemove = this.objects;
-            console.log(this.objectsToRemove);
-            removeObjects();
-            console.log(this.objectsToRemove);
 
             // Remove any additional displays
             for (var i=0; i<this.displayObjects.length; ++i) {
@@ -51,8 +45,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
                 obj._onAdd(this);
             }
             this.objectsToAdd = [];
-
-            removeObjects();
 
             for (var i=0; i<this.objects.length; ++i) {
                 this.objects[i]._update(delta);
@@ -100,6 +92,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.batch = new gfx.pixi.SpriteBatch();
 
         this.init = function() {
+            BubbleRenderTest.prototype.init();
             this.addDisplay(this.batch);
             var a = new objects.BubbleTest(128, 128);
             this.add(a);
@@ -142,7 +135,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
     CollisionTest.prototype = new State();
     CollisionTest.constructor = CollisionTest;
     function CollisionTest() {
-        State.call(this);
+        //State.call(this);
         this.pinBatch = new gfx.pixi.SpriteBatch();
 
         this.init = function() {
