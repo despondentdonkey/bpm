@@ -1,0 +1,16 @@
+{
+    "private": "true",
+    "name": "bpm",
+    "version": "0.0.0",
+    "description": "A JavaScript Game",
+
+    "dependencies": {},
+    "devDependencies": {
+        "grunt": "~0.4.1",
+        "grunt-shell": "~0.7",
+        "karma": "~0.12",
+        "karma-chrome-launcher": "~0.1",
+        "karma-firefox-launcher": "~0.1",
+        "karma-jasmine": "*"
+    }
+}
