@@ -9,7 +9,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         };
 
         // When this state has been switched
-        this._onSwitch = function() {
+        this._destroy = function() {
             // Remove all objects
             for (var i=0; i<this.objects.length; ++i) {
                 this.objects[i]._onRemove(this);
@@ -20,7 +20,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
                 this.removeDisplay(this.displayObjects[i]);
             }
 
-            this.onSwitch();
+            this.destroy();
         };
 
         this._update = function(delta) {
@@ -78,7 +78,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
             return display;
         };
 
-        this.onSwitch = function() {};
+        this.destroy = function() {};
         this.init = function() {};
         this.update = function(delta) {};
     }

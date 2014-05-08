@@ -41,7 +41,7 @@ define(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, state
 
     function setState(state) {
         if (currentState) {
-            currentState._onSwitch();
+            currentState._destroy();
         }
         currentState = state;
         currentStateInit = false;
