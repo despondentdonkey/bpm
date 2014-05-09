@@ -1,5 +1,5 @@
 function inherit(Sub, Base) {
-    Sub.prototype = new Base();
+    Sub.prototype = Object.create(Base.prototype);
     Sub.prototype.constructor = Sub;
 }
 

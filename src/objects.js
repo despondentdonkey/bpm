@@ -1,38 +1,41 @@
 define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     function GameObject() {
-        this._init = function(state) {
-            this.displayObjects = [];
-            this.state = null;
-            this.idList = [];
+        this.displayObjects = [];
+        this.state = null;
+        this.idList = [];
 
-            this.x = 0;
-            this.y = 0;
-            this.width = 0;
-            this.height = 0;
-            this.angle = 0;
-            this.scale = {
-                x: 1,
-                y: 1
-            }
-            this.anchor = {
-                x: 0.5,
-                y: 0.5
-            };
-            this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
+        this.x = 0;
+        this.y = 0;
+        this.width = 0;
+        this.height = 0;
+        this.angle = 0;
+        this.scale = {
+            x: 1,
+            y: 1
+        }
+        this.anchor = {
+            x: 0.5,
+            y: 0.5
+        };
+        this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
+    }
+
+    GameObject.prototype = {
+        _init:  function(state) {
             this.state = state;
             this.init(state);
-        };
+        },
 
-        this._destroy = function(state) {
+        _destroy: function(state) {
             while (this.displayObjects.length > 0) {
                 this.removeDisplay(this.displayObjects[0]);
             }
             this.state = null;
             this.destroy(state);
-        };
+        },
 
-        this._update = function(delta) {
+        _update:  function(delta) {
             this.update(delta);
             if (this.syncDisplayProperties) {
                 for (var i=0; i<this.displayObjects.length; ++i) {
@@ -46,19 +49,19 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
                     obj.scale.y = this.scale.y;
                 }
             }
-        };
+        },
 
-        this.addDisplay = function(display, container) {
+        addDisplay:  function(display, container) {
             this.displayObjects.push(display);
             return this.state.addDisplay(display, container);
-        };
+        },
 
-        this.removeDisplay = function(display) {
+        removeDisplay:  function(display) {
             this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
             return this.state.removeDisplay(display);
-        };
+        },
 
-        this.addId = function(id) {
+        addId:  function(id) {
             if (typeof id === 'string') {
                 if (!this.hasId(id)) {
                     this.idList.push(id);
@@ -68,9 +71,9 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
                     this.addId(id[i]);
                 }
             }
-        };
+        },
 
-        this.hasId = function(id) {
+        hasId:  function(id) {
             if (typeof id === 'string') {
                 for (var i=0; i<this.idList.length; ++i) {
                     if (this.idList[i] === id) {
@@ -89,9 +92,9 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
                 }
             }
             return false;
-        };
+        },
 
-        this.removeId = function(id) {
+        removeId:  function(id) {
             if (typeof id === 'string') {
                 if (this.hasId(id)) {
                     this.idList.splice(this.idList.indexOf(id), 1);
@@ -101,9 +104,9 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
                     this.removeId(id[i]);
                 }
             }
-        };
+        },
 
-        this.getBounds = function() {
+        getBounds:  function() {
             var width = this.width * this.anchor.x;
             var height = this.height * this.anchor.y;
             return {
@@ -112,9 +115,9 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
                 x2: this.x + width,
                 y2: this.y + height,
             };
-        };
+        },
 
-        this.getCollisions = function(id) {
+        getCollisions:  function(id) {
             var result = [];
             for (var i=0; i<this.state.objects.length; ++i) {
                 var obj = this.state.objects[i];
@@ -131,17 +134,17 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
                 }
             }
             return result;
-        };
+        },
 
-        this.init = function(state) {}
-        this.destroy = function(state) {}
-        this.update = function(delta) {};
-    }
+        init:  function(state) {},
+        destroy:  function(state) {},
+        update:  function(delta) {},
+    };
 
 
     inherit(BubbleTest, GameObject);
     function BubbleTest(x, y, tint) {
-        //GameObject.call(this);
+        GameObject.call(this);
         this.initialX = x; this.initialY = y;
         this.xmod=0; this.ymod=0;
         this.offsetX = 0; this.offsetY = 0;
@@ -172,12 +175,14 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     inherit(PinTest, GameObject);
     function PinTest(x, y, angle) {
-        this.init = function(state) {
-            this.x = x; this.y = y;
-            this.width = 13; this.height = 12;
-            this.angle = angle;
-            this.collisionTest = false;
+        GameObject.call(this);
 
+        this.x = x; this.y = y;
+        this.width = 13; this.height = 12;
+        this.angle = angle;
+        this.collisionTest = false;
+
+        this.init = function(state) {
             var pin = new gfx.pixi.Sprite(res.tex.pin);
             pin.anchor.x = this.anchor.x;
             pin.anchor.y = this.anchor.y;
@@ -202,6 +207,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     inherit(PinShooter, GameObject);
     function PinShooter() {
+        GameObject.call(this);
         this.init = function() {
             this.x = gfx.width/2;
             this.y = gfx.height/2;
@@ -218,6 +224,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     inherit(Pin, GameObject);
     function Pin(x, y, angle) {
+        GameObject.call(this);
         this.init = function(state) {
             this.x = x;
             this.y = y;
@@ -256,6 +263,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
     inherit(Bubble, GameObject);
     function Bubble(x, y, angle) {
+        GameObject.call(this);
         this.init = function(state) {
             this.x = x;
             this.y = y;

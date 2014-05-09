@@ -1,10 +1,11 @@
 define(['objects', 'gfx'], function(objects, gfx) {
     function State() {
+        this.displayObjects = [];
+        this.objects = [];
+        this.objectsToAdd = [];
+        this.objectsToRemove = [];
+
         this._init = function() {
-            this.displayObjects = [];
-            this.objects = [];
-            this.objectsToAdd = [];
-            this.objectsToRemove = [];
             this.init();
         };
 
@@ -83,9 +84,90 @@ define(['objects', 'gfx'], function(objects, gfx) {
         this.update = function(delta) {};
     }
 
+    State.prototype = {
+        _init: function() {
+            this.init();
+        },
+
+        // When this state has been switched
+        _destroy: function() {
+            // Remove all objects
+            for (var i=0; i<this.objects.length; ++i) {
+                this.objects[i]._destroy(this);
+            }
+
+            // Remove any additional displays
+            for (var i=0; i<this.displayObjects.length; ++i) {
+                this.removeDisplay(this.displayObjects[i]);
+            }
+
+            this.destroy();
+        },
+
+        _update: function(delta) {
+            // Add queued objects
+            for (var i=0; i<this.objectsToAdd.length; ++i) {
+                var obj = this.objectsToAdd[i];
+
+                this.objects.push(obj);
+                obj._init(this);
+            }
+            this.objectsToAdd = [];
+
+            // Remove queued objects
+            for (var i=0; i<this.objectsToRemove.length; ++i) {
+                var obj = this.objectsToRemove[i];
+                var index = this.objects.indexOf(obj);
+
+                if (index !== -1) {
+                    this.objects.splice(index, 1);
+                    obj._destroy(this);
+                }
+            }
+            this.objectsToRemove = [];
+
+            for (var i=0; i<this.objects.length; ++i) {
+                this.objects[i]._update(delta);
+            }
+
+            this.update(delta);
+        },
+
+        add: function(obj) {
+            this.objectsToAdd.push(obj);
+            return obj;
+        },
+
+        remove: function(obj) {
+            this.objectsToRemove.push(obj);
+            return obj;
+        },
+
+        addDisplay: function(display, container) {
+            this.displayObjects.push(display);
+            if (container) {
+                container.addChild(display);
+            } else {
+                gfx.stage.addChild(display);
+            }
+            return display;
+        },
+
+        removeDisplay: function(display) {
+            this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
+            display.parent.removeChild(display);
+            return display;
+        },
+
+        destroy: function() {},
+        init: function() {},
+        update: function(delta) {},
+    };
+
 
     inherit(BubbleRenderTest, State);
     function BubbleRenderTest() {
+        State.call(this);
         this.init = function() {
             BubbleRenderTest.prototype.init.call(this);
 
@@ -108,6 +190,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
     inherit(PinRenderTest, State);
     function PinRenderTest() {
+        State.call(this);
         this.init = function() {
             this.batch = new gfx.pixi.SpriteBatch();
             this.pinBatch = new gfx.pixi.SpriteBatch();
@@ -129,6 +212,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
     inherit(CollisionTest, State);
     function CollisionTest() {
+        State.call(this);
         this.init = function() {
             this.pinBatch = new gfx.pixi.SpriteBatch();
 
@@ -145,6 +229,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
     inherit(Field, State);
     function Field() {
+        State.call(this);
         this.init = function() {
             this.pinBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
