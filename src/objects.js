@@ -1,6 +1,6 @@
 define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
-    function GameObject() {
+    var GameObject = createClass(null, function() {
         this.displayObjects = [];
         this.state = null;
         this.idList = [];
@@ -19,9 +19,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             y: 0.5
         };
         this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
-    }
-
-    GameObject.prototype = {
+    }, {
         init: function(state) {
             this.state = state;
         },
@@ -132,7 +130,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             }
             return result;
         },
-    };
+    });
 
 
     var PinShooter = createClass(GameObject, function() {
