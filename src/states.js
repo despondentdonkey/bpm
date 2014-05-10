@@ -89,7 +89,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
 
     var Field = inherit2(State, function() {
-        State.call(this);
         console.log(this);
     },{
         init: function() {

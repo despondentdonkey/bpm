@@ -5,6 +5,7 @@ function inherit(Sub, Base) {
 
 function inherit2(Base, def, props) {
     function Sub() {
+        Base.call(this);
         def.call(this, Base.prototype);
     }
 
