@@ -10,7 +10,7 @@ function inherit2(Base, def, props) {
     }
 
     Sub.prototype = _.extend(Object.create(Base.prototype), props);
-    Sub.prototype.constructor = Sub;
+    Sub.prototype.constructor = def;
 
     return Sub;
 }
