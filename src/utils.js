@@ -3,6 +3,17 @@ function inherit(Sub, Base) {
     Sub.prototype.constructor = Sub;
 }
 
+function inherit2(Base, def, props) {
+    function Sub() {
+        def.call(this, Base.prototype);
+    }
+
+    Sub.prototype = _.extend(Object.create(Base.prototype), props);
+    Sub.prototype.constructor = Sub;
+
+    return Sub;
+}
+
 function randomRange(min, max) {
     return min + (Math.random() * ((max - min) + 1));
 }

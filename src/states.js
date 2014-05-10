@@ -77,24 +77,21 @@ define(['objects', 'gfx'], function(objects, gfx) {
     };
 
 
-
-    inherit(Testing, State);
+/*    inherit(Testing, State); */
     function Testing() {
 
     }
 
+    /*/
     Testing.prototype = {
 
-    };
+    };*/
 
 
-
-    inherit(Field, State);
-    function Field() {
+    var Field = inherit2(State, function() {
         State.call(this);
-    }
-
-    Field.prototype = {
+        console.log(this);
+    },{
         init: function() {
             State.prototype.init.call(this);
             this.pinBatch = new gfx.pixi.SpriteBatch();
@@ -118,11 +115,11 @@ define(['objects', 'gfx'], function(objects, gfx) {
         },
 
         update: function() {
-            State.prototype.init.call(this);
+            State.prototype.update.call(this);
             this.prim.position.x = this.pin.x - this.pin.width*this.pin.anchor.x;
             this.prim.position.y = this.pin.y - this.pin.height*this.pin.anchor.y;
         }
-    };
+    });
 
     return {
         Field: Field,
