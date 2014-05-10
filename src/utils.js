@@ -4,6 +4,9 @@ function inherit(Sub, Base) {
 }
 
 function createClass(Base, def, props) {
+    if (_.isNull(Base))
+        Base = function() {};
+
     function Sub() {
         Base.call(this);
         def.call(this, Base.prototype);
