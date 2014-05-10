@@ -22,21 +22,18 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
     }
 
     GameObject.prototype = {
-        _init:  function(state) {
+        init: function(state) {
             this.state = state;
-            this.init(state);
         },
 
-        _destroy: function(state) {
+        destroy: function(state) {
             while (this.displayObjects.length > 0) {
                 this.removeDisplay(this.displayObjects[0]);
             }
             this.state = null;
-            this.destroy(state);
         },
 
-        _update:  function(delta) {
-            this.update(delta);
+        update:  function(delta) {
             if (this.syncDisplayProperties) {
                 for (var i=0; i<this.displayObjects.length; ++i) {
                     var obj = this.displayObjects[i];
@@ -135,23 +132,21 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             }
             return result;
         },
-
-        init:  function(state) {},
-        destroy:  function(state) {},
-        update:  function(delta) {},
     };
 
 
     var PinShooter = createClass(GameObject, function() {
-        //GameObject.call(this);
+        GameObject.call(this);
     }, {
-        init: function() {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
             this.x = gfx.width/2;
             this.y = gfx.height/2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
         },
 
         update: function(delta) {
+            GameObject.prototype.update.call(this);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
             if (input.mouse.isPressed(input.MOUSE_LEFT)) {
                 this.state.add(new Pin(this.x, this.y, this.angle));
@@ -159,21 +154,24 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         },
     });
 
-    var Pin = createClass(GameObject, function() {
-
+    var Pin = createClass(GameObject, function(x, y, angle) {
+        GameObject.call(this);
+        this.x = x;
+        this.y = y;
+        this.speedX = Math.cos(angle);
+        this.speedY = -Math.sin(angle);
     }, {
         init: function(state) {
-            this.x = x;
-            this.y = y;
+            GameObject.prototype.init.call(this, state);
+
             this.speed = 0.2;
-            this.speedX = Math.cos(angle);
-            this.speedY = -Math.sin(angle);
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.pin), state.pinBatch);
             this.width = this.graphic.width;
             this.height = this.graphic.width;
         },
 
         update: function(delta) {
+            GameObject.prototype.update.call(this);
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;
@@ -198,16 +196,18 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
     });
 
 
-    var Bubble = createClass(GameObject, function() {
-
+    var Bubble = createClass(GameObject, function(x, y, angle) {
+        GameObject.call(this);
+        this.x = x;
+        this.y = y;
+        this.speedX = Math.cos(angle  || 0);
+        this.speedY = -Math.sin(angle || 0);
     }, {
         init: function(state) {
-            this.x = x;
-            this.y = y;
+            GameObject.prototype.init.call(this, state);
+
             this.addId('bubble');
             this.speed = 0.03;
-            this.speedX = Math.cos(angle  || 0);
-            this.speedY = -Math.sin(angle || 0);
 
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
             this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare));
@@ -217,6 +217,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         },
 
         update: function(delta) {
+            GameObject.prototype.update.call(this);
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;

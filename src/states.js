@@ -1,12 +1,10 @@
 define(['objects', 'gfx'], function(objects, gfx) {
-    var State = function State() {
+    var State = createClass(null, function() {
         this.displayObjects = [];
         this.objects = [];
         this.objectsToAdd = [];
         this.objectsToRemove = [];
-    }
-
-    State.prototype = {
+    }, {
         init: function() {},
 
         // When this state has been switched
@@ -74,7 +72,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
             display.parent.removeChild(display);
             return display;
         }
-    };
+    });
 
 
 /*    inherit(Testing, State); */
@@ -89,16 +87,15 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
 
     var Field = createClass(State, function() {
-        console.log(this);
+        State.call(this);
     },{
         init: function() {
-            console.log(this.add);
             State.prototype.init.call(this);
+
             this.pinBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
 
             this.shooter = this.add(new objects.PinShooter());
-            this.pin = this.add(new objects.PinTest(64,64,0));
 
             for (var i=0; i<1000; ++i) {
                 this.add(new objects.Bubble(randomRange(32, gfx.width-32), randomRange(32, gfx.height-32), Math.random() * 360));
@@ -106,19 +103,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
             this.addDisplay(this.pinBatch);
             this.addDisplay(this.bubbleBatch);
-
-            this.prim = this.addDisplay(new gfx.pixi.Graphics());
-            this.prim.lineStyle(1, 0x00FF00);
-            this.prim.drawRect(0,0,this.pin.width,this.pin.height);
-            this.prim.depth = 1;
-            gfx.sortDisplays();
         },
-
-        update: function() {
-            State.prototype.update.call(this);
-            this.prim.position.x = this.pin.x - this.pin.width*this.pin.anchor.x;
-            this.prim.position.y = this.pin.y - this.pin.height*this.pin.anchor.y;
-        }
     });
 
     return {
