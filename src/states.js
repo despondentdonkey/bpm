@@ -1,12 +1,10 @@
 define(['objects', 'gfx'], function(objects, gfx) {
-    var State = function State() {
+    var State = createClass(null, function() {
         this.displayObjects = [];
         this.objects = [];
         this.objectsToAdd = [];
         this.objectsToRemove = [];
-    }
-
-    State.prototype = {
+    },{
         init: function() {},
 
         // When this state has been switched
@@ -74,7 +72,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
             display.parent.removeChild(display);
             return display;
         }
-    };
+    });;
 
 
 /*    inherit(Testing, State); */
@@ -88,7 +86,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
     };*/
 
 
-    var Field = inherit2(State, function() {
+    var Field = createClass(State, function() {
         console.log(this);
     },{
         init: function() {
@@ -122,6 +120,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
     return {
         Field: Field,
-        Testing: Testing
+        Testing: Testing,
+        State: State
     };
 });
