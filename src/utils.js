@@ -3,7 +3,7 @@ function inherit(Sub, Base) {
     Sub.prototype.constructor = Sub;
 }
 
-function inherit2(Base, def, props) {
+function createClass(Base, def, props) {
     function Sub() {
         Base.call(this);
         def.call(this, Base.prototype);

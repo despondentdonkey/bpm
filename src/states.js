@@ -1,5 +1,5 @@
 define(['objects', 'gfx'], function(objects, gfx) {
-    function State() {
+    var State = function State() {
         this.displayObjects = [];
         this.objects = [];
         this.objectsToAdd = [];
@@ -13,7 +13,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
         destroy: function() {
             // Remove all objects
             for (var i=0; i<this.objects.length; ++i) {
-                this.objects[i]._destroy(this);
+                this.objects[i].destroy(this);
             }
 
             // Remove any additional displays
@@ -28,7 +28,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
                 var obj = this.objectsToAdd[i];
 
                 this.objects.push(obj);
-                obj._init(this);
+                obj.init(this);
             }
             this.objectsToAdd = [];
 
@@ -39,13 +39,13 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
                 if (index !== -1) {
                     this.objects.splice(index, 1);
-                    obj._destroy(this);
+                    obj.destroy(this);
                 }
             }
             this.objectsToRemove = [];
 
             for (var i=0; i<this.objects.length; ++i) {
-                this.objects[i]._update(delta);
+                this.objects[i].update(delta);
             }
         },
 
