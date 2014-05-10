@@ -14,7 +14,7 @@ define(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, state
 
         var bpm = this;
         res.load(function() {
-            gfx.init(800, 600);
+            gfx.init(800, 600, document.getElementById('canvas'));
             input.init(gfx.renderer.view);
             dbg.addStateButtons(bpm, states);
             update();

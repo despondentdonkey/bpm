@@ -1,5 +1,5 @@
 define(['lib/pixi'], function(pixi) {
-    function init(width, height) {
+    function init(width, height, parent) {
         this.width = width;
         this.height = height;
         this.stage = new pixi.Stage(0x505050);
@@ -12,7 +12,11 @@ define(['lib/pixi'], function(pixi) {
         });
 
         this.renderer.view.tabIndex = 0;
-        document.body.appendChild(this.renderer.view);
+        if (parent) {
+            parent.appendChild(this.renderer.view);
+        } else {
+            document.body.appendChild(this.renderer.view);
+        }
         this.renderer.view.focus();
     }
 
