@@ -88,10 +88,11 @@ define(['objects', 'gfx'], function(objects, gfx) {
     };*/
 
 
-    var Field = inherit2(State, function() {
+    var Field = createClass(State, function() {
         console.log(this);
     },{
         init: function() {
+            console.log(this.add);
             State.prototype.init.call(this);
             this.pinBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
