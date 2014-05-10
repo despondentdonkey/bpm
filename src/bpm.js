@@ -24,10 +24,10 @@ define(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, state
     function update() {
         if (currentState) {
             if (!currentStateInit) {
-                currentState._init();
+                currentState.init();
                 currentStateInit = true;
             }
-            currentState._update(time.delta);
+            currentState.update(time.delta);
         }
 
         input.update();
@@ -40,7 +40,7 @@ define(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, state
 
     function setState(state) {
         if (currentState) {
-            currentState._destroy();
+            currentState.destroy();
         }
         currentState = state;
         currentStateInit = false;
