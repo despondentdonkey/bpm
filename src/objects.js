@@ -141,6 +141,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             this.x = gfx.width/2;
             this.y = gfx.height/2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
+            this.graphic.depth = -10;
         },
 
         update: function(delta) {

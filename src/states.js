@@ -22,13 +22,16 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
         update: function(delta) {
             // Add queued objects
-            for (var i=0; i<this.objectsToAdd.length; ++i) {
-                var obj = this.objectsToAdd[i];
+            if (this.objectsToAdd.length > 0) {
+                for (var i=0; i<this.objectsToAdd.length; ++i) {
+                    var obj = this.objectsToAdd[i];
 
-                this.objects.push(obj);
-                obj.init(this);
+                    this.objects.push(obj);
+                    obj.init(this);
+                }
+                gfx.sortDisplays();
+                this.objectsToAdd = [];
             }
-            this.objectsToAdd = [];
 
             // Remove queued objects
             for (var i=0; i<this.objectsToRemove.length; ++i) {
@@ -92,6 +95,14 @@ define(['objects', 'gfx'], function(objects, gfx) {
         init: function() {
             State.prototype.init.call(this);
 
+            this.test = this.addDisplay(new gfx.pixi.Text('hello', {
+                stroke: 'black',
+                strokeThickness: 4,
+                fill: 'white',
+            }));
+
+            this.test.depth = -10;
+
             this.pinBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
 
@@ -104,6 +115,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
             this.addDisplay(this.pinBatch);
             this.addDisplay(this.bubbleBatch);
         },
+
     });
 
     return {
