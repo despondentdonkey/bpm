@@ -170,6 +170,9 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.pin), state.pinBatch);
             this.width = this.graphic.width;
             this.height = this.graphic.width;
+
+            this.lifeTime = 6000;
+            this.lifeTimer = this.lifeTime;
         },
 
         update: function(delta) {
@@ -179,6 +182,15 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.y += this.speedY * speed;
 
             this.angle = -Math.atan2(this.speedY, this.speedX);
+
+            this.lifeTimer -= delta;
+
+            // y = sqrt(1 -x) + x/4
+            this.graphic.alpha = Math.sqrt(this.lifeTimer / this.lifeTime) + (1-(this.lifeTimer/this.lifeTime))/4;
+
+            if (this.lifeTimer <= 0) {
+                this.state.remove(this);
+            }
 
             var bounds = this.getBounds();
             if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
