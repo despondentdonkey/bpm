@@ -113,8 +113,17 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
             this.shooter = this.add(new objects.PinShooter());
 
-            for (var i=0; i<100; ++i) {
-                this.add(new objects.Bubble(9, randomRange(32, gfx.width-32), randomRange(32, gfx.height-32), Math.random() * 360));
+            var randBub = function(armor) {
+                return new objects.Bubble(armor, randomRange(32, gfx.width-32), randomRange(32, gfx.height-32), Math.random() * 360);
+            };
+
+            var i;
+            for (i=0; i<100; ++i) {
+                this.add(randBub(8));
+            }
+
+            for (i=0; i<2000; i++) {
+                this.add(randBub(0));
             }
 
             this.addDisplay(this.pinBatch);
