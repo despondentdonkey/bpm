@@ -1,5 +1,5 @@
 define(['objects', 'gfx'], function(objects, gfx) {
-    var State = createClass(null, function() {
+    var State = createClass(null, function(_super) {
         this.displayObjects = [];
         this.objects = [];
         this.objectsToAdd = [];
@@ -90,10 +90,10 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
 
     var Field = createClass(State, function() {
-        State.call(this);
+
     },{
         init: function() {
-            State.prototype.init.call(this);
+            this._super.init.call(this);
 
             this.test = this.addDisplay(new gfx.pixi.Text('hello', {
                 stroke: 'black',

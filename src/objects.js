@@ -134,10 +134,10 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
 
     var PinShooter = createClass(GameObject, function() {
-        GameObject.call(this);
+
     }, {
         init: function(state) {
-            GameObject.prototype.init.call(this, state);
+            this._super.init.call(this, state);
             this.x = gfx.width/2;
             this.y = gfx.height/2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
@@ -145,7 +145,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         },
 
         update: function(delta) {
-            GameObject.prototype.update.call(this);
+            this._super.update.call(this);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
             if (input.mouse.isPressed(input.MOUSE_LEFT)) {
                 this.state.add(new Pin(this.x, this.y, this.angle));
@@ -154,14 +154,13 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
     });
 
     var Pin = createClass(GameObject, function(x, y, angle) {
-        GameObject.call(this);
         this.x = x;
         this.y = y;
         this.speedX = Math.cos(angle);
         this.speedY = -Math.sin(angle);
     }, {
         init: function(state) {
-            GameObject.prototype.init.call(this, state);
+            this._super.init.call(this, state);
 
             this.speed = 0.2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.pin), state.pinBatch);
@@ -170,7 +169,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         },
 
         update: function(delta) {
-            GameObject.prototype.update.call(this);
+            this._super.update.call(this);
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;
@@ -196,14 +195,13 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
 
     var Bubble = createClass(GameObject, function(x, y, angle) {
-        GameObject.call(this);
         this.x = x;
         this.y = y;
         this.speedX = Math.cos(angle  || 0);
         this.speedY = -Math.sin(angle || 0);
     }, {
         init: function(state) {
-            GameObject.prototype.init.call(this, state);
+            this._super.init.call(this, state);
 
             this.addId('bubble');
             this.speed = 0.03;
@@ -216,7 +214,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         },
 
         update: function(delta) {
-            GameObject.prototype.update.call(this);
+            this._super.update.call(this);
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;
