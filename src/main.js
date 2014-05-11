@@ -16,8 +16,6 @@ requirejs(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, st
 
     function run() {
         states.setState(new states.Field());
-        console.log('state set');
-        console.log(states.currentState);
 
         res.load(function() {
             gfx.init(800, 600, document.getElementById('canvas'));
