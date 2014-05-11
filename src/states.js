@@ -1,4 +1,4 @@
-define(['bpm', 'objects', 'gfx'], function(bpm, objects, gfx) {
+define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
 
     this.currentState;
     this.currentStateInit = false;
@@ -105,6 +105,9 @@ define(['bpm', 'objects', 'gfx'], function(bpm, objects, gfx) {
     },{
         init: function() {
             this._super.init.call(this);
+
+            this.background = this.addDisplay(new gfx.pixi.Sprite(res.tex.background));
+            this.background.depth = 100;
 
             this.statusText = this.addDisplay(new gfx.pixi.Text('hello', {
                 stroke: 'black',

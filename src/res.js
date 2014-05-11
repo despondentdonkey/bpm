@@ -28,6 +28,7 @@ define(['gfx'], function(gfx) {
             glare: 'bubbles/bubble-glare.png',
             pin: 'pin.png',
             arrow: 'arrow.png',
+            background: 'background.jpg',
         });
 
         this.loader.load(function() {
