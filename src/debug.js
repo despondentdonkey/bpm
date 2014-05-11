@@ -1,23 +1,25 @@
 var dbg = {};
 
-dbg.addStateButtons = function(bpm, states, parent) {
+dbg.addStateButtons = function(states) {
     var div = document.createElement('div');
     div.style.width   = '220px';
     div.style.padding = '5px';
 
     for (var key in states) {
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.value = key;
-        button.style.width = div.style.width;
+        if (states[key] && states[key].name === 'Subclass') {
+            var button = document.createElement('input');
+            button.type = 'button';
+            button.value = key;
+            button.style.width = div.style.width;
 
-        (function(state) {
-            button.onclick = function() {
-                bpm.setState(new state());
-            };
-        })(states[key]);
+            (function(state) {
+                button.onclick = function() {
+                    states.setState(new state());
+                };
+            })(states[key]);
 
-        div.appendChild(button);
+            div.appendChild(button);
+        }
     }
 
     document.getElementById('stateButtons').appendChild(div);
