@@ -1,4 +1,19 @@
 define(['objects', 'gfx'], function(objects, gfx) {
+
+    this.currentState;
+    this.currentStateInit = false;
+
+    // Static Methods
+    function setState(state) {
+        if (this.currentState) {
+            this.currentState.destroy();
+        }
+        this.currentState = state;
+        this.currentStateInit = false;
+    }
+
+    // Classes
+
     var State = createClass(null, function(_super) {
         this.displayObjects = [];
         this.objects = [];
