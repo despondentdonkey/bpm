@@ -188,16 +188,18 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             var collisions = this.getCollisions('bubble');
             for (var i=0; i<collisions.length; ++i) {
                 var obj = collisions[i];
-                if (obj.armor > 0)
+                if (obj.armor > 0) {
                     obj.armor--;
-                else
+                    this.state.remove(this);
+                } else {
                     this.state.remove(obj);
+                }
             }
         },
     });
 
 
-    var Bubble = createClass(GameObject, function(x, y, angle) {
+    var Bubble = createClass(GameObject, function(armor, x, y, angle) {
         this.x = x;
         this.y = y;
 
@@ -206,48 +208,54 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         this.speedY = v.y;
 
         // armor protects bubbles from hits while > 0
-        this.armor = 9;
-    }, function() {
-        var prevArmor = this.armor;
-        var maxArmor = 9;
+        this._maxArmor = 4;
+        this.armor = (_.isNumber(armor) && armor <= this._maxArmor) ? armor : this._maxArmor;
+        this._prevArmor = this.armor;
+    }, {
+        init: function(state) {
+            this._super.init.call(this, state);
 
-        return {
-            init: function(state) {
-                this._super.init.call(this, state);
+            this.addId('bubble');
+            this.speed = 0.03;
 
-                this.addId('bubble');
-                this.speed = 0.03;
+            this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
+            this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare));
 
-                this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
-                this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare));
-                this.armor = [];
-/*                for (var i = 0; i < maxArmor; i++) {
-                    this.armor[i] = new */
+            this.armorTex = [null];
+            for (var i = 1; i < this._maxArmor + 1; i++) {
+                var atex = res.tex['armor'+i];
+                this.armorTex[i] = new gfx.pixi.Sprite(atex);
+            }
+            this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.tex['armor'+this.armor]));
 
-                this.width = this.graphic.width;
-                this.height = this.graphic.width;
-            },
 
-            update: function(delta) {
-                this._super.update.call(this);
+            this.width = this.graphic.width;
+            this.height = this.graphic.width;
+        },
 
-/*                if (this.armor !== prevArmor) {
-                    this.graphic*/
+        update: function(delta) {
+            this._super.update.call(this);
 
-                var speed = this.speed * delta;
-                this.x += this.speedX * speed;
-                this.y += this.speedY * speed;
+            if (this.armor !== this._prevArmor) {
+                this.removeDisplay(this.armorGraphic);
+                if (this.armor > 0)
+                    this.armorGraphic = this.addDisplay(this.armorTex[this.armor]);
+                this._prevArmor = this.armor;
+            }
 
-                var bounds = this.getBounds();
-                if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
-                    this.speedX = -this.speedX;
-                }
+            var speed = this.speed * delta;
+            this.x += this.speedX * speed;
+            this.y += this.speedY * speed;
 
-                if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
-                    this.speedY = -this.speedY;
-                }
-            },
-        };
+            var bounds = this.getBounds();
+            if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
+                this.speedX = -this.speedX;
+            }
+
+            if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
+                this.speedY = -this.speedY;
+            }
+        },
     });
 
     return {
