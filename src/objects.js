@@ -188,7 +188,10 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             var collisions = this.getCollisions('bubble');
             for (var i=0; i<collisions.length; ++i) {
                 var obj = collisions[i];
-                this.state.remove(obj);
+                if (obj.armor > 0)
+                    obj.armor--;
+                else
+                    this.state.remove(obj);
             }
         },
     });
@@ -202,37 +205,49 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         this.speedX = v.x;
         this.speedY = v.y;
 
-        // pin hits to kill
-        this.health = 1;
-    }, {
-        init: function(state) {
-            this._super.init.call(this, state);
+        // armor protects bubbles from hits while > 0
+        this.armor = 9;
+    }, function() {
+        var prevArmor = this.armor;
+        var maxArmor = 9;
 
-            this.addId('bubble');
-            this.speed = 0.03;
+        return {
+            init: function(state) {
+                this._super.init.call(this, state);
 
-            this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
-            this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare));
+                this.addId('bubble');
+                this.speed = 0.03;
 
-            this.width = this.graphic.width;
-            this.height = this.graphic.width;
-        },
+                this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
+                this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare));
+                this.armor = [];
+/*                for (var i = 0; i < maxArmor; i++) {
+                    this.armor[i] = new */
 
-        update: function(delta) {
-            this._super.update.call(this);
-            var speed = this.speed * delta;
-            this.x += this.speedX * speed;
-            this.y += this.speedY * speed;
+                this.width = this.graphic.width;
+                this.height = this.graphic.width;
+            },
 
-            var bounds = this.getBounds();
-            if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
-                this.speedX = -this.speedX;
-            }
+            update: function(delta) {
+                this._super.update.call(this);
 
-            if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
-                this.speedY = -this.speedY;
-            }
-        },
+/*                if (this.armor !== prevArmor) {
+                    this.graphic*/
+
+                var speed = this.speed * delta;
+                this.x += this.speedX * speed;
+                this.y += this.speedY * speed;
+
+                var bounds = this.getBounds();
+                if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
+                    this.speedX = -this.speedX;
+                }
+
+                if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
+                    this.speedY = -this.speedY;
+                }
+            },
+        };
     });
 
     return {
