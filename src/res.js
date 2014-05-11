@@ -28,6 +28,8 @@ define(['gfx'], function(gfx) {
             glare: 'bubbles/bubble-glare.png',
             armor1: 'bubbles/bubble-armor1.png',
             armor2: 'bubbles/bubble-armor2.png',
+            armor3: 'bubbles/bubble-armor3.png',
+            armor4: 'bubbles/bubble-armor4.png',
 
             pin: 'pin.png',
             arrow: 'arrow.png',
