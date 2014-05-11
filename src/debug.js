@@ -1,5 +1,6 @@
 var dbg = {};
 
+
 dbg.addStateButtons = function(states) {
     var div = document.createElement('div');
     div.style.width   = '220px';
@@ -25,20 +26,22 @@ dbg.addStateButtons = function(states) {
     document.getElementById('stateButtons').appendChild(div);
 };
 
-var display, last, text;
-dbg.fpsMonitor = function(gfx, time, state) {
-    if (!display || (_.isNumber(last) && last !== time.fps)) {
-        text = new gfx.pixi.Text(time.fps, {
-            stroke: 'black',
-            strokeThickness: 4,
-            fill: 'white',
-        });
 
-        text.y = gfx.height - text.height;
-
-        last = time.fps;
-        if (display)
-            state.removeDisplay(display);
-        display = state.addDisplay(text);
+dbg.FPS = createClass(null, function(state) {
+    this.state = state;
+    this.last = 0;
+    this.text = new this.gfx.pixi.Text('', {
+        stroke: 'black',
+        strokeThickness: 4,
+        fill: 'white',
+    });
+    this.display = state.addDisplay(this.text);
+    this.text.y = this.gfx.height - this.text.height;
+}, {
+    update: function() {
+        if (this.last !== time.fps) {
+            this.text.setText(time.fps);
+            last = time.fps;
+        }
     }
-};
+});
