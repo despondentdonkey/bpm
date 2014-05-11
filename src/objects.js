@@ -214,8 +214,13 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
     var Bubble = createClass(GameObject, function(x, y, angle) {
         this.x = x;
         this.y = y;
-        this.speedX = Math.cos(angle  || 0);
-        this.speedY = -Math.sin(angle || 0);
+
+        var v = angularSpeed(angle || 0);
+        this.speedX = v.x;
+        this.speedY = v.y;
+
+        // pin hits to kill
+        this.health = 1;
     }, {
         init: function(state) {
             this._super.init.call(this, state);
