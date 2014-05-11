@@ -255,6 +255,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             for (var i = 1; i < this.armor + 1; i++) {
                 var atex = res.tex['armor'+i];
                 this.armorSprites[i] = new gfx.pixi.Sprite(atex);
+                this.armorSprites[i].depth = -1;
             }
             // If not armored initially, set armorGraphic to null
             this.armorGraphic = this.armor > 0 ? this.addDisplay(this.armorSprites[this.armor]) : null;
