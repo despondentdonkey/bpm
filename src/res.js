@@ -26,6 +26,9 @@ define(['gfx'], function(gfx) {
         loadImages(this.loader, 'res/gfx/', {
             bubble: 'bubbles/bubble.png',
             glare: 'bubbles/bubble-glare.png',
+            armor1: 'bubbles/bubble-armor1.png',
+            armor2: 'bubbles/bubble-armor2.png',
+
             pin: 'pin.png',
             arrow: 'arrow.png',
             background: 'background.jpg',
