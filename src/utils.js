@@ -7,16 +7,16 @@ function createClass(Base, def, props) {
     if (_.isNull(Base))
         Base = function() {};
 
-    function Sub() {
+    function Subclass() {
         Base.apply(this, arguments);
         def.apply(this, arguments);
         this._super = Base.prototype;
     }
 
-    Sub.prototype = _.extend(Object.create(Base.prototype), props);
-    Sub.prototype.constructor = def;
+    Subclass.prototype = _.extend(Object.create(Base.prototype), props);
+    Subclass.prototype.constructor = def;
 
-    return Sub;
+    return Subclass;
 }
 
 function randomRange(min, max) {
