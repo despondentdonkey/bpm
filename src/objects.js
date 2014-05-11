@@ -1,4 +1,4 @@
-define(['res', 'gfx', 'input'], function(res, gfx, input) {
+define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
     var GameObject = createClass(null, function() {
         this.displayObjects = [];
@@ -147,8 +147,12 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         update: function(delta) {
             this._super.update.call(this);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
-            if (input.mouse.isPressed(input.MOUSE_LEFT)) {
-                this.state.add(new Pin(this.x, this.y, this.angle));
+
+            if (bpm.player.pins > 0) {
+                if (input.mouse.isPressed(input.MOUSE_LEFT)) {
+                    this.state.add(new Pin(this.x, this.y, this.angle));
+                    bpm.player.pins--;
+                }
             }
         },
     });

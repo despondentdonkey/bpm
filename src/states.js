@@ -1,4 +1,4 @@
-define(['objects', 'gfx'], function(objects, gfx) {
+define(['bpm', 'objects', 'gfx'], function(bpm, objects, gfx) {
 
     this.currentState;
     this.currentStateInit = false;
@@ -106,13 +106,13 @@ define(['objects', 'gfx'], function(objects, gfx) {
         init: function() {
             this._super.init.call(this);
 
-            this.test = this.addDisplay(new gfx.pixi.Text('hello', {
+            this.statusText = this.addDisplay(new gfx.pixi.Text('hello', {
                 stroke: 'black',
                 strokeThickness: 4,
                 fill: 'white',
             }));
 
-            this.test.depth = -10;
+            this.statusText.depth = -10;
 
             this.pinBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
@@ -125,6 +125,11 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
             this.addDisplay(this.pinBatch);
             this.addDisplay(this.bubbleBatch);
+        },
+
+        update: function(delta) {
+            this._super.update.call(this, delta);
+            this.statusText.setText('Pins: ' + bpm.player.pins);
         },
 
     });
