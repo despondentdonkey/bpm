@@ -22,3 +22,19 @@ function createClass(Base, def, props) {
 function randomRange(min, max) {
     return min + (Math.random() * ((max - min) + 1));
 }
+
+function angularSpeed(angle) {
+    if (!_.isNumber(angle))
+        warn('Non-Number Passed to utils.angularSpeed(int angle)');
+
+    return {x: Math.cos(angle), y: -Math.sin(angle)};
+}
+
+
+// Error Handling
+
+function warn(message) {
+    // wrapper for console.warn
+    // can use to track bugs during alpha, beta, into prod
+    console.warn(message);
+}
