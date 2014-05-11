@@ -224,9 +224,18 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         this.speedX = v.x;
         this.speedY = v.y;
 
+        // Armor settings
         // armor protects bubbles from hits while > 0
         this._maxArmor = 9;
-        this.armor = (_.isNumber(armor) && armor <= this._maxArmor) ? armor : this._maxArmor;
+        if (_.isNumber(armor)) {
+            if (armor < 0)
+                armor = 0;
+            if (armor > this._maxArmor)
+                armor = this._maxArmor;
+            this.armor = armor;
+        } else {
+            warn('Bubble armor is not a number');
+        }
         this._prevArmor = this.armor;
     }, {
         init: function(state) {
@@ -238,25 +247,27 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
             this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare), state.glareBatch);
 
-            this.armorTex = [null];
-            for (var i = 1; i < this._maxArmor + 1; i++) {
-                var atex = res.tex['armor'+i];
-                this.armorTex[i] = new gfx.pixi.Sprite(atex);
-            }
-            this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.tex['armor'+this.armor]));
-
-
             this.width = this.graphic.width;
             this.height = this.graphic.width;
+
+            // Armor
+            this.armorSprites = [null];
+            for (var i = 1; i < this.armor + 1; i++) {
+                var atex = res.tex['armor'+i];
+                this.armorSprites[i] = new gfx.pixi.Sprite(atex);
+            }
+            // If not armored initially, set armorGraphic to null
+            this.armorGraphic = this.armor > 0 ? this.addDisplay(this.armorSprites[this.armor]) : null;
         },
 
         update: function(delta) {
             this._super.update.call(this);
 
-            if (this.armor !== this._prevArmor) {
+            // Armor
+            if (!_.isNull(this.armorGraphic) && (this.armor !== this._prevArmor)) {
                 this.removeDisplay(this.armorGraphic);
                 if (this.armor > 0)
-                    this.armorGraphic = this.addDisplay(this.armorTex[this.armor]);
+                    this.armorGraphic = this.addDisplay(this.armorSprites[this.armor]);
                 this._prevArmor = this.armor;
             }
 
