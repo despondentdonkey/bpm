@@ -139,6 +139,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
 
             this.addDisplay(this.pinBatch);
             this.addDisplay(this.bubbleBatch);
+            this.addDisplay(this.glareBatch);
         },
 
         update: function(delta) {
