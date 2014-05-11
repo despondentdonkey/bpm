@@ -30,6 +30,11 @@ define(['gfx'], function(gfx) {
             armor2: 'bubbles/bubble-armor2.png',
             armor3: 'bubbles/bubble-armor3.png',
             armor4: 'bubbles/bubble-armor4.png',
+            armor5: 'bubbles/bubble-armor5.png',
+            armor6: 'bubbles/bubble-armor6.png',
+            armor7: 'bubbles/bubble-armor7.png',
+            armor8: 'bubbles/bubble-armor8.png',
+            armor9: 'bubbles/bubble-armor9.png',
 
             pin: 'pin.png',
             arrow: 'arrow.png',

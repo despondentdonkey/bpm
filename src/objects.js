@@ -208,7 +208,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         this.speedY = v.y;
 
         // armor protects bubbles from hits while > 0
-        this._maxArmor = 4;
+        this._maxArmor = 9;
         this.armor = (_.isNumber(armor) && armor <= this._maxArmor) ? armor : this._maxArmor;
         this._prevArmor = this.armor;
     }, {
