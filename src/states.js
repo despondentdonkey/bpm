@@ -108,6 +108,8 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
             this.pinBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
+            this.glareBatch = new gfx.pixi.SpriteBatch();
+            this.armorBatch = new gfx.pixi.SpriteBatch();
 
             this.shooter = this.add(new objects.PinShooter());
 

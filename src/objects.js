@@ -219,7 +219,7 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             this.speed = 0.03;
 
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
-            this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare));
+            this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare), state.glareBatch);
 
             this.armorTex = [null];
             for (var i = 1; i < this._maxArmor + 1; i++) {
