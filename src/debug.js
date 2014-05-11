@@ -34,6 +34,8 @@ dbg.fpsMonitor = function(gfx, time, state) {
             fill: 'white',
         });
 
+        text.y = gfx.height - text.height;
+
         last = time.fps;
         if (display)
             state.removeDisplay(display);
