@@ -122,8 +122,8 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
 
             this.shooter = this.add(new objects.PinShooter());
 
-            for (var i=0; i<1000; ++i) {
-                this.add(new objects.Bubble(randomRange(32, gfx.width-32), randomRange(32, gfx.height-32), Math.random() * 360));
+            for (var i=0; i<100; ++i) {
+                this.add(new objects.Bubble(9, randomRange(32, gfx.width-32), randomRange(32, gfx.height-32), Math.random() * 360));
             }
 
             this.addDisplay(this.pinBatch);
