@@ -1,7 +1,7 @@
 define(function() {
     return {
         player: {
-            pins: 100,
+            pins: 10000,
         },
     };
 });

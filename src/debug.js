@@ -26,22 +26,22 @@ dbg.addStateButtons = function(states) {
     document.getElementById('stateButtons').appendChild(div);
 };
 
+dbg.fpsMonitorInit = false;
+dbg.fpsMonitor = function(gfx, time, state) {
+    if (!dbg.fpsMonitorInit) {
+        dbg.fpsMonitorText = new gfx.pixi.Text('0', {
+            stroke: 'black',
+            strokeThickness: 4,
+            fill: 'white',
+        });
 
-dbg.FPS = createClass(null, function(state) {
-    this.state = state;
-    this.last = 0;
-    this.text = new this.gfx.pixi.Text('', {
-        stroke: 'black',
-        strokeThickness: 4,
-        fill: 'white',
-    });
-    this.display = state.addDisplay(this.text);
-    this.text.y = this.gfx.height - this.text.height;
-}, {
-    update: function() {
-        if (this.last !== time.fps) {
-            this.text.setText(time.fps);
-            last = time.fps;
-        }
+        var text = dbg.fpsMonitorText;
+
+        text.y = gfx.height - text.height;
+        text.depth = -10;
+
+        gfx.stage.addChild(text);
+        dbg.fpsMonitorInit = true;
     }
-});
+    dbg.fpsMonitorText.setText(time.fps);
+};
