@@ -1,6 +1,6 @@
 define(['res', 'gfx', 'input'], function(res, gfx, input) {
 
-    function GameObject() {
+    var GameObject = createClass(null, function() {
         this.displayObjects = [];
         this.state = null;
         this.idList = [];
@@ -13,30 +13,25 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
         this.scale = {
             x: 1,
             y: 1
-        }
+        };
         this.anchor = {
             x: 0.5,
             y: 0.5
         };
         this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
-    }
-
-    GameObject.prototype = {
-        _init:  function(state) {
+    }, {
+        init: function(state) {
             this.state = state;
-            this.init(state);
         },
 
-        _destroy: function(state) {
+        destroy: function(state) {
             while (this.displayObjects.length > 0) {
                 this.removeDisplay(this.displayObjects[0]);
             }
             this.state = null;
-            this.destroy(state);
         },
 
-        _update:  function(delta) {
-            this.update(delta);
+        update:  function(delta) {
             if (this.syncDisplayProperties) {
                 for (var i=0; i<this.displayObjects.length; ++i) {
                     var obj = this.displayObjects[i];
@@ -135,108 +130,47 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             }
             return result;
         },
-
-        init:  function(state) {},
-        destroy:  function(state) {},
-        update:  function(delta) {},
-    };
+    });
 
 
-    inherit(BubbleTest, GameObject);
-    function BubbleTest(x, y, tint) {
+    var PinShooter = createClass(GameObject, function() {
         GameObject.call(this);
-        this.initialX = x; this.initialY = y;
-        this.xmod=0; this.ymod=0;
-        this.offsetX = 0; this.offsetY = 0;
-        this.tint = tint;
-
-        this.init = function(state) {
-            // BubbleTest render test
-            var bub = new gfx.pixi.Sprite(res.tex.bubble);
-            this.addDisplay(bub, state.batch);
-        };
-
-        this.update = function(delta) {
-            this.xmod += 0.02;
-            this.ymod += 0.01;
-
-            this.offsetX = Math.cos(this.xmod) * 20;
-            this.offsetY = Math.sin(this.ymod) * 20;
-
-            this.x = this.initialX + this.offsetX;
-            this.y = this.initialY + this.offsetY;
-
-            this.angle = Math.tan(this.xmod/3);
-            this.scale.x = Math.cos(this.xmod) * 1.5;
-            this.scale.y = Math.sin(this.ymod) * 1.5;
-        };
-    }
-
-
-    inherit(PinTest, GameObject);
-    function PinTest(x, y, angle) {
-        GameObject.call(this);
-
-        this.x = x; this.y = y;
-        this.width = 13; this.height = 12;
-        this.angle = angle;
-        this.collisionTest = false;
-
-        this.init = function(state) {
-            var pin = new gfx.pixi.Sprite(res.tex.pin);
-            pin.anchor.x = this.anchor.x;
-            pin.anchor.y = this.anchor.y;
-            this.addDisplay(pin, state.pinBatch);
-            this.addId('pin');
-        };
-
-        this.update = function(delta) {
-            this.angle += 0.1;
-            this.x += Math.cos(this.angle);
-            this.y += -Math.sin(this.angle);
-
-            if (this.collisionTest) {
-                var col = this.getCollisions('pin');
-                for (var i=0; i<col.length; ++i) {
-                    var obj = col[i];
-                    //console.log(obj);
-                }
-            }
-        };
-    }
-
-    inherit(PinShooter, GameObject);
-    function PinShooter() {
-        GameObject.call(this);
-        this.init = function() {
+    }, {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
             this.x = gfx.width/2;
             this.y = gfx.height/2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
-        };
+            this.graphic.depth = -10;
+        },
 
-        this.update = function(delta) {
+        update: function(delta) {
+            GameObject.prototype.update.call(this);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
             if (input.mouse.isPressed(input.MOUSE_LEFT)) {
                 this.state.add(new Pin(this.x, this.y, this.angle));
             }
-        };
-    }
+        },
+    });
 
-    inherit(Pin, GameObject);
-    function Pin(x, y, angle) {
+    var Pin = createClass(GameObject, function(x, y, angle) {
         GameObject.call(this);
-        this.init = function(state) {
-            this.x = x;
-            this.y = y;
+        this.x = x;
+        this.y = y;
+        this.speedX = Math.cos(angle);
+        this.speedY = -Math.sin(angle);
+    }, {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
+
             this.speed = 0.2;
-            this.speedX = Math.cos(angle);
-            this.speedY = -Math.sin(angle);
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.pin), state.pinBatch);
             this.width = this.graphic.width;
             this.height = this.graphic.width;
-        };
+        },
 
-        this.update = function(delta) {
+        update: function(delta) {
+            GameObject.prototype.update.call(this);
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;
@@ -257,29 +191,32 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
                 var obj = collisions[i];
                 this.state.remove(obj);
             }
-        };
-    }
+        },
+    });
 
 
-    inherit(Bubble, GameObject);
-    function Bubble(x, y, angle) {
+    var Bubble = createClass(GameObject, function(x, y, angle) {
         GameObject.call(this);
-        this.init = function(state) {
-            this.x = x;
-            this.y = y;
+        this.x = x;
+        this.y = y;
+        this.speedX = Math.cos(angle  || 0);
+        this.speedY = -Math.sin(angle || 0);
+    }, {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
+
             this.addId('bubble');
             this.speed = 0.03;
-            this.speedX = Math.cos(angle  || 0);
-            this.speedY = -Math.sin(angle || 0);
 
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
             this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare));
 
             this.width = this.graphic.width;
             this.height = this.graphic.width;
-        };
+        },
 
-        this.update = function(delta) {
+        update: function(delta) {
+            GameObject.prototype.update.call(this);
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;
@@ -292,12 +229,10 @@ define(['res', 'gfx', 'input'], function(res, gfx, input) {
             if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
                 this.speedY = -this.speedY;
             }
-        };
-    }
+        },
+    });
 
     return {
-        BubbleTest: BubbleTest,
-        PinTest: PinTest,
         PinShooter: PinShooter,
         Bubble: Bubble,
     };

@@ -1,10 +1,9 @@
 var dbg = {};
 
-dbg.addStateButtons = function(bpm, states) {
+dbg.addStateButtons = function(bpm, states, parent) {
     var div = document.createElement('div');
-    div.style.display = "inline-block";
-    div.style.width   = "220px";
-    div.style.padding = "5px";
+    div.style.width   = '220px';
+    div.style.padding = '5px';
 
     for (var key in states) {
         var button = document.createElement('input');
@@ -21,5 +20,5 @@ dbg.addStateButtons = function(bpm, states) {
         div.appendChild(button);
     }
 
-    document.body.appendChild(div);
+    document.getElementById('stateButtons').appendChild(div);
 };
