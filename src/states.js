@@ -93,15 +93,11 @@ define(['objects', 'gfx'], function(objects, gfx) {
     });
 
 
-/*    inherit(Testing, State); */
-    function Testing() {
+    var Testing = createClass(State, function() {
 
-    }
+    }, {
 
-    /*/
-    Testing.prototype = {
-
-    };*/
+    });
 
 
     var Field = createClass(State, function() {
