@@ -130,6 +130,9 @@ define(['objects', 'gfx'], function(objects, gfx) {
     });
 
     return {
+        currentState: this.currentState,
+        currentStateInit: this.currentStateInit,
+        setState: setState,
         Field: Field,
         Testing: Testing,
         State: State
