@@ -128,6 +128,7 @@ define(['objects', 'gfx'], function(objects, gfx) {
 
             this.addDisplay(this.pinBatch);
             this.addDisplay(this.bubbleBatch);
+            this.addDisplay(this.glareBatch);
         },
 
     });
