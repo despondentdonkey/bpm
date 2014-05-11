@@ -106,14 +106,6 @@ define(['objects', 'gfx'], function(objects, gfx) {
         init: function() {
             this._super.init.call(this);
 
-            this.test = this.addDisplay(new gfx.pixi.Text('hello', {
-                stroke: 'black',
-                strokeThickness: 4,
-                fill: 'white',
-            }));
-
-            this.test.depth = -10;
-
             this.pinBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
 
