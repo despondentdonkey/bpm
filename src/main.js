@@ -38,7 +38,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, st
         input.update();
         time.update();
 
-        dbg.fpsMonitor(gfx, time, states.currentState);
+        dbg.fpsMonitor(gfx, time);
 
         gfx.render();
 

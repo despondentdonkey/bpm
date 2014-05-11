@@ -39,7 +39,7 @@ dbg.fpsMonitor = function(gfx, time, state) {
         text.y = gfx.height - text.height;
         text.depth = -10;
 
-        state.addDisplay(text);
+        gfx.stage.addChild(text);
         dbg.fpsMonitorInit = true;
     }
     dbg.fpsMonitorText.setText(time.fps);
