@@ -30,8 +30,8 @@ define(['bpm', 'objects', 'gfx'], function(bpm, objects, gfx) {
             }
 
             // Remove any additional displays
-            for (var i=0; i<this.displayObjects.length; ++i) {
-                this.removeDisplay(this.displayObjects[i]);
+            while (this.displayObjects.length > 0) {
+                this.removeDisplay(this.displayObjects[0]);
             }
         },
 
