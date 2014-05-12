@@ -331,7 +331,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
             this.sprite.alpha = this.lifeTimer / this.lifeTime;
             this.lifeTimer--;
-            if (this.lifeTimer < 0) {
+            if (this.state && this.lifeTimer < 0) {
                 this.state.remove(this);
             }
 
@@ -365,15 +365,17 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         emit: function(x, y, amount) {
-            for (var i=0; i<amount; ++i) {
-                var particle = new Particle(this, this.texture, {
-                    x:        randomRange(x - this.range, x + this.range),
-                    y:        randomRange(y - this.range, y + this.range),
-                    speed:    randomRange(this.speedMin, this.speedMax),
-                    angle:    randomRange(this.angleMin, this.angleMax),
-                    lifeTime: randomRange(this.lifeMin, this.lifeMax),
-                });
-                this.state.add(particle);
+            if (this.state) {
+                for (var i=0; i<amount; ++i) {
+                    var particle = new Particle(this, this.texture, {
+                        x:        randomRange(x - this.range, x + this.range),
+                        y:        randomRange(y - this.range, y + this.range),
+                        speed:    randomRange(this.speedMin, this.speedMax),
+                        angle:    randomRange(this.angleMin, this.angleMax),
+                        lifeTime: randomRange(this.lifeMin, this.lifeMax),
+                    });
+                    this.state.add(particle);
+                }
             }
         },
     });
