@@ -177,6 +177,11 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.lifeTimer = this.lifeTime;
         },
 
+        destroy: function() {
+            this.state.pinEmitter.emit(this.x, this.y, 10);
+            this._super.destroy.call(this);
+        },
+
         update: function(delta) {
             this._super.update.call(this);
             var speed = this.speed * delta;
@@ -192,7 +197,6 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.graphic.alpha = Math.sqrt(lifeRatio) + (1-lifeRatio)/4;
 
             if (this.lifeTimer <= 0) {
-                this.state.pinEmitter.emit(this.x, this.y, 10);
                 this.state.remove(this);
             }
 
