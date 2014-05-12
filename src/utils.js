@@ -20,7 +20,7 @@ function createClass(Base, def, props) {
 }
 
 function randomRange(min, max) {
-    return min + (Math.random() * ((max - min) + 1));
+    return Math.random() * (max - min) + min;
 }
 
 function angularSpeed(angle) {
