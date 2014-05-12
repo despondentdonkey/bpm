@@ -1,3 +1,6 @@
+var DEG2RAD = Math.PI / 180;
+var RAD2DEG = 180 / Math.PI;
+
 function inherit(Sub, Base) {
     Sub.prototype = Object.create(Base.prototype);
     Sub.prototype.constructor = Sub;
@@ -22,6 +25,7 @@ function createClass(Base, def, props) {
 function randomRange(min, max) {
     return Math.random() * (max - min) + min;
 }
+
 
 function angularSpeed(angle) {
     if (!_.isNumber(angle))

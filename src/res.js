@@ -39,6 +39,7 @@ define(['gfx'], function(gfx) {
             pin: 'pin.png',
             arrow: 'arrow.png',
             background: 'background.jpg',
+            pinParticle: 'pin-particle.png',
         });
 
         this.loader.load(function() {

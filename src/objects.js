@@ -38,8 +38,10 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
                     obj.position.x = this.x;
                     obj.position.y = this.y;
                     obj.rotation = -this.angle;
-                    obj.anchor.x = this.anchor.x;
-                    obj.anchor.y = this.anchor.y;
+                    if (obj.anchor) {
+                        obj.anchor.x = this.anchor.x;
+                        obj.anchor.y = this.anchor.y;
+                    }
                     obj.scale.x = this.scale.x;
                     obj.scale.y = this.scale.y;
                 }
@@ -190,6 +192,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.graphic.alpha = Math.sqrt(lifeRatio) + (1-lifeRatio)/4;
 
             if (this.lifeTimer <= 0) {
+                this.state.pinEmitter.emit(this.x, this.y, 10);
                 this.state.remove(this);
             }
 
@@ -287,8 +290,93 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
     });
 
+    var Particle = createClass(GameObject, function(emitter, tex, opt) {
+        this.x = opt.x;
+        this.y = opt.y;
+
+        this.speed = opt.speed;
+        this.speedX = Math.cos(opt.angle * DEG2RAD);
+        this.speedY = -Math.sin(opt.angle * DEG2RAD);
+
+        this.emitter = emitter;
+
+        this.lifeTime = opt.lifeTime;
+        this.lifeTimer = this.lifeTime;
+
+        this.sprite = new gfx.pixi.Sprite(tex);
+        this.sprite.anchor.x = 0.5;
+        this.sprite.anchor.y = 0.5;
+    }, {
+        init: function(state) {
+            this._super.init.call(this, state);
+            this.emitter.batch.addChild(this.sprite);
+        },
+
+        destroy: function() {
+            this._super.destroy.call(this);
+            this.emitter.batch.removeChild(this.sprite);
+        },
+
+        update: function(delta) {
+            this._super.update.call(this, delta);
+
+            var speed = this.speed * delta;
+
+            this.x += this.speedX * speed;
+            this.y += this.speedY * speed;
+
+            this.sprite.alpha = this.lifeTimer / this.lifeTime;
+            this.lifeTimer--;
+            if (this.lifeTimer < 0) {
+                this.state.remove(this);
+            }
+
+            this.sprite.position.x = this.x;
+            this.sprite.position.y = this.y;
+        },
+    });
+
+    var Emitter = createClass(GameObject, function(tex, opt) {
+        this.setOptions(opt);
+        this.texture = tex;
+        this.batch = new gfx.pixi.SpriteBatch();
+        this.syncDisplayProperties = false;
+    }, {
+        init: function(state) {
+            this._super.init.call(this, state);
+            this.addDisplay(this.batch);
+        },
+
+        setOptions: function(opt) {
+            this.angleMin = opt.angleMin;
+            this.angleMax = opt.angleMax;
+
+            this.speedMin = opt.speedMin;
+            this.speedMax = opt.speedMax;
+
+            this.lifeMin = opt.lifeMin;
+            this.lifeMax = opt.lifeMax;
+
+            this.range = opt.range;
+        },
+
+        emit: function(x, y, amount) {
+            for (var i=0; i<amount; ++i) {
+                var particle = new Particle(this, this.texture, {
+                    x:        randomRange(x - this.range, x + this.range),
+                    y:        randomRange(y - this.range, y + this.range),
+                    speed:    randomRange(this.speedMin, this.speedMax),
+                    angle:    randomRange(this.angleMin, this.angleMax),
+                    lifeTime: randomRange(this.lifeMin, this.lifeMax),
+                });
+                this.state.add(particle);
+            }
+        },
+    });
+
     return {
         PinShooter: PinShooter,
         Bubble: Bubble,
+        Emitter: Emitter,
     };
 });
