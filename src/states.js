@@ -124,16 +124,27 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
 
             this.shooter = this.add(new objects.PinShooter());
 
+            this.pinEmitter = new objects.Emitter(res.tex.pinParticle, {
+                angleMin: 0,
+                angleMax: 360,
+                speedMin: 0.08,
+                speedMax: 0.1,
+                lifeMin: 10,
+                lifeMax: 20,
+                range: 3,
+            });
+            this.add(this.pinEmitter);
+
             var randBub = function(armor) {
                 return new objects.Bubble(armor, randomRange(32, gfx.width-32), randomRange(32, gfx.height-32), Math.random() * 360);
             };
 
             var i;
-            for (i=0; i<100; ++i) {
+            for (i=0; i<5; ++i) {
                 this.add(randBub(8));
             }
 
-            for (i=0; i<2000; i++) {
+            for (i=0; i<20; i++) {
                 this.add(randBub(0));
             }
 
