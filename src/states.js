@@ -137,6 +137,19 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
             });
             this.add(this.pinEmitter);
 
+            this.bubbleEmitter = new objects.Emitter(res.tex.bubbleParticle, {
+                angleMin: 0,
+                angleMax: 360,
+                speedMin: 0.01,
+                speedMax: 0.08,
+                lifeMin: 20,
+                lifeMax: 40,
+                range: 4,
+                minRotationRate: 0,
+                maxRotationRate: 0,
+            });
+            this.add(this.bubbleEmitter);
+
             var randBub = function(armor) {
                 return new objects.Bubble(armor, randomRange(32, gfx.width-32), randomRange(32, gfx.height-32), Math.random() * 360);
             };

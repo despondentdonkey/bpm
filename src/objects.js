@@ -268,6 +268,11 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.armorGraphic = this.armor > 0 ? this.addDisplay(this.armorSprites[this.armor]) : null;
         },
 
+        destroy: function() {
+            this.state.bubbleEmitter.emit(this.x, this.y, 10);
+            this._super.destroy.call(this);
+        },
+
         update: function(delta) {
             this._super.update.call(this);
 
