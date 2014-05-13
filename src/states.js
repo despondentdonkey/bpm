@@ -127,11 +127,13 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
             this.pinEmitter = new objects.Emitter(res.tex.pinParticle, {
                 angleMin: 0,
                 angleMax: 360,
-                speedMin: 0.08,
-                speedMax: 0.1,
-                lifeMin: 10,
-                lifeMax: 20,
+                speedMin: 0.1,
+                speedMax: 0.2,
+                lifeMin: 50,
+                lifeMax: 100,
                 range: 3,
+                minRotationRate: 0.2,
+                maxRotationRate: 0.5,
             });
             this.add(this.pinEmitter);
 

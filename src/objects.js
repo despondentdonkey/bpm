@@ -178,7 +178,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         destroy: function() {
-            this.state.pinEmitter.emit(this.x, this.y, 10);
+            this.state.pinEmitter.emit(this.x, this.y, 3);
             this._super.destroy.call(this);
         },
 
@@ -302,6 +302,8 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         this.speedX = Math.cos(opt.angle * DEG2RAD);
         this.speedY = -Math.sin(opt.angle * DEG2RAD);
 
+        this.rotationRate = opt.rotationRate;
+
         this.emitter = emitter;
 
         this.lifeTime = opt.lifeTime;
@@ -335,6 +337,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
                 this.state.remove(this);
             }
 
+            this.sprite.rotation += this.rotationRate;
             this.sprite.position.x = this.x;
             this.sprite.position.y = this.y;
         },
@@ -362,6 +365,8 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.lifeMax = opt.lifeMax;
 
             this.range = opt.range;
+            this.minRotationRate = opt.minRotationRate;
+            this.maxRotationRate = opt.maxRotationRate;
         },
 
         emit: function(x, y, amount) {
@@ -373,6 +378,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
                         speed:    randomRange(this.speedMin, this.speedMax),
                         angle:    randomRange(this.angleMin, this.angleMax),
                         lifeTime: randomRange(this.lifeMin, this.lifeMax),
+                        rotationRate: randomRange(this.minRotationRate, this.maxRotationRate),
                     });
                     this.state.add(particle);
                 }
