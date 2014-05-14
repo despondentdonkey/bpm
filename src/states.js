@@ -101,14 +101,21 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
 
 
     var Field = createClass(State, function() {
-
+        this.comboTime = 1000;
+        this.comboTimer = this.comboTime;
+        this.multiplier = 1;
+        this.combo = 0;
+        this.comboGoal = 4;
     },{
         init: function() {
             this._super.init.call(this);
 
-            this.multiplier = 1;
-            this.combo = 0;
-            this.comboGoal = 4;
+            this.comboTimeBar = new objects.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13);
+            this.comboTimeBar.x = gfx.width/2 - this.comboTimeBar.width/2;
+            this.comboTimeBar.y = 0;
+            this.comboTimeBar.depth = -100;
+            this.comboTimeBar.setRatio(0);
+            this.add(this.comboTimeBar);
 
             this.background = this.addDisplay(new gfx.pixi.Sprite(res.tex.background));
             this.background.depth = 100;
@@ -129,6 +136,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
 
             this.comboText.anchor.x = 0.5;
             this.comboText.position.x = gfx.width/2;
+            this.comboText.position.y = this.comboTimeBar.height;
 
             this.statusText.depth = -10;
             this.comboText.depth = -10;
@@ -196,6 +204,16 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
             if (this.combo >= this.comboGoal) {
                 this.multiplier++;
                 this.comboGoal = this.comboGoal + Math.round(Math.sqrt(this.comboGoal * 8));
+            }
+
+            if (this.combo > 0) {
+                this.comboTimer -= delta;
+                this.comboTimeBar.setRatio(this.comboTimer / this.comboTime);
+                if (this.comboTimer < 0) {
+                    this.combo = 0;
+                    this.comboGoal = 4;
+                    this.multiplier = 1;
+                }
             }
         },
     });

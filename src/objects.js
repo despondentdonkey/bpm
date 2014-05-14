@@ -273,6 +273,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         destroy: function() {
             bpm.player.xp += this.worth;
             this.state.combo++;
+            this.state.comboTimer = this.state.comboTime;
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
             this._super.destroy.call(this);
         },
@@ -441,6 +442,14 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             },
         });
 
+        Object.defineProperty(this, 'visible', {
+            get: function() { return this._visible; },
+            set: function(val) {
+                this._visible = val;
+                this.updateVisible = true;
+            },
+        });
+
     }, {
         init: function(state) {
             this._super.init.call(this, state);
@@ -459,10 +468,17 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         update: function(delta) {
             this._super.update.call(this, delta);
             if (this.updateDepth) {
-                for (var i=0; i<this.sprites.length; ++i) {
+                for (var i in this.sprites) {
                     this.sprites[i].depth = this.depth;
                 }
                 this.updateDepth = false;
+            }
+
+            if (this.updateVisible) {
+                for (var i in this.sprites) {
+                    this.sprites[i].visible = this.visible;
+                }
+                this.updateVisible = false;
             }
 
             if (this.updatePos) {
@@ -491,10 +507,73 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
     });
 
+    var StatusBar = createClass(GameObject, function(back, front, width, height) {
+        this.backSliceTextures = back;
+        this.frontSliceTextures = front;
+        this.width = width;
+        this.height = height;
+
+        Object.defineProperty(this, 'depth', {
+            get: function() { return this._depth },
+            set: function(val) {
+                this._depth = val;
+                this.updateDepth = true;
+            },
+        });
+    }, {
+        init: function(state) {
+            this.backSlice = new NineSlice(this.backSliceTextures);
+            this.frontSlice = new NineSlice(this.frontSliceTextures);
+
+            this.backSlice.depth = this.depth+1;
+            this.frontSlice.depth = this.depth;
+
+            this.backSlice.x = this.x;
+            this.backSlice.y = this.y;
+
+            this.backSlice.width = this.width;
+            this.backSlice.height = this.height;
+
+            this.frontSlice.x = this.x;
+            this.frontSlice.y = this.y;
+
+            this.frontSlice.width = this.width;
+            this.frontSlice.height = this.height;
+
+            state.add(this.backSlice);
+            state.add(this.frontSlice);
+        },
+
+        setRatio: function(ratio) {
+            this.ratio = ratio;
+            this.updateRatio = true;
+        },
+
+        update: function(delta) {
+            this._super.update.call(this, delta);
+            if (this.updateDepth) {
+                this.backSlice.depth = this.depth+1;
+                this.frontSlice.depth = this.depth;
+                this.updateDepth = false;
+            }
+
+            if (this.updateRatio) {
+                this.frontSlice.width = this.ratio * this.width;
+                if (this.ratio <= 0.05) { // A slight offset, when the ratio is too small it gets ugly.
+                    this.frontSlice.visible = false;
+                } else if (!this.frontSlice.visible) {
+                    this.frontSlice.visible = true;
+                }
+                this.updateRatio = false;
+            }
+        },
+    });
+
     return {
         PinShooter: PinShooter,
         Bubble: Bubble,
         Emitter: Emitter,
         NineSlice: NineSlice,
+        StatusBar: StatusBar,
     };
 });
