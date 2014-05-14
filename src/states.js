@@ -106,16 +106,32 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
         init: function() {
             this._super.init.call(this);
 
+            this.multiplier = 1;
+            this.combo = 0;
+            this.comboGoal = 4;
+
             this.background = this.addDisplay(new gfx.pixi.Sprite(res.tex.background));
             this.background.depth = 100;
 
-            this.statusText = this.addDisplay(new gfx.pixi.Text('hello', {
+            this.statusText = this.addDisplay(new gfx.pixi.Text('', {
                 stroke: 'black',
                 strokeThickness: 4,
                 fill: 'white',
+                align: 'left',
             }));
 
+            this.comboText = this.addDisplay(new gfx.pixi.Text('', {
+                stroke: 'black',
+                strokeThickness: 4,
+                fill: 'white',
+                align: 'center',
+            }));
+
+            this.comboText.anchor.x = 0.5;
+            this.comboText.position.x = gfx.width/2;
+
             this.statusText.depth = -10;
+            this.comboText.depth = -10;
 
             this.pinBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
@@ -155,11 +171,11 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
             };
 
             var i;
-            for (i=0; i<5; ++i) {
+            for (i=0; i<0; ++i) {
                 this.add(randBub(8));
             }
 
-            for (i=0; i<20; i++) {
+            for (i=0; i<400; i++) {
                 this.add(randBub(0));
             }
 
@@ -170,9 +186,18 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
 
         update: function(delta) {
             this._super.update.call(this, delta);
-            this.statusText.setText('Pins: ' + bpm.player.pins);
-        },
 
+            this.statusText.setText('Pins: ' + bpm.player.pins
+            + '\nXP: ' + bpm.player.xp);
+
+            this.comboText.setText(this.combo + ' / ' + this.comboGoal
+            + '\nx' + this.multiplier);
+
+            if (this.combo >= this.comboGoal) {
+                this.multiplier++;
+                this.comboGoal = this.comboGoal + Math.round(Math.sqrt(this.comboGoal * 8));
+            }
+        },
     });
 
     return {

@@ -231,6 +231,8 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         this.speedX = v.x;
         this.speedY = v.y;
 
+        this.worth = 10;
+
         // Armor settings
         // armor protects bubbles from hits while > 0
         this._maxArmor = 9;
@@ -269,6 +271,8 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         destroy: function() {
+            bpm.player.xp += this.worth;
+            this.state.combo++;
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
             this._super.destroy.call(this);
         },
