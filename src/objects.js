@@ -395,9 +395,106 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
     });
 
+    var NineSlice = createClass(GameObject, function(slices) {
+        this.slices = slices;
+        this.sprites = {};
+
+        this._depth = 0;
+
+        Object.defineProperty(this, 'depth', {
+            get: function() { return this._depth; },
+            set: function(val) {
+                this.updateDepth = true;
+                this._depth = val;
+            },
+        });
+
+        Object.defineProperty(this, 'x', {
+            get: function() { return this._x; },
+            set: function(val) {
+                this._x = val;
+                this.updatePos = true;
+            },
+        });
+
+        Object.defineProperty(this, 'y', {
+            get: function() { return this._y; },
+            set: function(val) {
+                this._y = val;
+                this.updatePos = true;
+            },
+        });
+
+        Object.defineProperty(this, 'width', {
+            get: function() { return this._width; },
+            set: function(val) {
+                this._width = val;
+                this.updatePos = true;
+            },
+        });
+
+        Object.defineProperty(this, 'height', {
+            get: function() { return this._height; },
+            set: function(val) {
+                this._height = val;
+                this.updatePos = true;
+            },
+        });
+
+    }, {
+        init: function(state) {
+            this._super.init.call(this, state);
+
+            for (var key in this.slices) {
+                this.sprites[key] = new gfx.pixi.Sprite(this.slices[key]);
+                this.sprites[key].depth = this.depth;
+                this.addDisplay(this.sprites[key]);
+            }
+
+            this.updatePositions(this.sprites, this.x, this.y, this.width, this.height);
+            this.syncDisplayProperties = false;
+            this.a=0; this.b=0;
+        },
+
+        update: function(delta) {
+            this._super.update.call(this, delta);
+            if (this.updateDepth) {
+                for (var i=0; i<this.sprites.length; ++i) {
+                    this.sprites[i].depth = this.depth;
+                }
+                this.updateDepth = false;
+            }
+
+            if (this.updatePos) {
+                this.updatePositions(this.sprites, this.x, this.y, this.width, this.height);
+                this.updatePos = false;
+            }
+        },
+
+        setPos: function(sprite, x, y, w, h) {
+            sprite.position.x = x;
+            sprite.position.y = y;
+            sprite.scale.x = w/sprite.texture.width;
+            sprite.scale.y = h/sprite.texture.height;
+        },
+
+        updatePositions: function(sprites, x, y, w, h) {
+            this.setPos(sprites.left, x, y+sprites.topLeft.height, sprites.left.width, h-sprites.topLeft.height);
+            this.setPos(sprites.top, x+sprites.topLeft.width, y, w-sprites.topLeft.width, sprites.top.height);
+            this.setPos(sprites.right, x+w, y+sprites.topRight.height, sprites.right.width, h-sprites.topRight.height);
+            this.setPos(sprites.bottom, x+sprites.bottomLeft.width, y+h, w-sprites.bottomLeft.width, sprites.bottom.height);
+            this.setPos(sprites.topLeft, x, y, sprites.topLeft.width, sprites.topLeft.height);
+            this.setPos(sprites.topRight, x+w, y, sprites.topRight.width, sprites.topRight.height);
+            this.setPos(sprites.bottomRight, x+w, y+h, sprites.bottomRight.width, sprites.bottomRight.height);
+            this.setPos(sprites.bottomLeft, x, y+h, sprites.bottomRight.width, sprites.bottomRight.height);
+            this.setPos(sprites.center, x+sprites.left.width, y+sprites.top.height, w-sprites.left.width, h-sprites.top.height);
+        },
+    });
+
     return {
         PinShooter: PinShooter,
         Bubble: Bubble,
         Emitter: Emitter,
+        NineSlice: NineSlice,
     };
 });
