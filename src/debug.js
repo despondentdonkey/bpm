@@ -43,5 +43,5 @@ dbg.fpsMonitor = function(gfx, time, state) {
         gfx.stage.addChild(text);
         dbg.fpsMonitorInit = true;
     }
-    dbg.fpsMonitorText.setText(time.fps);
+    dbg.fpsMonitorText.setText(time.fps + ' | ' + time.delta);
 };
