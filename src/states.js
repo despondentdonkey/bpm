@@ -145,7 +145,8 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
             this.glareBatch = new gfx.pixi.SpriteBatch();
             this.armorBatch = new gfx.pixi.SpriteBatch();
 
-            this.pinBatch.depth = -1;
+            this.bubbleBatch.depth = 2;
+            this.glareBatch.depth = 1;
 
             this.shooter = this.add(new objects.PinShooter());
 
