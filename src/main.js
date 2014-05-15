@@ -24,6 +24,9 @@ requirejs(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, st
 
             // Pause game when window loses focus. Might wanna move this somewhere else, at least the rendering part.
             window.addEventListener('blur', function() {
+                if (paused) // If already paused then don't do anything.
+                    return;
+
                 paused = true;
 
                 var back = new gfx.pixi.Graphics();
