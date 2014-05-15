@@ -1,8 +1,23 @@
 define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
-    var GameObject = createClass(null, function() {
-        this.displayObjects = [];
+    var BasicObject = createClass(null, function() {
         this.state = null;
+    }, {
+        init: function(state) {
+            this.state = state;
+        },
+
+        destroy: function(state) {
+            this.state = null;
+        },
+
+        update: function(delta) {
+
+        },
+    });
+
+    var GameObject = createClass(BasicObject, function() {
+        this.displayObjects = [];
         this.idList = [];
 
         this.x = 0;
