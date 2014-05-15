@@ -133,19 +133,46 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             var result = [];
             for (var i=0; i<this.state.objects.length; ++i) {
                 var obj = this.state.objects[i];
-                if (obj !== this && obj.hasId(id)) {
-                    var bounds = this.getBounds();
-                    var objBounds = obj.getBounds();
+                if (obj instanceof GameObject) {
+                    if (obj !== this && obj.hasId(id)) {
+                        var bounds = this.getBounds();
+                        var objBounds = obj.getBounds();
 
-                     if (bounds.x1 < objBounds.x2
-                      && bounds.x2 > objBounds.x1
-                      && bounds.y1 < objBounds.y2
-                      && bounds.y2 > objBounds.y1) {
-                        result.push(obj);
+                         if (bounds.x1 < objBounds.x2
+                          && bounds.x2 > objBounds.x1
+                          && bounds.y1 < objBounds.y2
+                          && bounds.y2 > objBounds.y1) {
+                            result.push(obj);
+                        }
                     }
                 }
             }
             return result;
+        },
+    });
+
+
+    // types = oneshot, loop
+    var Timer = createClass(BasicObject, function(duration, type, onComplete) {
+        this.duration = duration;
+        this.currentTime = duration;
+        this.onComplete = onComplete;
+        this.type = type;
+    }, {
+        update: function(delta) {
+            BasicObject.prototype.update.call(this, delta);
+            this.currentTime -= delta;
+            if (this.currentTime <= 0) {
+                if (this.onComplete) {
+                    this.onComplete();
+                }
+
+                if (this.type === 'oneshot') {
+                    this.state.remove(this);
+                } else if (this.type === 'loop') {
+                    this.currentTime = this.duration;
+                }
+            }
         },
     });
 
@@ -585,6 +612,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
     });
 
     return {
+        Timer: Timer,
         PinShooter: PinShooter,
         Bubble: Bubble,
         Emitter: Emitter,
