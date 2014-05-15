@@ -145,6 +145,8 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
             this.glareBatch = new gfx.pixi.SpriteBatch();
             this.armorBatch = new gfx.pixi.SpriteBatch();
 
+            this.pinBatch.depth = -1;
+
             this.shooter = this.add(new objects.PinShooter());
 
             this.pinEmitter = new objects.Emitter(res.tex.pinParticle, {
@@ -185,6 +187,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
             for (i=0; i<400; i++) {
                 this.add(randBub(0));
             }
+
 
             this.addDisplay(this.pinBatch);
             this.addDisplay(this.bubbleBatch);
