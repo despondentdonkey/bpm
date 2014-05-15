@@ -139,7 +139,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
     }, {
         init: function(state) {
-            this._super.init.call(this, state);
+            GameObject.prototype.init.call(this, state);
             this.x = gfx.width/2;
             this.y = gfx.height/2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
@@ -147,7 +147,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         update: function(delta) {
-            this._super.update.call(this);
+            GameObject.prototype.update.call(this);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
 
             if (bpm.player.pins > 0) {
@@ -166,7 +166,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         this.speedY = -Math.sin(angle);
     }, {
         init: function(state) {
-            this._super.init.call(this, state);
+            GameObject.prototype.init.call(this, state);
 
             this.speed = 0.2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.pin), state.pinBatch);
@@ -179,11 +179,11 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
         destroy: function() {
             this.state.pinEmitter.emit(this.x, this.y, 3);
-            this._super.destroy.call(this);
+            GameObject.prototype.destroy.call(this);
         },
 
         update: function(delta) {
-            this._super.update.call(this);
+            GameObject.prototype.update.call(this);
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;
@@ -248,7 +248,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         this._prevArmor = this.armor;
     }, {
         init: function(state) {
-            this._super.init.call(this, state);
+            GameObject.prototype.init.call(this, state);
 
             this.addId('bubble');
             this.speed = 0.03;
@@ -275,11 +275,11 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.state.combo++;
             this.state.comboTimer = this.state.comboTime;
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
-            this._super.destroy.call(this);
+            GameObject.prototype.destroy.call(this);
         },
 
         update: function(delta) {
-            this._super.update.call(this);
+            GameObject.prototype.update.call(this);
 
             // Armor
             if (!_.isNull(this.armorGraphic) && (this.armor !== this._prevArmor)) {
@@ -324,17 +324,17 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         this.sprite.anchor.y = 0.5;
     }, {
         init: function(state) {
-            this._super.init.call(this, state);
+            GameObject.prototype.init.call(this, state);
             this.emitter.batch.addChild(this.sprite);
         },
 
         destroy: function() {
-            this._super.destroy.call(this);
+            GameObject.prototype.destroy.call(this);
             this.emitter.batch.removeChild(this.sprite);
         },
 
         update: function(delta) {
-            this._super.update.call(this, delta);
+            GameObject.prototype.update.call(this, delta);
 
             var speed = this.speed * delta;
 
@@ -360,7 +360,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         this.syncDisplayProperties = false;
     }, {
         init: function(state) {
-            this._super.init.call(this, state);
+            GameObject.prototype.init.call(this, state);
             this.addDisplay(this.batch);
         },
 
@@ -452,7 +452,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
     }, {
         init: function(state) {
-            this._super.init.call(this, state);
+            GameObject.prototype.init.call(this, state);
 
             for (var key in this.slices) {
                 this.sprites[key] = new gfx.pixi.Sprite(this.slices[key]);
@@ -466,7 +466,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         update: function(delta) {
-            this._super.update.call(this, delta);
+            GameObject.prototype.update.call(this, delta);
             if (this.updateDepth) {
                 for (var i in this.sprites) {
                     this.sprites[i].depth = this.depth;
@@ -550,7 +550,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         update: function(delta) {
-            this._super.update.call(this, delta);
+            GameObject.prototype.update.call(this, delta);
             if (this.updateDepth) {
                 this.backSlice.depth = this.depth+1;
                 this.frontSlice.depth = this.depth;

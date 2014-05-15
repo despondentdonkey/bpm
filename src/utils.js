@@ -1,11 +1,6 @@
 var DEG2RAD = Math.PI / 180;
 var RAD2DEG = 180 / Math.PI;
 
-function inherit(Sub, Base) {
-    Sub.prototype = Object.create(Base.prototype);
-    Sub.prototype.constructor = Sub;
-}
-
 function createClass(Base, def, props) {
     if (_.isNull(Base))
         Base = function() {};
@@ -13,7 +8,6 @@ function createClass(Base, def, props) {
     function Subclass() {
         Base.apply(this, arguments);
         def.apply(this, arguments);
-        this._super = Base.prototype;
     }
 
     Subclass.prototype = _.extend(Object.create(Base.prototype), props);

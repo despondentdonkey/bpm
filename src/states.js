@@ -11,8 +11,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
         this.currentState = state;
         this.currentStateInit = false;
     }
-
-    // Classes
+// Classes
 
     var State = createClass(null, function(_super) {
         this.displayObjects = [];
@@ -108,7 +107,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
         this.comboGoal = 4;
     },{
         init: function() {
-            this._super.init.call(this);
+            State.prototype.init.call(this);
 
             this.comboTimeBar = new objects.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13);
             this.comboTimeBar.x = gfx.width/2 - this.comboTimeBar.width/2;
@@ -193,7 +192,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
         },
 
         update: function(delta) {
-            this._super.update.call(this, delta);
+            State.prototype.update.call(this, delta);
 
             this.statusText.setText('Pins: ' + bpm.player.pins
             + '\nXP: ' + bpm.player.xp);
