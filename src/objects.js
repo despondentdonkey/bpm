@@ -313,7 +313,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         destroy: function() {
-            bpm.player.xp += this.worth;
+            bpm.player.xp += this.worth * this.state.multiplier;
             this.state.combo++;
             this.state.comboTimer = this.state.comboTime;
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
