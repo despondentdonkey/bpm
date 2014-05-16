@@ -183,7 +183,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
             this.add(this.bubbleEmitter);
 
             var randBub = function(armor) {
-                return new objects.Bubble(armor, randomRange(32, gfx.width-32), randomRange(32, gfx.height-32), Math.random() * 360);
+                return new objects.Bubble(armor, randomRange(32, gfx.width-32), randomRange(-128, -32), Math.random() * 360);
             };
 
             var i;
@@ -191,7 +191,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
                 this.add(randBub(8));
             }
 
-            for (i=0; i<400; i++) {
+            for (i=0; i<40; i++) {
                 this.add(randBub(0));
             }
 

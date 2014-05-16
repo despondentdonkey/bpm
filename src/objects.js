@@ -183,7 +183,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
             this.x = gfx.width/2;
-            this.y = gfx.height/2;
+            this.y = gfx.height/1.2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
             this.graphic.depth = -10;
         },
@@ -269,9 +269,8 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         this.x = x;
         this.y = y;
 
-        var v = angularSpeed(angle || 0);
-        this.speedX = v.x;
-        this.speedY = v.y;
+        this.speedX = Math.cos(angle * DEG2RAD);
+        this.speedY = 1;
 
         this.worth = 10;
 
@@ -338,10 +337,6 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             var bounds = this.getBounds();
             if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
                 this.speedX = -this.speedX;
-            }
-
-            if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
-                this.speedY = -this.speedY;
             }
         },
     });

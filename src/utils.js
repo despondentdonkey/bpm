@@ -20,15 +20,6 @@ function randomRange(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-
-function angularSpeed(angle) {
-    if (!_.isNumber(angle))
-        warn('Non-Number Passed to utils.angularSpeed(int angle)');
-
-    return {x: Math.cos(angle), y: -Math.sin(angle)};
-}
-
-
 // Error Handling
 
 function warn(message) {
