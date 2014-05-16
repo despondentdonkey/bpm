@@ -109,6 +109,13 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
         init: function() {
             State.prototype.init.call(this);
 
+            // Basic spawner
+            this.add(new objects.Timer(1000, 'loop', _.bind(function() {
+                if (!this) // Make sure this state still exists, probably not necessary.
+                    return;
+                this.add(randBub(0));
+            }, this)));
+
             this.comboTimeBar = new objects.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13);
             this.comboTimeBar.x = gfx.width/2 - this.comboTimeBar.width/2;
             this.comboTimeBar.depth = -100;
