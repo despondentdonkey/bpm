@@ -438,116 +438,6 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
     });
 
-    var NineSlice = createClass(GameObject, function(slices) {
-        this.slices = slices;
-        this.sprites = {};
-
-        this._depth = 0;
-
-        Object.defineProperty(this, 'depth', {
-            get: function() { return this._depth; },
-            set: function(val) {
-                this.updateDepth = true;
-                this._depth = val;
-            },
-        });
-
-        Object.defineProperty(this, 'x', {
-            get: function() { return this._x; },
-            set: function(val) {
-                this._x = val;
-                this.updatePos = true;
-            },
-        });
-
-        Object.defineProperty(this, 'y', {
-            get: function() { return this._y; },
-            set: function(val) {
-                this._y = val;
-                this.updatePos = true;
-            },
-        });
-
-        Object.defineProperty(this, 'width', {
-            get: function() { return this._width; },
-            set: function(val) {
-                this._width = val;
-                this.updatePos = true;
-            },
-        });
-
-        Object.defineProperty(this, 'height', {
-            get: function() { return this._height; },
-            set: function(val) {
-                this._height = val;
-                this.updatePos = true;
-            },
-        });
-
-        Object.defineProperty(this, 'visible', {
-            get: function() { return this._visible; },
-            set: function(val) {
-                this._visible = val;
-                this.updateVisible = true;
-            },
-        });
-
-    }, {
-        init: function(state) {
-            GameObject.prototype.init.call(this, state);
-
-            for (var key in this.slices) {
-                this.sprites[key] = new gfx.pixi.Sprite(this.slices[key]);
-                this.sprites[key].depth = this.depth;
-                this.addDisplay(this.sprites[key]);
-            }
-
-            this.updatePositions(this.sprites, this.x, this.y, this.width, this.height);
-            this.syncDisplayProperties = false;
-            this.a=0; this.b=0;
-        },
-
-        update: function(delta) {
-            GameObject.prototype.update.call(this, delta);
-            if (this.updateDepth) {
-                for (var i in this.sprites) {
-                    this.sprites[i].depth = this.depth;
-                }
-                this.updateDepth = false;
-            }
-
-            if (this.updateVisible) {
-                for (var i in this.sprites) {
-                    this.sprites[i].visible = this.visible;
-                }
-                this.updateVisible = false;
-            }
-
-            if (this.updatePos) {
-                this.updatePositions(this.sprites, this.x, this.y, this.width, this.height);
-                this.updatePos = false;
-            }
-        },
-
-        setPos: function(sprite, x, y, w, h) {
-            sprite.position.x = x;
-            sprite.position.y = y;
-            sprite.scale.x = w/sprite.texture.width;
-            sprite.scale.y = h/sprite.texture.height;
-        },
-
-        updatePositions: function(sprites, x, y, w, h) {
-            this.setPos(sprites.left, x, y+sprites.topLeft.height, sprites.left.width, h-sprites.topLeft.height);
-            this.setPos(sprites.top, x+sprites.topLeft.width, y, w-sprites.topLeft.width, sprites.top.height);
-            this.setPos(sprites.right, x+w, y+sprites.topRight.height, sprites.right.width, h-sprites.topRight.height);
-            this.setPos(sprites.bottom, x+sprites.bottomLeft.width, y+h, w-sprites.bottomLeft.width, sprites.bottom.height);
-            this.setPos(sprites.topLeft, x, y, sprites.topLeft.width, sprites.topLeft.height);
-            this.setPos(sprites.topRight, x+w, y, sprites.topRight.width, sprites.topRight.height);
-            this.setPos(sprites.bottomRight, x+w, y+h, sprites.bottomRight.width, sprites.bottomRight.height);
-            this.setPos(sprites.bottomLeft, x, y+h, sprites.bottomRight.width, sprites.bottomRight.height);
-            this.setPos(sprites.center, x+sprites.left.width, y+sprites.top.height, w-sprites.left.width, h-sprites.top.height);
-        },
-    });
 
     var StatusBar = createClass(GameObject, function(back, front, width, height) {
         this.backSliceTextures = back;
@@ -564,26 +454,24 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         });
     }, {
         init: function(state) {
-            this.backSlice = new NineSlice(this.backSliceTextures);
-            this.frontSlice = new NineSlice(this.frontSliceTextures);
+            GameObject.prototype.init.call(this, state);
+            this.backSlice = new gfx.NineSlice(this.backSliceTextures);
+            this.frontSlice = new gfx.NineSlice(this.frontSliceTextures);
 
             this.backSlice.depth = this.depth+1;
             this.frontSlice.depth = this.depth;
 
-            this.backSlice.x = this.x;
-            this.backSlice.y = this.y;
-
             this.backSlice.width = this.width;
             this.backSlice.height = this.height;
-
-            this.frontSlice.x = this.x;
-            this.frontSlice.y = this.y;
 
             this.frontSlice.width = this.width;
             this.frontSlice.height = this.height;
 
-            state.add(this.backSlice);
-            state.add(this.frontSlice);
+            this.addDisplay(this.backSlice);
+            this.addDisplay(this.frontSlice);
+
+            this.frontSlice.update();
+            this.backSlice.update();
         },
 
         setRatio: function(ratio) {
@@ -593,6 +481,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
         update: function(delta) {
             GameObject.prototype.update.call(this, delta);
+
             if (this.updateDepth) {
                 this.backSlice.depth = this.depth+1;
                 this.frontSlice.depth = this.depth;
@@ -600,7 +489,11 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             }
 
             if (this.updateRatio) {
+                this.frontSlice.update();
+                this.backSlice.update();
+
                 this.frontSlice.width = this.ratio * this.width;
+
                 if (this.ratio <= 0.05) { // A slight offset, when the ratio is too small it gets ugly.
                     this.frontSlice.visible = false;
                 } else if (!this.frontSlice.visible) {
@@ -616,7 +509,6 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         PinShooter: PinShooter,
         Bubble: Bubble,
         Emitter: Emitter,
-        NineSlice: NineSlice,
         StatusBar: StatusBar,
     };
 });

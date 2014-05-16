@@ -111,7 +111,6 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
 
             this.comboTimeBar = new objects.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13);
             this.comboTimeBar.x = gfx.width/2 - this.comboTimeBar.width/2;
-            this.comboTimeBar.y = 0;
             this.comboTimeBar.depth = -100;
             this.comboTimeBar.setRatio(0);
             this.add(this.comboTimeBar);
