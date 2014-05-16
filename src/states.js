@@ -1,4 +1,4 @@
-define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
+define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, res, input) {
 
     this.currentState;
     this.currentStateInit = false;
@@ -18,6 +18,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
         this.objects = [];
         this.objectsToAdd = [];
         this.objectsToRemove = [];
+        this.paused = false;
     }, {
         init: function() {},
 
@@ -223,7 +224,28 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
                     this.multiplier = 1;
                 }
             }
+
+            if (input.key.isReleased('P')) {
+                console.log('released');
+                setState(new PauseMenu());
+            }
         },
+    });
+
+    var PauseMenu = createClass(State, function(prevState) {
+        this.paused = true;
+        this.prevState = prevState;
+        console.log('constructed');
+    }, {
+        init: function() {
+            State.prototype.init.call(this);
+            console.log('init');
+        },
+        update: function(delta) {
+            State.prototype.update.call(this, delta);
+            if (input.key.isReleased(input.key.ESCAPE))
+                setState(prevState);
+        }
     });
 
     return {

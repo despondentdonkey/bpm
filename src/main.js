@@ -66,7 +66,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
     }
 
     function update() {
-        if (!paused) {
+        if (!paused || !states.currentState.paused) {
             if (states.currentState) {
                 if (!states.currentStateInit) {
                     states.currentState.init();
