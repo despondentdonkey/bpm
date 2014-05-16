@@ -233,6 +233,13 @@
                 Opens 30% transparent, black overlay window
                 game continues to play in background
 
+
+    x | x - Rounds:
+        Basically a day of work. It'll go from day to night. At the end of the day it will tally up your kills and reward you with money.
+        Could potentially work well with quests too. You have to do a quest within the day or something otherwise it will reset. Not sure about this, maybe it will just pause the time while doing a quest.
+
+        I'm liking rounds more since I think there should be a calm period where the user can start upgrading. If there are always bubbles just flying through it can get overwhelming and it would make it harder to find a good time to take a break. So maybe you can only upgrade after a round or quest.
+
 === New Gamplay Final ===
 
     Gameplay:
