@@ -6,7 +6,7 @@ requirejs.config({
 
 requirejs(['lib/pixi', 'lib/sfx', 'lib/lode', 'lib/underscore', 'debug', 'utils']);
 
-requirejs(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, states, input) {
+requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, res, states, input, bpm) {
     // Override default requestAnimationFrame for maximum compatibility.
     var requestAnimationFrame = window.requestAnimationFrame
                            || window.mozRequestAnimationFrame
@@ -59,6 +59,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input'], function(time, gfx, res, st
 
             input.init(gfx.renderer.view);
             dbg.addStateButtons(states);
+            dbg.addCheats(bpm);
             update();
         });
 

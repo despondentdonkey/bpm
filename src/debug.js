@@ -26,6 +26,41 @@ dbg.addStateButtons = function(states) {
     document.getElementById('stateButtons').appendChild(div);
 };
 
+dbg.addCheats = function(bpm) {
+    var div = document.createElement('div');
+    var box = document.createElement('input');
+
+    div.style.width   = '220px';
+    div.style.padding = '5px';
+
+    box.type = 'textbox';
+    box.placeholder = 'e.g. pins=100';
+    box.style.width = div.style.width;
+    box.addEventListener('keydown', function(e) {
+        if (e.keyCode === 13) { // Enter key
+            eval('bpm.player.' + box.value);
+        }
+    });
+    div.appendChild(box);
+
+    function cheat(evalString, displayString) {
+        var button = document.createElement('input');
+        button.type = 'button';
+        button.value = displayString || evalString;
+        button.style.width = div.style.width;
+        button.addEventListener('click', function() {
+            eval(evalString);
+        });
+        div.appendChild(button);
+    }
+
+    cheat('bpm.player.pins=10000');
+    cheat('bpm.player.pins=10');
+    cheat('bpm.player.pins=0');
+
+    document.getElementById('bpmCheats').appendChild(div);
+};
+
 dbg.fpsMonitorInit = false;
 dbg.fpsMonitor = function(gfx, time, state) {
     if (!dbg.fpsMonitorInit) {
