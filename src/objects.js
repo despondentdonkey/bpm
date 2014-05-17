@@ -253,13 +253,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
             var collisions = this.getCollisions('bubble');
             for (var i=0; i<collisions.length; ++i) {
-                var obj = collisions[i];
-                if (obj.armor > 0) {
-                    obj.armor--;
-                    this.state.remove(this);
-                } else {
-                    this.state.remove(obj);
-                }
+                collisions[i].onPinCollision(this);
             }
         },
     });
@@ -312,9 +306,6 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         destroy: function() {
-            bpm.player.xp += this.worth * this.state.multiplier;
-            this.state.combo++;
-            this.state.comboTimer = this.state.comboTime;
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
             GameObject.prototype.destroy.call(this);
         },
@@ -337,6 +328,22 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             var bounds = this.getBounds();
             if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
                 this.speedX = -this.speedX;
+            }
+
+            if (bounds.y1 >= gfx.height) {
+                this.state.remove(this);
+            }
+        },
+
+        onPinCollision: function(pin) {
+            if (this.armor > 0) {
+                this.armor--;
+                this.state.remove(pin);
+            } else {
+                bpm.player.xp += this.worth * this.state.multiplier;
+                this.state.combo++;
+                this.state.comboTimer = this.state.comboTime;
+                this.state.remove(this);
             }
         },
     });
