@@ -192,7 +192,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
             }
 
             for (i=0; i<40; i++) {
-                this.add(randBub(0));
+                this.add(randBub(3));
             }
 
 

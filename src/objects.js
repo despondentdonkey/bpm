@@ -335,15 +335,22 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.width = this.graphic.width;
             this.height = this.graphic.width;
 
-            // Armor
-            this.armorSprites = [null];
-            for (var i = 1; i < this.armor + 1; i++) {
-                var atex = res.tex['armor'+i];
-                this.armorSprites[i] = new gfx.pixi.Sprite(atex);
-                this.armorSprites[i].depth = -1;
+            this.crack = new gfx.pixi.MovieClip(res.sheets.cracks);
+            this.crack.animationSpeed = 0;
+            this.crack.play();
+            this.crack.depth = -1;
+
+            this.hpMax = this.armor*2;
+            this.hp = this.hpMax;
+
+            if (this.armor > 0) {
+                this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.tex['armor'+this.armor]));
+                this.armorStatus = 'normal';
+            } else {
+                // If not armored initially, set armorGraphic to null
+                this.armorGraphic = null;
+                this.armorStatus = null;
             }
-            // If not armored initially, set armorGraphic to null
-            this.armorGraphic = this.armor > 0 ? this.addDisplay(this.armorSprites[this.armor]) : null;
         },
 
         destroy: function() {
@@ -353,14 +360,6 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
         update: function(delta) {
             GameObject.prototype.update.call(this);
-
-            // Armor
-            if (!_.isNull(this.armorGraphic) && (this.armor !== this._prevArmor)) {
-                this.removeDisplay(this.armorGraphic);
-                if (this.armor > 0)
-                    this.armorGraphic = this.addDisplay(this.armorSprites[this.armor]);
-                this._prevArmor = this.armor;
-            }
 
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
@@ -377,14 +376,33 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         onPinCollision: function(pin) {
+            this.hp--;
+
             if (this.armor > 0) {
-                this.armor--;
-                this.state.remove(pin);
-            } else {
+                // Add crack effect on first pin collision.
+                if (this.armorStatus === 'normal') {
+                    this.addDisplay(this.crack);
+                    this.armorStatus = 'damaged';
+                }
+
+                // Remove armor and crack effect.
+                if (this.hp <= 0) {
+                    if (this.armorStatus === 'damaged') {
+                        this.removeDisplay(this.crack);
+                        this.removeDisplay(this.armorGraphic);
+                        this.armorStatus = null;
+                    }
+                }
+            }
+
+            if (this.hp <= -1) {
                 bpm.player.xp += this.worth * this.state.multiplier;
                 this.state.combo++;
                 this.state.comboTimer = this.state.comboTime;
                 this.state.remove(this);
+            } else {
+                this.crack.currentFrame = Math.round((1 - (this.hp / this.hpMax)) * (this.crack.totalFrames-1));
+                this.state.remove(pin);
             }
         },
     });
