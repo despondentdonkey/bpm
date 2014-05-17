@@ -204,8 +204,7 @@ define(['bpm', 'objects', 'gfx', 'res'], function(bpm, objects, gfx, res) {
         update: function(delta) {
             State.prototype.update.call(this, delta);
 
-            this.statusText.setText('Pins: ' + bpm.player.pins
-            + '\nXP: ' + bpm.player.xp);
+            this.statusText.setText('XP: ' + bpm.player.xp);
 
             this.comboText.setText(this.combo + ' / ' + this.comboGoal
             + '\nx' + this.multiplier);
