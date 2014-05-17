@@ -160,6 +160,8 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         this.type = type;
     }, {
         update: function(delta) {
+            if (this.paused) return;
+
             BasicObject.prototype.update.call(this, delta);
             this.currentTime -= delta;
             if (this.currentTime <= 0) {
@@ -186,17 +188,56 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.y = gfx.height/1.2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
             this.graphic.depth = -10;
+
+            this.pinText = this.state.addDisplay(new gfx.pixi.Text('', {
+                stroke: 'black',
+                strokeThickness: 4,
+                fill: 'white',
+                align: 'left',
+            }));
+            this.pinText.anchor.x = 0.5;
+            this.pinText.x = this.x;
+            this.pinText.y = this.y + 10;
+
+            this.pinLoader = this.state.addDisplay(new gfx.pixi.Graphics());
+
+            this.pinTimer = this.state.add(new Timer(3000, 'loop', _.bind(function() {
+                bpm.player.pins++;
+            }, this)));
         },
 
         update: function(delta) {
             GameObject.prototype.update.call(this);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
 
+            this.pinText.setText(bpm.player.pins);
+
             if (bpm.player.pins > 0) {
                 if (input.mouse.isPressed(input.MOUSE_LEFT)) {
                     this.state.add(new Pin(this.x, this.y, this.angle));
                     bpm.player.pins--;
                 }
+            }
+
+            if (bpm.player.pins < bpm.player.pinMax) {
+                this.pinTimer.paused = false;
+
+                this.pinLoader.visible = true;
+                this.pinLoader.clear();
+                this.drawPinLoaderCircle(0, 1);
+                this.drawPinLoaderCircle(0x67575e, 1 - (this.pinTimer.currentTime / this.pinTimer.duration));
+            } else {
+                this.pinTimer.paused = true;
+                this.pinLoader.visible = false;
+            }
+        },
+
+        drawPinLoaderCircle: function(color, ratio) {
+            this.pinLoader.lineStyle(8, color, 1);
+            var y = this.pinText.y + this.pinText.height/2;
+            for (var i=0; i<ratio*180; ++i) {
+                var rad = i * DEG2RAD;
+                this.pinLoader.lineTo(this.x + (-Math.cos(rad) * 48),  y + (Math.sin(rad) * 32));
             }
         },
     });
