@@ -42,6 +42,16 @@ define(['lib/pixi'], function(pixi) {
         this.renderer.render(this.stage);
     }
 
+    // Returns an array of textures of each frame. Only works on a sprite sheet which has each cell full.
+    function createSpriteSheet(tex, cellWidth, cellHeight) {
+        var textures = [];
+        for (var w=0; w<tex.width/cellWidth; ++w) {
+            for (var h=0; h<tex.height/cellHeight; ++h) {
+                textures.push(new pixi.Texture(tex, new pixi.Rectangle(w * cellWidth, h * cellHeight, cellWidth, cellHeight)));
+            }
+        }
+        return textures;
+    }
 
     var NineSlice = createClass(pixi.DisplayObjectContainer, function(slices) {
         this.slices = slices;
@@ -83,6 +93,7 @@ define(['lib/pixi'], function(pixi) {
         init: init,
         sortDisplays: sortDisplays,
         render: render,
+        createSpriteSheet: createSpriteSheet,
         NineSlice: NineSlice,
         pixi: pixi
     };

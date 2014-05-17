@@ -2,10 +2,12 @@ define(['gfx'], function(gfx) {
     var result = {
         load: load,
         tex: {},
+        sheets: {},
         slices: {},
     };
 
     var texturesToCreate = {};
+    var spriteSheetsToCreate = {};
     var slicesToCreate = {};
 
     function loadImages(loader, rootDir, urls) {
@@ -20,6 +22,14 @@ define(['gfx'], function(gfx) {
             result.tex[key] = new gfx.pixi.Texture(new gfx.pixi.BaseTexture(texturesToCreate[key]));
         }
         texturesToCreate = {};
+    }
+
+    function createQueuedSpriteSheets() {
+        for (var key in spriteSheetsToCreate) {
+            var obj = spriteSheetsToCreate[key]; // Should contain an array [cellWidth, cellHeight]
+            result.sheets[key] = gfx.createSpriteSheet(result.tex[key], obj[0], obj[1]);
+        }
+        spriteSheetsToCreate = {};
     }
 
     function createQueuedSlices() {
@@ -43,6 +53,7 @@ define(['gfx'], function(gfx) {
                 bottomRight: new gfx.pixi.Texture(tex, new gfx.pixi.Rectangle(x2, y2, tex.width - x2, tex.height - y2)),
             };
         }
+        slicesToCreate = {};
     }
 
     function load(onComplete) {
@@ -52,6 +63,7 @@ define(['gfx'], function(gfx) {
             bubble: 'bubbles/bubble.png',
             bubbleParticle: 'bubbles/bubble-particle.png',
             glare: 'bubbles/bubble-glare.png',
+            cracks: 'bubbles/cracks-32x32-strip5.png',
             armor1: 'bubbles/bubble-armor1.png',
             armor2: 'bubbles/bubble-armor2.png',
             armor3: 'bubbles/bubble-armor3.png',
@@ -71,6 +83,11 @@ define(['gfx'], function(gfx) {
             barFront: 'bar-front.png',
         });
 
+        // Creates a list of textures to be used with PIXI.MovieClip. [cellWidth, cellHeight]
+        spriteSheetsToCreate = {
+            cracks: [32, 32],
+        };
+
         slicesToCreate = {
             barBack: new gfx.pixi.Rectangle(12, 12, 25, 4),
             barFront: new gfx.pixi.Rectangle(12, 12, 25, 4),
@@ -78,6 +95,7 @@ define(['gfx'], function(gfx) {
 
         this.loader.load(function() {
             createQueuedTextures();
+            createQueuedSpriteSheets();
             createQueuedSlices();
             if (onComplete) {
                 onComplete();
