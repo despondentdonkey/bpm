@@ -208,7 +208,7 @@
         -P: The idling would happen naturally. The auto shooter would just keep shooting, and your buildings or whatever would generate income. The penalty for idling though is that you cannot use the main shooter. And the main shooter is way OP compared to the auto shooters.
         -S: Alright, that works. We'll just use the specs of the auto shooter to balance out the game. Idling needs a HEAVY penalty.
 
-        8 | 6 - Production buildings
+        0 | 6 - Production buildings
             - Sort of as a side game, but implemented like cookie clicker
             -S: These production buildings could unlock the ability to unlock new upgrades. Like the technology tree in Civ.
             -P: How would that work though? You just buy the building then you unlock the upgrade? Also how do buildings work in Cookie Clicker? Do they just give you more production? I think buildings are more for the idle part of the game.
@@ -234,16 +234,19 @@
                 game continues to play in background
 
 
-    x | x - Rounds:
+    9 | x - Rounds:
         Basically a day of work. It'll go from day to night. At the end of the day it will tally up your kills and reward you with money.
         Could potentially work well with quests too. You have to do a quest within the day or something otherwise it will reset. Not sure about this, maybe it will just pause the time while doing a quest.
+            -S: I like this. This could be the ongoing side-quest-thing I was talking about. We could also have bonuses based on combos and amount popped.
 
         I'm liking rounds more since I think there should be a calm period where the user can start upgrading. If there are always bubbles just flying through it can get overwhelming and it would make it harder to find a good time to take a break. So maybe you can only upgrade after a round or quest.
+            -S: I agree; I think the option to upgrade should be available at all times except during quests, though.
 
-    x | x - Game Difficulty:
+    9 | x - Game Difficulty:
         Casual - Slower bubbles, little if any penalty for getting them in your town.
         Normal
         Hard - Maybe faster bubbles. Missing enough bubbles will result in a game over where you must restart.
+        Extreme - Unlocked; all bubbles start with +1 armor; missing more than 3 bubbles will result in a game over.
 
 === New Gamplay Final ===
 
@@ -255,7 +258,7 @@
         Score bubbles will be called bubbles. Double, combo, bomb bubbles will either be removed or be something different.
             Bubbles will continually arm themselves with stronger armor throughout the game.
                 wood, stone, steel, black iron (just black steel), gold, platinum, diamond
-            x | x - once bubbles start showing signs of intelligence we could show them will little brains which get bigger as they get smarter.
+            9 | x - once bubbles start showing signs of intelligence we could show them will little brains which get bigger as they get smarter.
             Bubbles will eventually (either from a large amount of bubbles or a time based pattern) summon a large boss bubble to help them. This will be integrated into the story.
 
         Elemental psuedo-classes
