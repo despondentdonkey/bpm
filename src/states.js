@@ -244,6 +244,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             this.addDisplay(this.pinBatch);
             this.addDisplay(this.bubbleBatch);
             this.addDisplay(this.glareBatch);
+            this.addDisplay(this.armorBatch);
 
             // Need to bind event callbacks, otherwise `this === window` on call
             _.bindAll(this, 'onBlur', 'onFocus');

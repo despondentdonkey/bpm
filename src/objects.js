@@ -339,7 +339,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.hp = this.hpMax;
 
             if (this.armor > 0) {
-                this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.sheets.armor[this.armor-1]));
+                this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.sheets.armor[this.armor-1]), this.armorBatch);
                 this.armorStatus = 'normal';
 
                 this.crack = new gfx.pixi.MovieClip(res.sheets.cracks);
