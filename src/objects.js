@@ -335,18 +335,17 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.width = this.graphic.width;
             this.height = this.graphic.width;
 
-            this.crack = new gfx.pixi.MovieClip(res.sheets.cracks);
-            this.crack.anchor.x = this.crack.anchor.y = 0.5;
-            this.crack.animationSpeed = 0;
-            this.crack.play();
-            this.crack.depth = -1;
-
             this.hpMax = this.armor*2;
             this.hp = this.hpMax;
 
             if (this.armor > 0) {
                 this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.tex['armor'+this.armor]));
                 this.armorStatus = 'normal';
+
+                this.crack = new gfx.pixi.MovieClip(res.sheets.cracks);
+                this.crack.anchor.x = this.crack.anchor.y = 0.5;
+                this.crack.animationSpeed = 0;
+                this.crack.play();
             } else {
                 // If not armored initially, set armorGraphic to null
                 this.armorGraphic = null;
