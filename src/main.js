@@ -14,7 +14,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
                            || window.msRequestAnimationFrame
                            || function(func) { setTimeout(func, 1000/60) };
 
-    var paused = false;
+    var focused = true;
 
     function run() {
         states.setState(new states.Field());
@@ -22,39 +22,23 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
         res.load(function() {
             gfx.init(800, 600, document.getElementById('canvas'));
 
-            // Pause game when window loses focus. Might wanna move this somewhere else, at least the rendering part.
+            // Pause game when window loses focus
+            var prevState;
             window.addEventListener('blur', function() {
-                if (paused) // If already paused then don't do anything.
-                    return;
-
-                paused = true;
-
-                var back = new gfx.pixi.Graphics();
-                back.beginFill('0', 0.5);
-                back.drawRect(0, 0, gfx.width, gfx.height);
-                back.endFill();
-
-                var text = new gfx.pixi.Text('Paused', {
-                    stroke: 'black',
-                    strokeThickness: 8,
-                    align: 'center',
-                    fill: 'white',
-                    font: 'bold 64px arial',
-                });
-                text.anchor.x = text.anchor.y = 0.5;
-                text.x = gfx.width/2;
-                text.y = gfx.height/2;
-
-                gfx.stage.addChild(back);
-                gfx.stage.addChild(text);
-
-                function onMouseDown() {
-                    paused = false;
-                    gfx.renderer.view.removeEventListener('mousedown', onMouseDown);
-                    gfx.stage.removeChild(back);
-                    gfx.stage.removeChild(text);
+                var curState = states.current.state;
+                if (focused && !curState.paused) {
+                    prevState = curState;
+                    states.cacheState(curState, new states.PauseMenu(curState));
+                    focused = false;
                 }
-                gfx.renderer.view.addEventListener('mousedown', onMouseDown);
+            });
+
+            window.addEventListener('focus', function() {
+                if (!focused) {
+                    states.restoreState(prevState);
+                    focused = true;
+                    prevState = null;
+                }
             });
 
             input.init(gfx.renderer.view);
@@ -66,16 +50,15 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
     }
 
     function update() {
-        if (!paused || !states.currentState.paused) {
-            if (states.currentState) {
-                if (!states.currentStateInit) {
-                    states.currentState.init();
-                    states.currentStateInit = true;
-                }
-                states.currentState.update(time.delta);
+        if (states.current.state) {
+            if (!states.current.init) {
+                states.current.state.init();
+                states.current.init = true;
             }
-            input.update();
+            states.current.state.update(time.delta);
         }
+
+        input.update();
 
         gfx.render();
 
