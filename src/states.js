@@ -131,14 +131,14 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
     });
 
 
-    var Testing = createClass(State, function() {
+    var Testing = createClass(State, function Testing() {
 
     }, {
 
     });
 
 
-    var Field = createClass(State, function() {
+    var Field = createClass(State, function Field() {
         this.comboTime = 1000;
         this.comboTimer = this.comboTime;
         this.multiplier = 1;
