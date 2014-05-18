@@ -48,18 +48,22 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
         update:  function(delta) {
             if (this.syncDisplayProperties) {
-                for (var i=0; i<this.displayObjects.length; ++i) {
-                    var obj = this.displayObjects[i];
-                    obj.position.x = this.x;
-                    obj.position.y = this.y;
-                    obj.rotation = -this.angle;
-                    if (obj.anchor) {
-                        obj.anchor.x = this.anchor.x;
-                        obj.anchor.y = this.anchor.y;
-                    }
-                    obj.scale.x = this.scale.x;
-                    obj.scale.y = this.scale.y;
+                this.updateDisplayProperties(this.displayObjects);
+            }
+        },
+
+        updateDisplayProperties: function(objects) {
+            for (var i=0; i<objects.length; ++i) {
+                var obj = objects[i];
+                obj.position.x = this.x;
+                obj.position.y = this.y;
+                obj.rotation = -this.angle;
+                if (obj.anchor) {
+                    obj.anchor.x = this.anchor.x;
+                    obj.anchor.y = this.anchor.y;
                 }
+                obj.scale.x = this.scale.x;
+                obj.scale.y = this.scale.y;
             }
         },
 
@@ -411,6 +415,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         addBubbleDisplays: function() {
             this.addDisplay(this.bubble, this.state.bubbleBatch);
             this.addDisplay(this.glare, this.state.glareBatch);
+            this.updateDisplayProperties([this.bubble, this.glare]);
         },
     });
 
