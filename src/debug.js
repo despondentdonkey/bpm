@@ -57,11 +57,13 @@ dbg.addCheats = function(bpm) {
     cheat('bpm.player.pins=10000');
     cheat('bpm.player.pins=10');
     cheat('bpm.player.pins=0');
+    cheat('dbg.fpsMonitorShow=!dbg.fpsMonitorShow', 'Toggle FPS Monitor');
 
     document.getElementById('bpmCheats').appendChild(div);
 };
 
 dbg.fpsMonitorInit = false;
+dbg.fpsMonitorShow = true;
 dbg.fpsMonitor = function(gfx, time, state) {
     if (!dbg.fpsMonitorInit) {
         dbg.fpsMonitorText = new gfx.pixi.Text('0', {
@@ -78,5 +80,11 @@ dbg.fpsMonitor = function(gfx, time, state) {
         gfx.stage.addChild(text);
         dbg.fpsMonitorInit = true;
     }
-    dbg.fpsMonitorText.setText(time.fps + ' | ' + time.delta);
+
+    if (dbg.fpsMonitorShow) {
+        dbg.fpsMonitorText.visible = true;
+        dbg.fpsMonitorText.setText(time.fps + ' | ' + time.delta);
+    } else {
+        dbg.fpsMonitorText.visible = false;
+    }
 };
