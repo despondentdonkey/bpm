@@ -382,7 +382,37 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
     var MainMenu = createClass(Menu, function MainMenu(prevState) {
 
     }, {
+        init: function() {
+            Menu.prototype.init.call(this);
 
+        }
+    });
+
+    var UpgradeMenu = createClass(Menu, function UpgradeMenu(prevState) {
+
+    }, {
+        init: function() {
+            Menu.prototype.init.call(this);
+
+        }
+    });
+
+    var PerkMenu = createClass(Menu, function PerkMenu(prevState) {
+
+    }, {
+        init: function() {
+            Menu.prototype.init.call(this);
+
+        }
+    });
+
+    var QuestMenu = createClass(Menu, function QuestMenu(prevState) {
+
+    }, {
+        init: function() {
+            Menu.prototype.init.call(this);
+
+        }
     });
 
     return {
