@@ -336,6 +336,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.height = this.graphic.width;
 
             this.crack = new gfx.pixi.MovieClip(res.sheets.cracks);
+            this.crack.anchor.x = this.crack.anchor.y = 0.5;
             this.crack.animationSpeed = 0;
             this.crack.play();
             this.crack.depth = -1;
@@ -381,14 +382,13 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             if (this.armor > 0) {
                 // Add crack effect on first pin collision.
                 if (this.armorStatus === 'normal') {
-                    this.addDisplay(this.crack);
+                    this.armorGraphic.addChild(this.crack);
                     this.armorStatus = 'damaged';
                 }
 
                 // Remove armor and crack effect.
                 if (this.hp <= 0) {
                     if (this.armorStatus === 'damaged') {
-                        this.removeDisplay(this.crack);
                         this.removeDisplay(this.armorGraphic);
                         this.armorStatus = null;
                     }
