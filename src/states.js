@@ -1,19 +1,55 @@
 define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, res, input) {
 
-    this.currentState;
-    this.currentStateInit = false;
+    var current = {
+        init: false,
+        state: null,
+        cached: {}
+    };
 
     // Static Methods
-    function setState(state) {
-        if (this.currentState) {
-            this.currentState.destroy();
+    function setState(state, persist) {
+        // Sets state; if persist === true, destroy is not called on current state
+        if (current.state) {
+            if (!persist) {
+                current.state.destroy();
+            }
+            current.state = null; // I think this helps a bug with switching states. It stopped, so it's staying for now.
         }
-        this.currentState = state;
-        this.currentStateInit = false;
-    }
-// Classes
 
-    var State = createClass(null, function(_super) {
+        current.state = state;
+        current.init = false;
+    }
+
+    function cacheState(state, newState) {
+        // Caches passed state, switches to newState
+        //      cached states are saved by constructor, so only one class is ever saved a time
+        if (current.state) {
+            // Save current state
+            var constructor = current.state.constructor;
+            current.cached[constructor] = current.state;
+
+            if (newState instanceof State) {
+                setState(newState, true);
+            }
+
+        }
+    }
+
+    function restoreState(state) {
+        // Restores a cached state with matching constructor of passed state
+        // May return unexpected results - make sure you know that the state you are restoring was cached
+        var constructor = state.constructor;
+        if (_.has(current.cached, constructor)) {
+            log('restoring state ' + state.constructor.name);
+            state = current.cached[constructor];
+            delete current.cached[constructor];
+
+            setState(state);
+        }
+    }
+
+    // Classes
+    var State = createClass(null, function State(_super) {
         this.displayObjects = [];
         this.objects = [];
         this.objectsToAdd = [];
@@ -36,32 +72,34 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
         },
 
         update: function(delta) {
-            // Add queued objects
-            if (this.objectsToAdd.length > 0) {
-                for (var i=0; i<this.objectsToAdd.length; ++i) {
-                    var obj = this.objectsToAdd[i];
+            if (!this.paused) {
+                // Add queued objects
+                if (this.objectsToAdd.length > 0) {
+                    for (var i=0; i<this.objectsToAdd.length; ++i) {
+                        var obj = this.objectsToAdd[i];
 
-                    this.objects.push(obj);
-                    obj.init(this);
+                        this.objects.push(obj);
+                        obj.init(this);
+                    }
+                    gfx.sortDisplays();
+                    this.objectsToAdd = [];
                 }
-                gfx.sortDisplays();
-                this.objectsToAdd = [];
-            }
 
-            // Remove queued objects
-            for (var i=0; i<this.objectsToRemove.length; ++i) {
-                var obj = this.objectsToRemove[i];
-                var index = this.objects.indexOf(obj);
+                // Remove queued objects
+                for (var i=0; i<this.objectsToRemove.length; ++i) {
+                    var obj = this.objectsToRemove[i];
+                    var index = this.objects.indexOf(obj);
 
-                if (index !== -1) {
-                    this.objects.splice(index, 1);
-                    obj.destroy(this);
+                    if (index !== -1) {
+                        this.objects.splice(index, 1);
+                        obj.destroy(this);
+                    }
                 }
-            }
-            this.objectsToRemove = [];
+                this.objectsToRemove = [];
 
-            for (var i=0; i<this.objects.length; ++i) {
-                this.objects[i].update(delta);
+                for (var i=0; i<this.objects.length; ++i) {
+                    this.objects[i].update(delta);
+                }
             }
         },
 
@@ -227,33 +265,54 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
 
             if (input.key.isReleased('P')) {
                 console.log('released');
-                setState(new PauseMenu());
+                setState(new PauseMenu(this), true);
             }
         },
     });
 
-    var PauseMenu = createClass(State, function(prevState) {
-        this.paused = true;
+    var PauseMenu = createClass(State, function PauseMenu(prevState) {
         this.prevState = prevState;
-        console.log('constructed');
     }, {
         init: function() {
             State.prototype.init.call(this);
-            console.log('init');
+            this.paused = true;
+
+            var back = new gfx.pixi.Graphics();
+            back.beginFill('0', 0.5);
+            back.drawRect(0, 0, gfx.width, gfx.height);
+            back.endFill();
+
+            var text = new gfx.pixi.Text('Paused', {
+                stroke: 'black',
+                strokeThickness: 8,
+                align: 'center',
+                fill: 'white',
+                font: 'bold 64px arial',
+            });
+
+            text.anchor.x = text.anchor.y = 0.5;
+            text.x = gfx.width/2;
+            text.y = gfx.height/2;
+
+            this.addDisplay(back);
+            this.addDisplay(text);
         },
         update: function(delta) {
             State.prototype.update.call(this, delta);
-            if (input.key.isReleased(input.key.ESCAPE))
-                setState(prevState);
+            if (input.key.isReleased(input.ESCAPE)) {
+                setState(this.prevState);
+            }
         }
     });
 
     return {
-        currentState: this.currentState,
-        currentStateInit: this.currentStateInit,
+        current: current,
         setState: setState,
+        cacheState: cacheState,
+        restoreState: restoreState,
         Field: Field,
         Testing: Testing,
-        State: State
+        State: State,
+        PauseMenu: PauseMenu
     };
 });
