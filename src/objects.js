@@ -329,11 +329,11 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.addId('bubble');
             this.speed = 0.03;
 
-            this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.bubble), state.bubbleBatch);
-            this.glare = this.addDisplay(new gfx.pixi.Sprite(res.tex.glare), state.glareBatch);
+            this.bubble = new gfx.pixi.Sprite(res.tex.bubble);
+            this.glare = new gfx.pixi.Sprite(res.tex.glare);
 
-            this.width = this.graphic.width;
-            this.height = this.graphic.width;
+            this.width = this.bubble.width;
+            this.height = this.bubble.width;
 
             this.hpMax = this.armor*2;
             this.hp = this.hpMax;
@@ -350,6 +350,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
                 // If not armored initially, set armorGraphic to null
                 this.armorGraphic = null;
                 this.armorStatus = null;
+                this.addBubbleDisplays();
             }
         },
 
@@ -385,10 +386,11 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
                     this.armorStatus = 'damaged';
                 }
 
-                // Remove armor and crack effect.
+                // Remove armor and crack effect. Add bubble displays.
                 if (this.hp <= 0) {
                     if (this.armorStatus === 'damaged') {
                         this.removeDisplay(this.armorGraphic);
+                        this.addBubbleDisplays();
                         this.armorStatus = null;
                     }
                 }
@@ -403,6 +405,12 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
                 this.crack.currentFrame = Math.round((1 - (this.hp / this.hpMax)) * (this.crack.totalFrames-1));
                 this.state.remove(pin);
             }
+        },
+
+        // Adds the displays for the raw bubble.
+        addBubbleDisplays: function() {
+            this.addDisplay(this.bubble, this.state.bubbleBatch);
+            this.addDisplay(this.glare, this.state.glareBatch);
         },
     });
 
