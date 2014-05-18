@@ -22,10 +22,9 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
 
             // Pause game when window loses focus
             window.addEventListener('blur', function() {
-                if (!bpm.paused) {
-                    var curState = states.current.state;
+                var curState = states.current.state;
+                if (!curState.paused) {
                     states.cacheState(curState, new states.PauseMenu(curState));
-                    bpm.paused = true;
                 }
             });
 
