@@ -21,14 +21,6 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
         res.load(function() {
             gfx.init(800, 600, document.getElementById('canvas'));
 
-            // Pause game when window loses focus
-            window.addEventListener('blur', function() {
-                var curState = states.current.state;
-                if (!curState.paused) {
-                    states.cacheState(curState, new states.PauseMenu(curState));
-                }
-            });
-
             input.init(gfx.renderer.view);
             dbg.addStateButtons(states);
             dbg.addCheats(bpm);

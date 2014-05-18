@@ -27,6 +27,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
         // Save current state
         var constructor = state.constructor;
         current.cached[constructor] = state;
+        state.onCached();
 
         if (newState instanceof State) {
             setState(newState, true);
@@ -44,6 +45,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
 
             setState(state);
             current.init = true;
+            state.onRestore();
         }
     }
 
@@ -126,7 +128,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
             display.parent.removeChild(display);
             return display;
-        }
+        },
+
+        onCached: function() {},
+        onRestore: function() {}
     });
 
 
@@ -237,6 +242,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             this.addDisplay(this.pinBatch);
             this.addDisplay(this.bubbleBatch);
             this.addDisplay(this.glareBatch);
+
+            this._addEventListeners();
         },
 
         update: function(delta) {
@@ -266,6 +273,35 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
                 cacheState(this, new PauseMenu(this));
             }
         },
+
+        onCached: function() {
+            this._removeEventListeners();
+        },
+
+        onRestore: function() {
+            this._addEventListeners();
+        },
+
+        onBlur: function() {
+            // Pause game when window loses focus
+            if (!current.state.paused) {
+                cacheState(current.state, new PauseMenu(current.state));
+            }
+        },
+
+        onFocus: function() {
+
+        },
+
+        _addEventListeners: function() {
+            window.addEventListener('blur', this.onBlur);
+            window.addEventListener('focus', this.onFocus);
+        },
+
+        _removeEventListeners: function() {
+            window.removeEventListener('blur', this.onBlur);
+            window.removeEventListener('focus', this.onFocus);
+        }
     });
 
     var PauseMenu = createClass(State, function PauseMenu(prevState) {
