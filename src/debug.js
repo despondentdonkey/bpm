@@ -50,8 +50,6 @@ dbg.addCheats = function(bpm) {
         button.style.width = div.style.width;
         button.addEventListener('click', function() {
             eval(evalString);
-            button.blur();
-            document.getElementById('canvas').focus();
         });
         div.appendChild(button);
     }

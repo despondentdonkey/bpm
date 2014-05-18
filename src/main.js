@@ -17,15 +17,6 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
         states.setState(new states.Field());
 
         res.load(function() {
-            /*
-            var canvas = document.getElementById('canvas');
-            canvas.addEventListener('click', function() {
-                console.log('restoring focus');
-                //canvas.focus();
-                console.log(document.activeElement);
-            });
-
-            console.log(canvas);*/
             gfx.init(800, 600, document.getElementById('canvas'));
 
             input.init(gfx.renderer.view);

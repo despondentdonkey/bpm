@@ -290,6 +290,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
         },
 
         onFocus: function() {
+
         },
 
         _addEventListeners: function() {

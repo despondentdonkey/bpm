@@ -22,6 +22,11 @@ define(['lib/pixi'], function(pixi) {
             document.body.appendChild(this.renderer.view);
         }
         this.renderer.view.focus();
+
+        // Give focus to the canvas element when you mouse over it.
+        this.renderer.view.addEventListener('mouseover', _.bind(function() {
+            this.renderer.view.focus();
+        }, this));
     }
 
     var depthComparator = function(a, b) {
