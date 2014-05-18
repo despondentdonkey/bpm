@@ -297,8 +297,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
         },
         update: function(delta) {
             State.prototype.update.call(this, delta);
-            if (input.key.isReleased('P')) {
+            if (input.mouse.isReleased(input.MOUSE_LEFT)) {
                 restoreState(this.prevState);
+                bpm.paused = false;
             }
         }
     });

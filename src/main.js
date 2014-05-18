@@ -14,8 +14,6 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
                            || window.msRequestAnimationFrame
                            || function(func) { setTimeout(func, 1000/60) };
 
-    var focused = true;
-
     function run() {
         states.setState(new states.Field());
 
@@ -23,21 +21,11 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
             gfx.init(800, 600, document.getElementById('canvas'));
 
             // Pause game when window loses focus
-            var prevState;
             window.addEventListener('blur', function() {
-                var curState = states.current.state;
-                if (focused && !curState.paused) {
-                    prevState = curState;
+                if (!bpm.paused) {
+                    var curState = states.current.state;
                     states.cacheState(curState, new states.PauseMenu(curState));
-                    focused = false;
-                }
-            });
-
-            window.addEventListener('focus', function() {
-                if (!focused) {
-                    states.restoreState(prevState);
-                    focused = true;
-                    prevState = null;
+                    bpm.paused = true;
                 }
             });
 
