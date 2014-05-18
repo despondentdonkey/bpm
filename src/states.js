@@ -167,7 +167,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             this.comboTimeBar.setRatio(0);
             this.add(this.comboTimeBar);
 
-            this.background = this.addDisplay(new gfx.pixi.Sprite(res.tex.background));
+            this.background = this.addDisplay(new gfx.pixi.TilingSprite(res.tex.background, 800, 600));
             this.background.depth = 100;
 
             this.statusText = this.addDisplay(new gfx.pixi.Text('', {
