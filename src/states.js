@@ -148,6 +148,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
         this.multiplier = 1;
         this.combo = 0;
         this.comboGoal = 4;
+
+        this.pauseMenu = new PauseMenu(this);
     },{
         init: function() {
             State.prototype.init.call(this);
@@ -243,6 +245,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             this.addDisplay(this.bubbleBatch);
             this.addDisplay(this.glareBatch);
 
+            // Need to bind event callbacks, otherwise `this === window` on call
+            _.bindAll(this, 'onBlur', 'onFocus');
             this._addEventListeners();
         },
 
@@ -269,9 +273,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
                 }
             }
 
-            if (input.key.isReleased('P')) {
-                cacheState(this, new PauseMenu(this));
-            }
+            this.pauseMenu.monitor();
         },
 
         onCached: function() {
@@ -284,9 +286,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
 
         onBlur: function() {
             // Pause game when window loses focus
-            if (!current.state.paused) {
-                cacheState(current.state, new PauseMenu(current.state));
-            }
+            cacheState(this, this.pauseMenu);
         },
 
         onFocus: function() {
@@ -303,12 +303,47 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
         }
     });
 
-    var PauseMenu = createClass(State, function PauseMenu(prevState) {
+    var Menu = createClass(State, function Menu(prevState) {
         this.prevState = prevState;
     }, {
         init: function() {
             State.prototype.init.call(this);
             this.paused = true;
+        },
+
+        update: function(delta) {
+            State.prototype.update.call(this, delta);
+            if (this.isClosed()) {
+                restoreState(this.prevState);
+            }
+        },
+
+        monitor: function() {
+            // Watch for condition to open, cache current state and switch to menu when opened
+            // call this in prevState's update method; use to abstract all menu-related functionality
+            // out of parent state and into menu state
+            if (this.isOpened()) {
+                cacheState(this.prevState, this);
+            }
+        },
+
+        isClosed: function() {
+            // Predicate to specify how this menu will be closed
+            // defaults to same method as open
+            return this.isOpened();
+        },
+
+        isOpened: function() {
+            // Predicate to specify how this menu will be opened
+            return input.key.isReleased(input.ESCAPE);
+        }
+    });
+
+    var PauseMenu = createClass(Menu, function PauseMenu(prevState) {
+        this.pauseKey = 'P';
+    }, {
+        init: function() {
+            Menu.prototype.init.call(this);
 
             var back = new gfx.pixi.Graphics();
             back.beginFill('0', 0.5);
@@ -330,11 +365,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             this.addDisplay(back);
             this.addDisplay(text);
         },
-        update: function(delta) {
-            State.prototype.update.call(this, delta);
-            if (input.mouse.isReleased(input.MOUSE_LEFT) || input.key.isReleased('P')) {
-                restoreState(this.prevState);
-            }
+
+        isClosed: function() {
+            return (input.mouse.isReleased(input.MOUSE_LEFT) || input.key.isReleased(this.pauseKey));
+        },
+
+        isOpened: function() {
+            return input.key.isReleased(this.pauseKey);
         }
     });
 
