@@ -64,15 +64,7 @@ define(['gfx'], function(gfx) {
             bubbleParticle: 'bubbles/bubble-particle.png',
             glare: 'bubbles/bubble-glare.png',
             cracks: 'bubbles/cracks-32x32-strip5.png',
-            armor1: 'bubbles/bubble-armor1.png',
-            armor2: 'bubbles/bubble-armor2.png',
-            armor3: 'bubbles/bubble-armor3.png',
-            armor4: 'bubbles/bubble-armor4.png',
-            armor5: 'bubbles/bubble-armor5.png',
-            armor6: 'bubbles/bubble-armor6.png',
-            armor7: 'bubbles/bubble-armor7.png',
-            armor8: 'bubbles/bubble-armor8.png',
-            armor9: 'bubbles/bubble-armor9.png',
+            armor: 'bubbles/armor-32x32-strip9.png',
 
             pin: 'pin.png',
             arrow: 'arrow.png',
@@ -86,6 +78,7 @@ define(['gfx'], function(gfx) {
         // Creates a list of textures to be used with PIXI.MovieClip. [cellWidth, cellHeight]
         spriteSheetsToCreate = {
             cracks: [32, 32],
+            armor: [32, 32],
         };
 
         slicesToCreate = {
