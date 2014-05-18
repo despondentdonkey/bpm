@@ -23,15 +23,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
     function cacheState(state, newState) {
         // Caches passed state, switches to newState
         //      cached states are saved by constructor, so only one class is ever saved a time
-        if (current.state) {
-            // Save current state
-            var constructor = current.state.constructor;
-            current.cached[constructor] = current.state;
 
-            if (newState instanceof State) {
-                setState(newState, true);
-            }
+        // Save current state
+        var constructor = state.constructor;
+        current.cached[constructor] = state;
 
+        if (newState instanceof State) {
+            setState(newState, true);
         }
     }
 
@@ -45,6 +43,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             delete current.cached[constructor];
 
             setState(state);
+            current.init = true;
         }
     }
 
@@ -264,8 +263,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             }
 
             if (input.key.isReleased('P')) {
-                console.log('released');
-                setState(new PauseMenu(this), true);
+                cacheState(this, new PauseMenu(this));
             }
         },
     });
@@ -299,8 +297,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
         },
         update: function(delta) {
             State.prototype.update.call(this, delta);
-            if (input.key.isReleased(input.ESCAPE)) {
-                setState(this.prevState);
+            if (input.key.isReleased('P')) {
+                restoreState(this.prevState);
             }
         }
     });
