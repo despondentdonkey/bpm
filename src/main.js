@@ -4,9 +4,7 @@ requirejs.config({
     }
 });
 
-requirejs(['lib/pixi', 'lib/sfx', 'lib/lode', 'lib/underscore']);
-requirejs(['debug', 'utils']);
-
+requirejs(['lib/pixi', 'lib/sfx', 'lib/lode', 'lib/underscore', 'debug', 'utils'], function() {
 requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, res, states, input, bpm) {
     // Override default requestAnimationFrame for maximum compatibility.
     var requestAnimationFrame = window.requestAnimationFrame
@@ -49,4 +47,5 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
     }
 
     run();
+});
 });
