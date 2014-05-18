@@ -323,7 +323,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             // call this in prevState's update method; use to abstract all menu-related functionality
             // out of parent state and into menu state
             if (this.isOpened()) {
-                cacheState(this.prevState, this);
+                if (this.prevState instanceof State) {
+                    cacheState(this.prevState, this);
+                } else {
+                    setState(this);
+                }
             }
         },
 
@@ -373,6 +377,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
         isOpened: function() {
             return input.key.isReleased(this.pauseKey);
         }
+    });
+
+    var MainMenu = createClass(Menu, function MainMenu(prevState) {
+
+    }, {
+
     });
 
     return {
