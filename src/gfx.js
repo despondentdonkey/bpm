@@ -29,17 +29,20 @@ define(['lib/pixi'], function(pixi) {
         }, this));
     }
 
-    var depthComparator = function(a, b) {
-        var aDepth = a.depth ? a.depth : 0;
-        var bDepth = b.depth ? b.depth : 0;
-        return bDepth - aDepth;
-    };
-
+    // Insertion sort. Better than Array.prototype.sort() since it works better by leaving objects alone when depth values are the same.
     function sortDisplays(container) {
-        if (container) {
-            container.children.sort(depthComparator);
-        } else {
-            this.stage.children.sort(depthComparator);
+        var list = container ? container.children : this.stage.children;
+
+        for (var i=1; i<list.length; ++i) {
+            var key = list[i];
+            var j = i-1;
+
+            while (j >= 0 && (list[j].depth || 0) < (key.depth || 0)) {
+                list[j+1] = list[j];
+                j--;
+            }
+
+            list[j+1] = key;
         }
     }
 
