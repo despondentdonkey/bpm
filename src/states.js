@@ -82,7 +82,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
                         this.objects.push(obj);
                         obj.init(this);
                     }
-                    gfx.sortDisplays();
+                    gfx.sortStageDisplays = true;
                     this.objectsToAdd = [];
                 }
 

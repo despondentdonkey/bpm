@@ -5,13 +5,15 @@ define(['lib/pixi'], function(pixi) {
         this.stage = new pixi.Stage(0x505050);
         this.renderer = pixi.autoDetectRenderer(this.width, this.height);
 
+        this.sortStageDisplays = false;
+
         // Custom depth property for pixi display objects.
         var gfx = this;
         Object.defineProperty(pixi.DisplayObject.prototype, 'depth', {
             get: function() { return this._bpmDepth; },
             set: function(val) {
                 this._bpmDepth = val;
-                gfx.sortDisplays();
+                gfx.sortStageDisplays = true;
             },
         });
 

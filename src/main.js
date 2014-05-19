@@ -38,6 +38,11 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
 
         input.update();
 
+        if (gfx.sortStageDisplays) {
+            gfx.sortDisplays();
+            gfx.sortStageDisplays = false;
+        }
+
         gfx.render();
 
         time.update();
