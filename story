@@ -1,4 +1,4 @@
-In the quiet city of Pintonville a dark evil approaches.
+In the quiet city of Pinville a dark evil approaches.
 
 0 -- Characters and Locations
     The Mayor
@@ -40,6 +40,31 @@ In the quiet city of Pintonville a dark evil approaches.
         The home of the bubbles of doom
         Visit BubbleLand in phase 6 to meet K. Bubbs
 
+0 -- Quest Conventions
+    QUEST [0-9]+ = Main Questline
+    QUEST [A-Za-z]+[0-9]+ = Sidequests; have descriptor before number
+    FieldQuest [A-Za-z]+[0-9]+ = Sidequests to complete during rounds in Field, between main quests.
+
+    Text guide:
+
+        QUEST 1: [description of quest]
+                 Gold: [highest score]
+                 Silver: [medium score]
+                 Bronze: [passing score]
+
+                 Reward: [list reward]
+
+            Any dialog here will show up on quest acceptance
+
+            ** Quest Start - [how many/what type bubbles spawn] **
+                Any dialog here will show after quest starts
+            * Checkpoint * <- start from here if you die
+            ** Quest End **
+                Any dialog here will show after quest is turned in
+
+0 -- Rounds
+    Rounds represent days and progress when you are not currently on a quest.
+    When doing quest, round is paused.
 
 1 -- Introduction
     Mayor: "Thank the heavens you've arrived!"
@@ -47,46 +72,67 @@ In the quiet city of Pintonville a dark evil approaches.
             "Take this. It will aid you in your quest."
             * Receive Pin Shooter *
 
-    Mayor: "Now come! We have a lot of work to do!"
 
-    * Play round 1 - all normal bubbles *
+    * Rounds 1 - 3: Normal bubbles increasing regularly *
+
+    QUEST 1: Kill all of the bubbles before they reach the village!
+        Mayor: "Now come! We have a lot of work to do!"
+
+    ** Quest Start - all normal bubbles **
         Mayor: "Look at those hideous monstrosities! They make me sick."
                 "SHOOT THEM! KILL THEM ALL!"
-                * Show instructions based on device *
 
-    Mayor: "Wasn't that awful?? They get soap everywhere and they make everything sopping wet! How are we supposed to live under these conditions!?"
-            "Oh, that's right - that's what you're here for. As promised, here is money. Now don't spend it all in one place, y'hear!"
-            * Receive 1 gold *
-            "Why don't you head on down to the blacksmith? You might be able to pick yourself up a taco or something"
+        * Show basic gameplay tutorial *
+        * checkpoint (if you die, start here; skip dialog) *
+
+    ** Quest End **
+        Mayor: "Wasn't that awful?? They get soap everywhere and they make everything sopping wet! How are we supposed to live under these conditions!?"
+                "Oh, that's right - that's what you're here for. As promised, here is money. Now don't spend it all in one place, y'hear!"
+                * Receive 1 gold *
+                "Why don't you head on down to the blacksmith? You might be able to pick yourself up a taco or something"
 
     * Instructions on how to navigate the UI *
+    * Make user go to blacksmith *
 
-    Blacksmith: "Well howdy pardner! The mayor told me you were-a comin'! He's an... interesting fellow, isn't he?"
+    Blacksmith: "Well howdy partner! The mayor told me you were-a comin'! He's an... interesting fellow, isn't he?"
                 "Well don't be shy, what would you like to look at?"
-                * Display shop window *
+
+    * Display shop window and tutorial on how to navigate the shop *
+
                 "Wait - how much money do you have?"
                 "..."
                 "Get out."
 
-    Mayor: "*muttering to himself*"
-            "Oh! I didn't see you there. Come, quickly! The demons have returned!"
+    QUEST 2: Kill all of the bubbles before they reach the village!
+             Gold: Achieve 6x combo
+             Silver: 4x combo
+             Bronze: 3x combo
 
-    * Round 2 - normal, increasing amount *
-    Mayor: "Are they starting to increase in numbers, or am I crazy?"
-    Wizard via telepathy: "You're crazy."
-    Mayor: "WHAT??! Who said that?! Not again!" - Runs off
+        Mayor: "*muttering to himself*"
+               "Oh! I didn't see you there. Come, quickly! The demons have returned!"
+
+    ** Quest Start - All normal bubbles **
+        * Combo tutorial *
+        * Checkpoint *
+    ** Quest End **
+
+
+    FieldQuest Combo1: Achieve a combo of at least 10x
+
+            Reward: 10g
+
+    * End of round 3 *
+        Mayor: "Are they starting to increase in numbers, or am I crazy?"
+        Wizard via telepathy: "You're crazy."
+        Mayor: "WHAT??! Who said that?! Not again!" - Runs off
+
     Wizard via telepathy: "Hello, traveler. My name is The Wizard. I will help you become incredibly strong."
             "For every bubble you pop, I shall grant you knowledge points."
             "These knowledge points can be used to gain abilities you can use to wreak havoc upon your foes."
             "Come see me in my tower when you are ready."
             * on tower enter, display UI help *
 
-    Mayor runs in: "I almost forgot! Here is your pay, good sir. Cheerio."
-            * Gain enough coins for blacksmith purchase *
-
-    * rounds 3 - 5 increasing amounts of normal bubbles *
-
-    * Play round 5 - wooden bubbles appear *
+    * Round 5 - wooden bubbles appear *
         Mayor: "What's this? They are wearing armor?! Blasphemy!"
 
     -- Misc. One-Liners (can be used when needed)
@@ -99,6 +145,8 @@ In the quiet city of Pintonville a dark evil approaches.
             Mayor: "See? Killing is not so bad."
 
             Mayor: "Money money money money money money."
+
+            Mayor: "I almost forgot! Here is your pay, good sir. Cheerio."
 
         -- Armory entry
             Blacksmith: "Ahoy! Welcome, money!"
@@ -118,16 +166,27 @@ In the quiet city of Pintonville a dark evil approaches.
     * Town Meeting - Blacksmith, Wizard, and Mayor are gathered *
     Wizard: "We believe the bubbles have adapted to wearing armor to protect their brains"
 
-4 -- Ethical Questions, bubbles appear harmless and nice
+    -- Ethical Questions, bubbles appear harmless and nice
+
+    - Why do we pop?
 
 5 -- Mayor/town is seemingly evil
 
+    - give mayor evil laugh/mannerisms
+
 6 -- Meet Bubble King in BubbleLand
+    - Receive invite to bubble land in the form of a wave of bubbles
+        (need to write out "Come to BubbleLand
+                                <3 K. Bubbs"
+    - on wave finish, a bubble comes down and engulfs the current weapon, bubble carries weapon upwards off screen
+    - in bubbleland, show help for going back to Pinville (cannot upgrade or anything while in bubbleland)
+    - BubbleLand has a constant stream of very difficult bubbles - no rounds or quests
+    - Bubbles give exp AND gold in BL.
+    - Introduce Noble Bubbles and Royal Bubbles; Bubble bosses.
 
-7 -- Discover Bubbles' true intentions
-
-8 -- Discover the town's history - why is this town the target of the bubbles? why is the mayor crazy? why is the blacksmith a pirate thing? and who is the wizard??
-
-9 -- Mayor/town reputation restored, bubbles are evil again
+    -- Discover Bubbles' true intentions
+    - Meet bubble royalty and learn bubbly things
 
 10 -- Destroying BubbleLand and K. Bubbs
+
+    - 
