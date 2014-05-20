@@ -58,6 +58,40 @@ Rating ideas:
                 -P: Not sure, I think that if they will always change their angle to shoot, they should just spin in a circle and then shoot randomly. I also think the graphic for it should be circular so that we can have an upgrade which will allow it to shoot more than one pin, this would make it look less retarded if it were circle shaped. So yeah I think it should be random.
                 -S: Alrighty, mark your rating lower if you wanna drop it or keep it at a 5 if you wanna reconsider it later.
 
+        6 | 6 - Pin Life+
+            - I think there are better pin upgrades we can come up with. Perhaps pin life should be associated with the weapon?
+            -P: Yeah I personally wouldn't want to upgrade pin life, seems boring. What do you mean weapon?
+            -S: See the upgrade section for elaboration on the weapon idea.
+
+        8 | 5 - Abilities:
+            Upgrade the following abilities. You can only have 3 (?) active abilities enabled at a time. Passive abilities are always enabled.
+
+            Passive:
+                Stuff like Bubble Spawner, Pin Life, Bubble Spawn Rate, etc.
+
+            Active:
+                (All brainstorming ideas)
+                Electric Pins
+                Fire Pins
+                Immortal Pins
+                Shrapnel Pins
+
+            Weapons:
+                - Switch out your boring old pin shooter for upgraded awesomeness! Weapons provide various perks, like not shooting pins, but lasers or fire.
+                - Unlocked through building upgrades (various weapons factories or something). See idling->buildings for details.
+                - Combine the weapons mechanic with the pin abilities for max combo craziness.
+                Flamethrower
+                Chicken Launcher
+                Bubble Decimator
+
+                -P: What do these do though? So the weapon is the shooter?
+
+            Choose 1 weapon, 3 abilities, and all of your passive abilities to choose your "class". The fun part about this is that the combinations are limitless.
+            We can plan out a bunch of different combinations, but also leave it open to let players find their own powerful combos.
+
+            -P: This is all a bit too vague. Come up with an example of how one of these combinations would work and what exactly they'd be improving.
+
+
     Idle Ideas:
         0 | 5 - Detect idling
         0 | 5 - When idling:
@@ -128,9 +162,14 @@ Rating ideas:
         == Elemental psuedo-classes ==
             Weapon ideas:
                 shotgun - aoe spread
-                machine gun - fast single shots
+                rifle - fast single shots
                 laser - slow powerful shots
                 mega pin shooter - idk
+
+            Bullet element ideas:
+                shrapnel - creates another bullet either on chance or once per bullet.
+                bomb - creates an explosion on chance or once per bullet.
+                fire - deals damage over time to bubble, also causes other bubbles to ignite. on chance
 
         == Elemental psuedo-classes end ==
 
@@ -147,40 +186,6 @@ Rating ideas:
             -P: Oh now that you brought that up. I think we should change the name. Google 'Bubble Pop Mania' and you'll see what I mean.
             -S: LOL. Yes, I agree. Adding name section to this plan. I still like this idea though.
             -P: Okay I'll add it to the final gameplay area when we've come up with how exactly they get triggered.
-
-    Upgrade ideas:
-        6 | 6 - Pin Life+
-            - I think there are better pin upgrades we can come up with. Perhaps pin life should be associated with the weapon?
-            -P: Yeah I personally wouldn't want to upgrade pin life, seems boring. What do you mean weapon?
-            -S: See the upgrade section for elaboration on the weapon idea.
-
-        8 | 5 - Abilities:
-            Upgrade the following abilities. You can only have 3 (?) active abilities enabled at a time. Passive abilities are always enabled.
-
-            Passive:
-                Stuff like Bubble Spawner, Pin Life, Bubble Spawn Rate, etc.
-
-            Active:
-                (All brainstorming ideas)
-                Electric Pins
-                Fire Pins
-                Immortal Pins
-                Shrapnel Pins
-
-            Weapons:
-                - Switch out your boring old pin shooter for upgraded awesomeness! Weapons provide various perks, like not shooting pins, but lasers or fire.
-                - Unlocked through building upgrades (various weapons factories or something). See idling->buildings for details.
-                - Combine the weapons mechanic with the pin abilities for max combo craziness.
-                Flamethrower
-                Chicken Launcher
-                Bubble Decimator
-
-                -P: What do these do though? So the weapon is the shooter?
-
-            Choose 1 weapon, 3 abilities, and all of your passive abilities to choose your "class". The fun part about this is that the combinations are limitless.
-            We can plan out a bunch of different combinations, but also leave it open to let players find their own powerful combos.
-
-            -P: This is all a bit too vague. Come up with an example of how one of these combinations would work and what exactly they'd be improving.
 
     Resource limitations:
         -S: How are we going to handle resources? Just amount of pins? How do you get more pins? What if we made it so you have to buy pins using the currency obtained through popping bubbles and buildings. We could also have an upgrade to auto-buy pins when you run out. Of course, we'd make it easy to restock your pins. Any other resource restraints?
