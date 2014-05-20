@@ -58,6 +58,9 @@ dbg.addCheats = function(bpm) {
     cheat('bpm.player.pins=10');
     cheat('bpm.player.pins=0');
     cheat('dbg.fpsMonitorShow=!dbg.fpsMonitorShow', 'Toggle FPS Monitor');
+    cheat("bpm.player.currentWeapon='pinshooter'", 'pinshooter');
+    cheat("bpm.player.currentWeapon='shotgun'", 'shotgun');
+    cheat("bpm.player.currentWeapon='rifle'", 'rifle');
 
     document.getElementById('bpmCheats').appendChild(div);
 };
