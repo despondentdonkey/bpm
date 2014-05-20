@@ -202,7 +202,8 @@ Rating ideas:
     Resource limitations:
         -S: How are we going to handle resources? Just amount of pins? How do you get more pins? What if we made it so you have to buy pins using the currency obtained through popping bubbles and buildings. We could also have an upgrade to auto-buy pins when you run out. Of course, we'd make it easy to restock your pins. Any other resource restraints?
         -P: Pins should regen over time so we can have that upgrade available.
-        x | x - ammo for each weapon regens over time by a percentage which can be upgraded.
+        x | 0 - ammo for each weapon regens over time by a percentage which can be upgraded.
+        x | 9 - ammo for each weapon regens over time by an amount specific to each weapon. possibly upgradeable
 
     UI Layout:
         Initial Menu (when game is first loaded)
@@ -216,20 +217,6 @@ Rating ideas:
                 game continues to play in background
 
 
-    9 | x - Rounds:
-        Basically a day of work. It'll go from day to night. At the end of the day it will tally up your kills and reward you with money.
-        Could potentially work well with quests too. You have to do a quest within the day or something otherwise it will reset. Not sure about this, maybe it will just pause the time while doing a quest.
-            -S: I like this. This could be the ongoing side-quest-thing I was talking about. We could also have bonuses based on combos and amount popped.
-
-        I'm liking rounds more since I think there should be a calm period where the user can start upgrading. If there are always bubbles just flying through it can get overwhelming and it would make it harder to find a good time to take a break. So maybe you can only upgrade after a round or quest.
-            -S: I agree; I think the option to upgrade should be available at all times except during quests, though.
-
-    9 | x - Game Difficulty:
-        Casual - Slower bubbles, little if any penalty for getting them in your town.
-        Normal
-        Hard - Maybe faster bubbles. Missing enough bubbles will result in a game over where you must restart.
-        Extreme - Unlocked; all bubbles start with +1 armor; missing more than 3 bubbles will result in a game over.
-
 === New Gamplay Final ===
 
     Gameplay:
@@ -240,7 +227,7 @@ Rating ideas:
         Score bubbles will be called bubbles. Double, combo, bomb bubbles will either be removed or be something different.
             Bubbles will continually arm themselves with stronger armor throughout the game.
                 wood, stone, steel, black iron (just black steel), gold, platinum, diamond
-            9 | x - once bubbles start showing signs of intelligence we could show them will little brains which get bigger as they get smarter.
+            9 | 9 - once bubbles start showing signs of intelligence we could show them will little brains which get bigger as they get smarter.
             Bubbles will eventually (either from a large amount of bubbles or a time based pattern) summon a large boss bubble to help them. This will be integrated into the story.
 
         Elemental psuedo-classes
@@ -252,6 +239,21 @@ Rating ideas:
             and possibly additional upgrades for each thing.
 
             A more in depth explanation of the abilities should be discussed after hp bubbles have been fully designed and approved.
+
+    Rounds:
+        Basically a day of work. It'll go from day to night. At the end of the day it will tally up your kills and reward you with money.
+        Could potentially work well with quests too. You have to do a quest within the day or something otherwise it will reset. Not sure about this, maybe it will just pause the time while doing a quest.
+            -S: I like this. This could be the ongoing side-quest-thing I was talking about. We could also have bonuses based on combos and amount popped.
+
+        I'm liking rounds more since I think there should be a calm period where the user can start upgrading. If there are always bubbles just flying through it can get overwhelming and it would make it harder to find a good time to take a break. So maybe you can only upgrade after a round or quest.
+            -S: I agree; I think the option to upgrade should be available at all times except during quests, though.
+
+    Game Difficulty:
+        Casual - Slower bubbles, little if any penalty for getting them in your town.
+        Normal
+        Hard - Maybe faster bubbles. Missing enough bubbles will result in a game over where you must restart.
+        Extreme - Unlocked; all bubbles start with +1 armor; missing more than 3 bubbles will result in a game over.
+
 
     Upgrades:
         Pin Storage+
