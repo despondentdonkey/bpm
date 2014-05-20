@@ -1,7 +1,3 @@
 === Ideas on how to improve rendering performance. ===
 
 Rasterize the glare and bubble textures into one texture. Either do this manually or through Pixi. Use PIXI.RenderTexture
-
-When a bubble has armor and it is not damaged, put it into a unique batch for its texture. When it gets damaged remove it from the batch and add it normally, then add the crack movie clip to the armor.
-
-Combining the armors into one texture could improve performance. I'm not sure how Pixi does it, but when I worked with OpenGL binding only one texture and using texture coords to slice was faster than binding separate textures.

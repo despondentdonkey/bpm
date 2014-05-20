@@ -191,7 +191,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             this.statusText.depth = -10;
             this.comboText.depth = -10;
 
-            this.pinBatch = new gfx.pixi.SpriteBatch();
+            this.bulletBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
             this.glareBatch = new gfx.pixi.SpriteBatch();
             this.armorBatch = new gfx.pixi.SpriteBatch();
@@ -241,7 +241,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             }
 
 
-            this.addDisplay(this.pinBatch);
+            this.addDisplay(this.bulletBatch);
             this.addDisplay(this.bubbleBatch);
             this.addDisplay(this.glareBatch);
             this.addDisplay(this.armorBatch);

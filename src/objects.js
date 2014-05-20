@@ -258,6 +258,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
     });
 
+    // Any performance problems with these are mostly likely due to the collisions rather than rendering.
     var Bullet = createClass(GameObject, function(tex, x, y, angle) {
         this.x = x;
         this.y = y;
@@ -268,7 +269,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
 
-            this.graphic = this.addDisplay(new gfx.pixi.Sprite(this.tex));
+            this.graphic = this.addDisplay(new gfx.pixi.Sprite(this.tex), this.state.bulletBatch);
             this.width = this.graphic.width;
             this.height = this.graphic.width;
 
