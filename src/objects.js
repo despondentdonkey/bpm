@@ -183,7 +183,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
     });
 
 
-    var PinShooter = createClass(GameObject, function() {
+    var Shooter = createClass(GameObject, function() {
 
     }, {
         init: function(state) {
@@ -193,19 +193,21 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
             this.graphic.depth = -10;
 
-            this.pinText = this.state.addDisplay(new gfx.pixi.Text('', {
+            this.ammoText = this.state.addDisplay(new gfx.pixi.Text('', {
                 stroke: 'black',
                 strokeThickness: 4,
                 fill: 'white',
                 align: 'left',
             }));
-            this.pinText.anchor.x = 0.5;
-            this.pinText.x = this.x;
-            this.pinText.y = this.y + 10;
+            this.ammoText.anchor.x = 0.5;
+            this.ammoText.x = this.x;
+            this.ammoText.y = this.y + 10;
+            this.ammoText.depth = -10;
 
-            this.pinLoader = this.state.addDisplay(new gfx.pixi.Graphics());
+            this.ammoLoader = this.state.addDisplay(new gfx.pixi.Graphics());
+            this.ammoLoader.depth = -10;
 
-            this.pinTimer = this.state.add(new Timer(3000, 'loop', _.bind(function() {
+            this.ammoTimer = this.state.add(new Timer(3000, 'loop', _.bind(function() {
                 bpm.player.pins++;
             }, this)));
         },
@@ -214,63 +216,73 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             GameObject.prototype.update.call(this);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
 
-            this.pinText.setText(bpm.player.pins);
+            this.ammoText.setText(bpm.player.pins);
 
             if (bpm.player.pins > 0) {
                 if (input.mouse.isPressed(input.MOUSE_LEFT)) {
-                    this.state.add(new Pin(this.x, this.y, this.angle));
+                    var weapon = bpm.player.currentWeapon;
+                    if (weapon === 'shotgun') {
+                        var bulletOffset = 15 * DEG2RAD;
+                        this.state.add(new ShotgunBullet(this.x, this.y, this.angle));
+                        this.state.add(new ShotgunBullet(this.x, this.y, this.angle+bulletOffset));
+                        this.state.add(new ShotgunBullet(this.x, this.y, this.angle-bulletOffset));
+                    } else if (weapon === 'rifle') {
+                        this.state.add(new RifleBullet(this.x, this.y, this.angle));
+                    } else if (weapon === 'pinshooter') {
+                        this.state.add(new Pin(this.x, this.y, this.angle));
+                    }
                     bpm.player.pins--;
                 }
             }
 
             if (bpm.player.pins < bpm.player.pinMax) {
-                this.pinTimer.paused = false;
+                this.ammoTimer.paused = false;
 
-                this.pinLoader.visible = true;
-                this.pinLoader.clear();
-                this.drawPinLoaderCircle(0, 1);
-                this.drawPinLoaderCircle(0x67575e, 1 - (this.pinTimer.currentTime / this.pinTimer.duration));
+                this.ammoLoader.visible = true;
+                this.ammoLoader.clear();
+                this.drawAmmoLoaderCircle(0, 1);
+                this.drawAmmoLoaderCircle(0x67575e, 1 - (this.ammoTimer.currentTime / this.ammoTimer.duration));
             } else {
-                this.pinTimer.paused = true;
-                this.pinLoader.visible = false;
+                this.ammoTimer.paused = true;
+                this.ammoLoader.visible = false;
             }
         },
 
-        drawPinLoaderCircle: function(color, ratio) {
-            this.pinLoader.lineStyle(8, color, 1);
-            var y = this.pinText.y + this.pinText.height/2;
+        drawAmmoLoaderCircle: function(color, ratio) {
+            this.ammoLoader.lineStyle(8, color, 1);
+            var y = this.ammoText.y + this.ammoText.height/2;
             for (var i=0; i<ratio*180; ++i) {
                 var rad = i * DEG2RAD;
-                this.pinLoader.lineTo(this.x + (-Math.cos(rad) * 48),  y + (Math.sin(rad) * 32));
+                this.ammoLoader.lineTo(this.x + (-Math.cos(rad) * 48),  y + (Math.sin(rad) * 32));
             }
         },
     });
 
-    var Pin = createClass(GameObject, function(x, y, angle) {
+    var Bullet = createClass(GameObject, function(tex, x, y, angle) {
         this.x = x;
         this.y = y;
         this.speedX = Math.cos(angle);
         this.speedY = -Math.sin(angle);
+        this.tex = tex;
     }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
 
-            this.speed = 0.2;
-            this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.pin), state.pinBatch);
+            this.graphic = this.addDisplay(new gfx.pixi.Sprite(this.tex));
             this.width = this.graphic.width;
             this.height = this.graphic.width;
 
-            this.lifeTime = 6000;
-            this.lifeTimer = this.lifeTime;
+            this.speed = 0;
+            this.lifeTime = 0;
+            this.lifeTimer = 0;
         },
 
-        destroy: function() {
-            this.state.pinEmitter.emit(this.x, this.y, 3);
-            GameObject.prototype.destroy.call(this);
+        destroy: function(state) {
+            GameObject.prototype.destroy.call(this, state);
         },
 
         update: function(delta) {
-            GameObject.prototype.update.call(this);
+            GameObject.prototype.update.call(this, delta);
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;
@@ -298,8 +310,49 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
             var collisions = this.getCollisions('bubble');
             for (var i=0; i<collisions.length; ++i) {
-                collisions[i].onPinCollision(this);
+                collisions[i].onBulletCollision(this);
             }
+        },
+    });
+
+    var Pin = createClass(Bullet, function(x, y, angle) {
+        Bullet.call(this, res.tex.pin, x, y, angle);
+    }, {
+        init: function(state) {
+            Bullet.prototype.init.call(this, state);
+            this.speed = 0.2;
+
+            this.lifeTime = 6000;
+            this.lifeTimer = this.lifeTime;
+        },
+
+        destroy: function(state) {
+            this.state.pinEmitter.emit(this.x, this.y, 3);
+            Bullet.prototype.destroy.call(this, state);
+        },
+    });
+
+    var ShotgunBullet = createClass(Bullet, function(x, y, angle) {
+        Bullet.call(this, res.tex.shotgunBullet, x, y, angle);
+    }, {
+        init: function(state) {
+            Bullet.prototype.init.call(this, state);
+            this.speed = 0.25;
+
+            this.lifeTime = 6000;
+            this.lifeTimer = this.lifeTime;
+        },
+    });
+
+    var RifleBullet = createClass(Bullet, function(x, y, angle) {
+        Bullet.call(this, res.tex.rifleBullet, x, y, angle);
+    }, {
+        init: function(state) {
+            Bullet.prototype.init.call(this, state);
+            this.speed = 0.6;
+
+            this.lifeTime = 6000;
+            this.lifeTimer = this.lifeTime;
         },
     });
 
@@ -380,11 +433,11 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             }
         },
 
-        onPinCollision: function(pin) {
+        onBulletCollision: function(bullet) {
             this.hp--;
 
             if (this.armor > 0) {
-                // Add crack effect on first pin collision.
+                // Add crack effect on first bullet collision.
                 if (this.armorStatus === 'normal') {
                     this.armorGraphic.addChild(this.crack);
                     this.armorStatus = 'damaged';
@@ -407,7 +460,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
                 this.state.remove(this);
             } else {
                 this.crack.currentFrame = Math.round((1 - (this.hp / this.hpMax)) * (this.crack.totalFrames-1));
-                this.state.remove(pin);
+                this.state.remove(bullet);
             }
         },
 
@@ -579,7 +632,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
     return {
         Timer: Timer,
-        PinShooter: PinShooter,
+        Shooter: Shooter,
         Bubble: Bubble,
         Emitter: Emitter,
         StatusBar: StatusBar,

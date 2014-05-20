@@ -67,6 +67,9 @@ define(['gfx'], function(gfx) {
             armor: 'bubbles/armor-32x32-strip9.png',
 
             pin: 'pin.png',
+            shotgunBullet: 'shotgun-bullet.png',
+            rifleBullet: 'rifle-bullet.png',
+
             arrow: 'arrow.png',
             background: 'background.jpg',
             pinParticle: 'pin-particle.png',

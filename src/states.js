@@ -199,7 +199,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
             this.bubbleBatch.depth = 2;
             this.glareBatch.depth = 1;
 
-            this.shooter = this.add(new objects.PinShooter());
+            this.shooter = this.add(new objects.Shooter());
 
             this.pinEmitter = new objects.Emitter(res.tex.pinParticle, {
                 angleMin: 0,
