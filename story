@@ -164,7 +164,11 @@ In the quiet city of Pinville a dark evil approaches.
 
 3 -- Bubbles' intelligence becomes apparent
     * Town Meeting - Blacksmith, Wizard, and Mayor are gathered *
+    Mayor: begins to show concern over the bubbles armor
     Wizard: "We believe the bubbles have adapted to wearing armor to protect their brains"
+    Smith: "Psh armor like that can't be broken with a measly pin shooter. I'll hook you up with a real weapon" <- something along those lines
+    Wizard: "If the bubbles are evolving then they will eventually overcome your mortal weapons. You will also need my help" <- something along those lines
+    * introduce elemental classes. *
 
     -- Ethical Questions, bubbles appear harmless and nice
 
