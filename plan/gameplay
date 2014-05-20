@@ -161,15 +161,27 @@ Rating ideas:
 
         == Elemental psuedo-classes ==
             Weapon ideas:
-                shotgun - aoe spread
-                rifle - fast single shots
-                laser - slow powerful shots
+                shotgun - aoe spread, low ammo, normal ammo regen
+                rifle - fast single shots, high ammo, fast ammo regen
+                cannon - slow powerful shots, normal ammo, slow ammo regen
                 mega pin shooter - idk
+
+                Weapon upgrades:
+                    ...
 
             Bullet element ideas:
                 shrapnel - creates another bullet either on chance or once per bullet.
                 bomb - creates an explosion on chance or once per bullet.
                 fire - deals damage over time to bubble, also causes other bubbles to ignite. on chance
+
+                Bullet upgrades:
+                    ...
+
+            Passive abilities (maybe only select 1, possible upgrade to select 2):
+                +30% chance to execute bullet element ability.
+                Bullets bounce off armor instead of getting destroyed
+                Multiplier will also affect bullet damage. (each multiplier will increase damage by 10%)
+
 
         == Elemental psuedo-classes end ==
 
