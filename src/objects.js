@@ -7,7 +7,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.state = state;
         },
 
-        destroy: function(state) {
+        destroy: function() {
             this.state = null;
         },
 
@@ -17,8 +17,8 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
     });
 
     var GameObject = createClass(BasicObject, function() {
-        this.displayObjects = [];
         this.idList = [];
+        this.displayObjects = [];
 
         this.x = 0;
         this.y = 0;
@@ -34,19 +34,22 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             y: 0.5
         };
         this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
+
     }, {
+
         init: function(state) {
-            this.state = state;
+            BasicObject.prototype.init.call(this, state);
         },
 
-        destroy: function(state) {
+        destroy: function() {
             while (this.displayObjects.length > 0) {
                 this.removeDisplay(this.displayObjects[0]);
             }
-            this.state = null;
+            BasicObject.prototype.destroy.call(this);
         },
 
         update:  function(delta) {
+            BasicObject.prototype.update.call(this);
             if (this.syncDisplayProperties) {
                 this.updateDisplayProperties(this.displayObjects);
             }
