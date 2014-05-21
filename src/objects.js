@@ -55,18 +55,35 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             }
         },
 
-        updateDisplayProperties: function(objects) {
+        updateDisplayProperties: function(objects, props) {
+            props = props || {}; // If props doesn't exist then make it an empty object.
+            _.defaults(props, {
+                position: true,
+                rotation: true,
+                anchor: true,
+                scale: true,
+            });
+
             for (var i=0; i<objects.length; ++i) {
                 var obj = objects[i];
-                obj.position.x = this.x;
-                obj.position.y = this.y;
-                obj.rotation = -this.angle;
-                if (obj.anchor) {
+                if (props.position) {
+                    obj.position.x = this.x;
+                    obj.position.y = this.y;
+                }
+
+                if (props.rotation) {
+                    obj.rotation = -this.angle;
+                }
+
+                if (props.anchor && obj.anchor) {
                     obj.anchor.x = this.anchor.x;
                     obj.anchor.y = this.anchor.y;
                 }
-                obj.scale.x = this.scale.x;
-                obj.scale.y = this.scale.y;
+
+                if (props.scale) {
+                    obj.scale.x = this.scale.x;
+                    obj.scale.y = this.scale.y;
+                }
             }
         },
 
