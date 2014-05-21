@@ -154,17 +154,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         init: function() {
             State.prototype.init.call(this);
 
-            var buttonTest = new ui.Button('Pause Game', gfx.width - 90, gfx.height - 36, _.bind(function() {
+            var buttonTest = new ui.Button('Pause Game', {font: 'bold 12px arial'}, _.bind(function() {
                 this.onBlur();
             }, this));
 
-            buttonTest.textStyle = {
-                stroke: 'black',
-                strokeThickness: 3,
-                fill: 'white',
-                align: 'center',
-                font: 'bold 12px arial',
-            };
+            buttonTest.x = gfx.width - buttonTest.width - 5;
+            buttonTest.y = gfx.height - buttonTest.height - 5;
 
             this.add(buttonTest);
 

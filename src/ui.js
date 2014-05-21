@@ -49,8 +49,8 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         },
     });
 
-    var Button = createClass(BasicButton, function(text, x, y, onRelease) {
-        BasicButton.call(this, x, y, 0, 0);
+    var Button = createClass(BasicButton, function(text, style, onRelease) {
+        BasicButton.call(this, 0, 0, 0, 0);
 
         this.text = text;
         this.textIndent = 5; // How much the text should indent when clicked.
@@ -58,38 +58,36 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this.padding = 5;
         this.onRelease = onRelease;
 
-        this.textStyle = {
+        this.displayText = new gfx.pixi.Text(this.text, _.defaults(style, {
             stroke: 'black',
             strokeThickness: 3,
             fill: 'white',
             align: 'center',
-        };
+            font: 'bold 16px arial',
+        }));
+        this.displayText.depth = -10;
+
+        this.width = this.displayText.width + this.padding;
+        this.height = this.displayText.height + this.padding;
+
+        this.up = new gfx.NineSlice(res.slices.buttonUp);
+        this.up.width = this.width;
+        this.up.height = this.height;
+        this.up.update();
+        this.up.depth = -9;
+
+        this.down = new gfx.NineSlice(res.slices.buttonDown);
+        this.down.width = this.width;
+        this.down.height = this.height;
+        this.down.update();
+        this.down.depth = -9;
+        this.down.visible = false;
+
     }, {
         init: function(state) {
             BasicButton.prototype.init.call(this, state);
 
-            this.displayText = new gfx.pixi.Text(this.text, this.textStyle);
-            this.displayText.depth = -10;
-            this.displayText.x = this.x + this.padding/2;
-            this.displayText.y = this.y + this.padding/2;
             this.addDisplay(this.displayText);
-
-            this.width = this.displayText.width + this.padding;
-            this.height = this.displayText.height + this.padding;
-
-            this.up = new gfx.NineSlice(res.slices.buttonUp);
-            this.up.width = this.width;
-            this.up.height = this.height;
-            this.up.update();
-            this.up.depth = -9;
-
-            this.down = new gfx.NineSlice(res.slices.buttonDown);
-            this.down.width = this.width;
-            this.down.height = this.height;
-            this.down.update();
-            this.down.depth = -9;
-            this.down.visible = false;
-
             this.addDisplay(this.up);
             this.addDisplay(this.down);
 
@@ -108,20 +106,19 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 case 'hover': {
                     if (this.current !== this.up) {
                         this.setCurrent(this.up);
-                        this.displayText.x -= this.textIndent;
-                        this.displayText.y -= this.textIndent;
                     }
                     break;
                 }
                 case 'down': {
                     if (this.current !== this.down) {
                         this.setCurrent(this.down);
-                        this.displayText.x += this.textIndent;
-                        this.displayText.y += this.textIndent;
                     }
                     break;
                 }
             }
+
+            this.displayText.x = this.x + this.padding/2;
+            this.displayText.y = this.y + this.padding/2;
         },
 
         setCurrent: function(obj) {
