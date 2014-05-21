@@ -1,4 +1,4 @@
-define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, res, input) {
+define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, gfx, res, input, ui) {
 
     var current = {
         init: false,
@@ -153,6 +153,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input'], function(bpm, objects, gfx, re
     },{
         init: function() {
             State.prototype.init.call(this);
+
+            var test = new ui.Test(100, 32);
+            test.x = 100;
+            test.y = 200;
+            this.add(test);
 
             // Basic spawner
             this.add(new objects.Timer(1000, 'loop', _.bind(function() {

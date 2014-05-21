@@ -76,6 +76,10 @@ define(['gfx'], function(gfx) {
 
             barBack: 'bar-back.png',
             barFront: 'bar-front.png',
+
+            textBox: 'text-box.png',
+            buttonUp: 'button-up.png',
+            buttonDown: 'button-down.png',
         });
 
         // Creates a list of textures to be used with PIXI.MovieClip. [cellWidth, cellHeight]
@@ -87,6 +91,10 @@ define(['gfx'], function(gfx) {
         slicesToCreate = {
             barBack: new gfx.pixi.Rectangle(12, 12, 25, 4),
             barFront: new gfx.pixi.Rectangle(12, 12, 25, 4),
+
+            textBox: new gfx.pixi.Rectangle(5, 5, 28, 28),
+            buttonUp: new gfx.pixi.Rectangle(4, 4, 24, 24),
+            buttonDown: new gfx.pixi.Rectangle(6, 9, 19, 18),
         };
 
         this.loader.load(function() {

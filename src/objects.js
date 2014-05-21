@@ -635,6 +635,7 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
     });
 
     return {
+        GameObject: GameObject,
         Timer: Timer,
         Shooter: Shooter,
         Bubble: Bubble,
