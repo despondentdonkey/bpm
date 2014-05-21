@@ -131,7 +131,55 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         },
     });
 
+    // w, h optional. If w is specified then word wrap will be enabled to that length.
+    var TextField = createClass(GameObject, function(text, x, y, w, h) {
+        this.text = text;
+        this.x = x;
+        this.y = y;
+
+        this.width = w;
+        this.height = h;
+
+        this.padding = 5;
+
+        var wordWrapWidth = w;
+        this.textStyle = {
+            stroke: 'black',
+            strokeThickness: 3,
+            fill: 'white',
+            align: 'left',
+            font: 'bold 18px arial',
+            wordWrap: (wordWrapWidth !== undefined),
+            wordWrapWidth: wordWrapWidth,
+        };
+    }, {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
+
+            this.displayText = new gfx.pixi.Text(this.text, this.textStyle);
+            this.displayText.depth = -10;
+            this.displayText.x = this.x + this.padding/2;
+            this.displayText.y = this.y + this.padding/2;
+
+            this.width = (this.width || this.displayText.width) + this.padding;
+            this.height = (this.height || this.displayText.height) + this.padding;
+
+            this.back = new gfx.NineSlice(res.slices.textBox);
+            this.back.width = this.width;
+            this.back.height = this.height;
+            this.back.update();
+            this.back.depth = -9;
+
+            this.addDisplay(this.back);
+            this.addDisplay(this.displayText);
+
+            this.updateDisplayProperties([this.back]);
+            this.syncDisplayProperties = false;
+        },
+    });
+
     return {
         Button: Button,
+        TextField: TextField,
     };
 });

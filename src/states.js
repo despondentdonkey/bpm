@@ -168,6 +168,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
 
             this.add(buttonTest);
 
+            var textField = new ui.TextField("Hello, this is gonna be some long text to demonstrate word wrap. Hopefully it will look good. Let's add a bit more text. And some more, and maybe a little more here.", 0, 200, gfx.width-10);
+            //this.add(textField);
+
             // Basic spawner
             this.add(new objects.Timer(1000, 'loop', _.bind(function() {
                 if (!this) // Make sure this state still exists, probably not necessary.
