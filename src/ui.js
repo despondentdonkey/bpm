@@ -2,21 +2,15 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
     var GameObject = objects.GameObject;
 
-    var Test = createClass(GameObject, function(w, h) {
+    var BasicButton = createClass(GameObject, function(x, y, w, h) {
+        this.x = x;
+        this.y = y;
         this.width = w;
         this.height = h;
+        this.status = 'up';
     }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
-
-            this.up = new gfx.NineSlice(res.slices.buttonUp);
-            this.up.width = this.width;
-            this.up.height = this.height;
-            this.up.update();
-            this.up.depth = -9;
-            this.addDisplay(this.up);
-
-            this.status = 'up';
         },
 
         update: function(delta) {
@@ -50,7 +44,56 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         },
     });
 
+    var Button = createClass(BasicButton, function(x, y, w, h) {
+    }, {
+        init: function(state) {
+            BasicButton.prototype.init.call(this, state);
+
+            this.up = new gfx.NineSlice(res.slices.buttonUp);
+            this.up.width = this.width;
+            this.up.height = this.height;
+            this.up.update();
+            this.up.depth = -9;
+
+            this.down = new gfx.NineSlice(res.slices.buttonDown);
+            this.down.width = this.width;
+            this.down.height = this.height;
+            this.down.update();
+            this.down.depth = -9;
+
+            this.current = this.up;
+            this.addDisplay(this.current);
+        },
+
+        update: function(delta) {
+            BasicButton.prototype.update.call(this, delta);
+
+            switch (this.status) {
+                case 'up':
+                case 'upactive':
+                case 'hover': {
+                    if (this.current !== this.up) {
+                        this.setCurrent(this.up);
+                    }
+                    break;
+                }
+                case 'down': {
+                    if (this.current !== this.down) {
+                        this.setCurrent(this.down);
+                    }
+                    break;
+                }
+            }
+        },
+
+        setCurrent: function(obj) {
+            this.removeDisplay(this.current);
+            this.updateDisplayProperties([obj]);
+            this.current = this.addDisplay(obj);
+        },
+    });
+
     return {
-        Test: Test,
+        Button: Button,
     };
 });

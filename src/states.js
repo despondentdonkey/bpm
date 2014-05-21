@@ -154,9 +154,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         init: function() {
             State.prototype.init.call(this);
 
-            var test = new ui.Test(100, 32);
-            test.x = 100;
-            test.y = 200;
+            var test = new ui.Button(100, 200, 100, 32);
             this.add(test);
 
             // Basic spawner
