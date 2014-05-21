@@ -233,8 +233,11 @@ Rating ideas:
         Elemental psuedo-classes
             Once bubbles start arming themselves elemental classes will start to be available
             You choose a weapon ability (this gets triggered when you shoot a pin, or basically when you click )
+                -S: I say let's drop this (just weapon element). The ammo difference should be enough.
+                    Guns can just be upgradable to increase stats on the ammo
             a pin element (a bonus effect that happens when a pin either pops a bubble or collides with it)
             and an x amount of passive abilities
+                -S: passive abilities earned by perks (level up bonuses)
 
             and possibly additional upgrades for each thing.
 

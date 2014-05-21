@@ -1,0 +1,51 @@
+Each upgrade has 5 levels of upgrading
+
+Only 1 upgrade can be active at any time*
+Elemental
+    Fire - each upgrade increases damage
+        1 - 10% damage; time- 2 seconds
+        2 - 15% damage; time- 3 seconds
+        3 - 20% damage; time- 4 seconds
+            5% chance to ignite other bubbles
+        4 - 25% damage; time- 5 seconds
+            10% chance to ignite other bubbles
+        5 - 30% damage; time- 5 seconds
+            15% chance to ignite other bubbles
+            when dot expires, percentage of bubble life missing chance for bubble to explode,
+            100% chance of igniting any bubbles in explosion radius
+
+    Lightning - each upgrade increases chain amount
+        1 - 12% damage; chains- 3 targets (total)
+        2 - 18% damage; chains- 4 targets
+        3 - 25% damage; chains- 5 targets
+            3% chance for a godly bolt - 200% damage - chains to 3 targets
+        4 - 35% damage; chains- 6 targets
+            8% chance for godly bolt - 220% damage - chains 4
+        5 - 50% damage; chains- 7 targets
+            12% chance for godly bolt - 250% damage - chains 5
+            After getting a godly bolt, 10% chance of wrath of zeus - wipe board (500% damage to bosses)
+
+    Ice - each upgrade decreases bubble speed
+        1 - 5% damage; slows- 25% for 3 seconds
+        2 - 10% damage; slows- 50% for 4 seconds
+        3 - 15% damage; slows- 75% for 5 seconds
+            hitting a slowed bubble with ice ammo hits for an additional 75% damage
+        4 - 18% damage; freezes target for 6 seconds
+            hitting a frozen bubble with ice ammo hits for an additional 100% damage
+        5 - 20% damage; freezes target for 8 seconds
+            hitting a frozen bubble with ice ammo hits for an additional 150% damage
+            hitting a frozen bubble once more will cause the bubble to shatter - insta-kill
+
+    // meh, needs improvement
+    Death (secret) - each upgrade increases chance of insta-kill
+        1 - 10% chance of insta-kill
+        2 - 20% chance of insta-kill
+        3 - 30% chance of insta-kill
+        4 - 40% chance of insta-kill
+        5 - 50% chance of insta-kill
+
+
+Weapons
+
+* all perks are active all the time - passive skills
+Perks
