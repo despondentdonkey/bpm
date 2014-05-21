@@ -154,8 +154,19 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         init: function() {
             State.prototype.init.call(this);
 
-            var test = new ui.Button(100, 200, 100, 32);
-            this.add(test);
+            var buttonTest = new ui.Button('Pause Game', gfx.width - 90, gfx.height - 36, _.bind(function() {
+                this.onBlur();
+            }, this));
+
+            buttonTest.textStyle = {
+                stroke: 'black',
+                strokeThickness: 3,
+                fill: 'white',
+                align: 'center',
+                font: 'bold 12px arial',
+            };
+
+            this.add(buttonTest);
 
             // Basic spawner
             this.add(new objects.Timer(1000, 'loop', _.bind(function() {

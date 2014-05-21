@@ -39,15 +39,43 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             }
 
             if (input.mouse.isReleased(input.MOUSE_LEFT)) {
+                if (this.status === 'down') {
+                    if (this.onRelease) {
+                        this.onRelease();
+                    }
+                }
                 this.status = isHovering ? 'hover' : 'up';
             }
         },
     });
 
-    var Button = createClass(BasicButton, function(x, y, w, h) {
+    var Button = createClass(BasicButton, function(text, x, y, onRelease) {
+        BasicButton.call(this, x, y, 0, 0);
+
+        this.text = text;
+        this.textIndent = 5; // How much the text should indent when clicked.
+
+        this.padding = 5;
+        this.onRelease = onRelease;
+
+        this.textStyle = {
+            stroke: 'black',
+            strokeThickness: 3,
+            fill: 'white',
+            align: 'center',
+        };
     }, {
         init: function(state) {
             BasicButton.prototype.init.call(this, state);
+
+            this.displayText = new gfx.pixi.Text(this.text, this.textStyle);
+            this.displayText.depth = -10;
+            this.displayText.x = this.x + this.padding/2;
+            this.displayText.y = this.y + this.padding/2;
+            this.addDisplay(this.displayText);
+
+            this.width = this.displayText.width + this.padding;
+            this.height = this.displayText.height + this.padding;
 
             this.up = new gfx.NineSlice(res.slices.buttonUp);
             this.up.width = this.width;
@@ -60,9 +88,15 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             this.down.height = this.height;
             this.down.update();
             this.down.depth = -9;
+            this.down.visible = false;
+
+            this.addDisplay(this.up);
+            this.addDisplay(this.down);
 
             this.current = this.up;
-            this.addDisplay(this.current);
+
+            this.updateDisplayProperties([this.up, this.down]);
+            this.syncDisplayProperties = false;
         },
 
         update: function(delta) {
@@ -74,12 +108,16 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 case 'hover': {
                     if (this.current !== this.up) {
                         this.setCurrent(this.up);
+                        this.displayText.x -= this.textIndent;
+                        this.displayText.y -= this.textIndent;
                     }
                     break;
                 }
                 case 'down': {
                     if (this.current !== this.down) {
                         this.setCurrent(this.down);
+                        this.displayText.x += this.textIndent;
+                        this.displayText.y += this.textIndent;
                     }
                     break;
                 }
@@ -87,9 +125,9 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         },
 
         setCurrent: function(obj) {
-            this.removeDisplay(this.current);
-            this.updateDisplayProperties([obj]);
-            this.current = this.addDisplay(obj);
+            this.current.visible = false;
+            obj.visible = true;
+            this.current = obj;
         },
     });
 
