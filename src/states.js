@@ -121,7 +121,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
                 obj = [obj];
 
             for (var i = 0; i < obj.length; i++)
-                this.objectsToRemove.push(obj);
+                this.objectsToRemove.push(obj[i]);
+
 
             return ret;
         },
