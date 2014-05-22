@@ -451,6 +451,22 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         init: function() {
             Menu.prototype.init.call(this);
             console.log('Entering Upgrade Menu');
+
+            this.buttons = {
+                buy: new ui.Button('Buy', this.buttonStyle, function() { log('kaching!'); }, this),
+                upgrade0: new ui.Button('Upgrade 0', this.buttonStyle, function() { log('selected'); }, this),
+                upgrade1: new ui.Button('Upgrade 1', this.buttonStyle, function() { log('selected'); }, this),
+                upgrade2: new ui.Button('Upgrade 2', this.buttonStyle, function() { log('selected'); }, this),
+                upgrade3: new ui.Button('Upgrade 3', this.buttonStyle, function() { log('selected'); }, this),
+                upgrade4: new ui.Button('Upgrade 4', this.buttonStyle, function() { log('selected'); }, this),
+                upgrade5: new ui.Button('Upgrade 5', this.buttonStyle, function() { log('selected'); }, this),
+            };
+
+            var bvals = _.values(this.buttons);
+
+            this.buttons.buy.setPos(gfx.width - 50, gfx.height - 50);
+            _.each(_.tail(bvals), function(b, i) { b.setPos(50, 50 * i); });
+            this.add(bvals);
         },
 
         isOpened: function() {
