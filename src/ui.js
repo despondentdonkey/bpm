@@ -49,14 +49,15 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         },
     });
 
-    var Button = createClass(BasicButton, function(text, style, onRelease) {
+    var Button = createClass(BasicButton, function(text, style, onRelease, context) {
         BasicButton.call(this, 0, 0, 0, 0);
 
+        this.onRelease = context ? _.bind(onRelease, context) : onRelease;
+
+        // Text
         this.text = text;
         this.textIndent = 5; // How much the text should indent when clicked.
-
         this.padding = 5;
-        this.onRelease = onRelease;
 
         this.displayText = new gfx.pixi.Text(this.text, _.defaults(style, {
             stroke: 'black',
@@ -67,9 +68,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         }));
         this.displayText.depth = -10;
 
+        // Dimensions
         this.width = this.displayText.width + this.padding;
         this.height = this.displayText.height + this.padding;
 
+        // Nineslices
         this.up = new gfx.NineSlice(res.slices.buttonUp);
         this.up.width = this.width;
         this.up.height = this.height;
@@ -126,6 +129,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             obj.visible = true;
             this.current = obj;
         },
+
+        setPos: function(x, y) {
+            this.x = x;
+            this.y = y;
+        }
     });
 
     // w, h optional. If w is specified then word wrap will be enabled to that length.
