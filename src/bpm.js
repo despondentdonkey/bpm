@@ -5,6 +5,7 @@ define(function() {
             pinMax: 10000,
             xp: 0,
             currentWeapon: 'pinshooter',
+            currentElement: 'fire',
         },
     };
 });

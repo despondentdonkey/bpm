@@ -70,6 +70,8 @@ define(['gfx'], function(gfx) {
             shotgunBullet: 'shotgun-bullet.png',
             rifleBullet: 'rifle-bullet.png',
 
+            fire: 'fire-16x25-strip6.png',
+
             arrow: 'arrow.png',
             background: 'background.jpg',
             pinParticle: 'pin-particle.png',
@@ -86,6 +88,7 @@ define(['gfx'], function(gfx) {
         spriteSheetsToCreate = {
             cracks: [32, 32],
             armor: [32, 32],
+            fire: [16, 25],
         };
 
         slicesToCreate = {

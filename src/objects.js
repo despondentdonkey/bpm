@@ -415,6 +415,8 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             warn('Bubble armor is not a number');
         }
         this._prevArmor = this.armor;
+
+        this.elementStatus = null;
     }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
@@ -467,16 +469,20 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             if (bounds.y1 >= gfx.height) {
                 this.state.remove(this);
             }
-        },
 
-        onBulletCollision: function(bullet) {
-            this.hp--;
+            if (this.elementStatus === 'fire') {
+                this.onFire();
+            }
+
+            // Death/Armor Management
 
             if (this.armor > 0) {
-                // Add crack effect on first bullet collision.
-                if (this.armorStatus === 'normal') {
-                    this.armorGraphic.addChild(this.crack);
-                    this.armorStatus = 'damaged';
+                if (this.hp < this.hpMax) {
+                    // Add crack effect on first bullet collision.
+                    if (this.armorStatus === 'normal') {
+                        this.armorGraphic.addChild(this.crack);
+                        this.armorStatus = 'damaged';
+                    }
                 }
 
                 // Remove armor and crack effect. Add bubble displays.
@@ -495,8 +501,22 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
                 this.state.comboTimer = this.state.comboTime;
                 this.state.remove(this);
             } else {
-                this.crack.currentFrame = Math.round((1 - (this.hp / this.hpMax)) * (this.crack.totalFrames-1));
+                if (this.crack) {
+                    this.crack.currentFrame = Math.round((1 - (this.hp / this.hpMax)) * (this.crack.totalFrames-1));
+                }
+            }
+        },
+
+        onBulletCollision: function(bullet) {
+            this.hp--;
+
+            if (this.hp > -1) {
                 this.state.remove(bullet);
+
+                // apply element
+                if (bpm.player.currentElement === 'fire') {
+                    this.ignite();
+                }
             }
         },
 
@@ -505,6 +525,37 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
             this.addDisplay(this.bubble, this.state.bubbleBatch);
             this.addDisplay(this.glare, this.state.glareBatch);
             this.updateDisplayProperties([this.bubble, this.glare]);
+        },
+
+        // Adds the fire display and sets its element status to 'fire'.
+        ignite: function() {
+            if (this.elementStatus !== 'fire') {
+                if (!this.fire) {
+                    this.fire = new gfx.pixi.MovieClip(res.sheets.fire);
+                    this.fire.width = this.width;
+                    this.fire.height = this.height;
+                    this.fire.play();
+                    this.fire.animationSpeed = 0.3;
+                    this.fire.syncGameObjectProperties = { scale: false };
+                    this.fire.alpha = 0.7;
+                    this.fire.depth = -4;
+                }
+
+                this.addDisplay(this.fire);
+                this.elementStatus = 'fire';
+            }
+        },
+
+        // When the bubble is currently on fire.
+        onFire: function() {
+            this.hp -= 0.01;
+
+            var collisions = this.getCollisions('bubble');
+            for (var i=0; i<collisions.length; ++i) {
+                var bubble = collisions[i];
+                if (bubble === this) continue;
+                bubble.ignite();
+            }
         },
     });
 
