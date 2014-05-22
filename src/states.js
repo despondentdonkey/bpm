@@ -150,6 +150,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         this.comboGoal = 4;
 
         this.pauseMenu = new PauseMenu(this);
+        this.questMenu = new QuestMenu(this);
+        this.perkMenu = new PerkMenu(this);
+        this.upgradeMenu = new UpgradeMenu(this);
+        this.optionsMenu = new OptionsMenu(this);
+
+        this.menus = [
+            this.pauseMenu, this.questMenu, this.perkMenu,
+            this.upgradeMenu, this.optionsMenu
+        ];
     },{
         init: function() {
             State.prototype.init.call(this);
@@ -286,7 +295,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
                 }
             }
 
-            this.pauseMenu.monitor();
+            for (var i = 0; i < this.menus.length; i++)
+                this.menus[i].monitor();
         },
 
         onCached: function() {
@@ -319,10 +329,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
 
     var Menu = createClass(State, function Menu(prevState) {
         this.prevState = prevState;
+        this.buttonStyle = {
+            font: 'bold 24px arial'
+        };
     }, {
         init: function() {
             State.prototype.init.call(this);
-            this.paused = true;
+            this.paused = false;
         },
 
         update: function(delta) {
@@ -358,10 +371,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
     });
 
     var PauseMenu = createClass(Menu, function PauseMenu(prevState) {
-        this.pauseKey = 'P';
+        this.pauseKey = input.ESCAPE;
     }, {
         init: function() {
             Menu.prototype.init.call(this);
+            this.paused = true;
 
             var back = new gfx.pixi.Graphics();
             back.beginFill('0', 0.5);
@@ -399,7 +413,29 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         init: function() {
             Menu.prototype.init.call(this);
 
+            this.startButton = new ui.Button('Start', this.buttonStyle, function() {
+                setState(new Field());
+            }, this);
+
+            this.startButton.setPos(gfx.width / 2 - 5, gfx.height / 2);
+
+
+            this.optionsButton = new ui.Button('Options', this.buttonStyle, function() {
+                setState(new OptionsMenu(this));
+            }, this);
+            this.optionsButton.setPos(gfx.width / 2 - 5, gfx.height / 1.5);
+
+            this.add(this.startButton);
+            this.add(this.optionsButton);
+        },
+
+        /*
+        isOpened: function() {
+        },
+
+        isClosed: function() {
         }
+        */
     });
 
     var UpgradeMenu = createClass(Menu, function UpgradeMenu(prevState) {
@@ -407,7 +443,17 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
     }, {
         init: function() {
             Menu.prototype.init.call(this);
+            console.log('Entering Upgrade Menu');
+        },
 
+        isOpened: function() {
+            var r = input.key.isReleased;
+            return (r('U'));
+        },
+
+        isClosed: function() {
+            var r = input.key.isReleased;
+            return (r(input.ESCAPE) || r('U'));
         }
     });
 
@@ -416,7 +462,18 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
     }, {
         init: function() {
             Menu.prototype.init.call(this);
+            console.log('Entering Perk Menu');
 
+        },
+
+        isOpened: function() {
+            var r = input.key.isReleased;
+            return (r('P'));
+        },
+
+        isClosed: function() {
+            var r = input.key.isReleased;
+            return (r(input.ESCAPE) || r('P'));
         }
     });
 
@@ -425,8 +482,40 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
     }, {
         init: function() {
             Menu.prototype.init.call(this);
+            console.log('Entering Quest Menu');
 
+        },
+
+        isOpened: function() {
+            var r = input.key.isReleased;
+            return (r('Q') || r('I'));
+        },
+
+        isClosed: function() {
+            var r = input.key.isReleased;
+            return (r(input.ESCAPE) || (r('Q') || r('I')));
         }
+    });
+
+    var OptionsMenu = createClass(Menu, function OptionsMenu(prevState) {
+
+    }, {
+        init: function() {
+            Menu.prototype.init.call(this);
+            console.log('Entering Options Menu');
+
+        },
+
+        isOpened: function() {
+            var r = input.key.isReleased;
+            return (r('O'));
+        },
+
+        isClosed: function() {
+            var r = input.key.isReleased;
+            return (r(input.ESCAPE) || r('O'));
+        }
+
     });
 
     return {
@@ -437,6 +526,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         Field: Field,
         Testing: Testing,
         State: State,
-        PauseMenu: PauseMenu
+        PauseMenu: PauseMenu,
+        MainMenu: MainMenu,
+        UpgradeMenu: UpgradeMenu,
+        PerkMenu: PerkMenu,
+        QuestMenu: QuestMenu
     };
 });
