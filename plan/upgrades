@@ -1,7 +1,9 @@
-Each upgrade has 5 levels of upgrading
-
-Only 1 upgrade can be active at any time*
 Elemental
+    Each upgrade has 5 levels of upgrading
+    Only 1 upgrade can be active at any time
+    These are a big deal - should take some effort to earn
+
+
     Fire - each upgrade increases damage
         1 - 10% damage; time- 2 seconds
         2 - 15% damage; time- 3 seconds
@@ -46,6 +48,49 @@ Elemental
 
 
 Weapons
+    Each weapon has 4 upgrades; each upgrade can be upgraded 10x
+    Easier to obtain than elements
+
+    Pin Shooter
+        1. Power Pins
+            Extra big pins for extra big damage
+            50% damage increase
+            each upgrade increases damage by 10%
+
+        2. Pushback Pins
+            Pins incur a small push back on bubble
+            each upgrade: 10% pushback distance
+
+        3. Protected Pins
+            Pins take an extra hit to be destroyed (pins bounce off bubbles)
+            each upgrade: +1 extra hit
+
+        4. Particle Pins
+            On collision with a bubble, the pin will shatter into small pins, each damaging bubbles for 25% weapon damage.
+            each upgrade: +5% damage
+
+
+    Rifle
+        1. Automatic fire
+            Can hold mouse down to fire (base-level)
+            Shoot speed increases by 10% with every upgrade
+
+        2. 
+
+        3. 
+
+        4. 
+
+
+    Shotgun
+        1. 
+
+        2. 
+
+        3. 
+
+        4. 
+
 
 * all perks are active all the time - passive skills
 Perks
