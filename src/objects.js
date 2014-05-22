@@ -56,43 +56,58 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
         },
 
         updateDisplayProperties: function(objects, props) {
-            props = props || {}; // If props doesn't exist then make it an empty object.
-            _.defaults(props, {
+            var propsDefined = (props !== undefined);
+            var defaults = {
                 position: true,
                 rotation: true,
                 anchor: true,
                 scale: true,
-            });
+            };
+
+            // If properties are defined then merge the defaults with them. Otherwise just make them the defaults.
+            if (propsDefined) {
+                _.defaults(props, defaults);
+            } else {
+                props = defaults;
+            }
 
             for (var i=0; i<objects.length; ++i) {
                 var obj = objects[i];
-                if (props.position) {
+
+                var sync; // A display object can specify to sync certain properties. If props were specified then it will override syncGameObjectProperties.
+                if (propsDefined || obj.syncGameObjectProperties === undefined) {
+                    sync = props;
+                } else {
+                    sync = _.defaults(obj.syncGameObjectProperties, defaults);
+                }
+
+                if (sync.position) {
                     obj.position.x = this.x;
                     obj.position.y = this.y;
                 }
 
-                if (props.rotation) {
+                if (sync.rotation) {
                     obj.rotation = -this.angle;
                 }
 
-                if (props.anchor && obj.anchor) {
+                if (sync.anchor && obj.anchor) {
                     obj.anchor.x = this.anchor.x;
                     obj.anchor.y = this.anchor.y;
                 }
 
-                if (props.scale) {
+                if (sync.scale) {
                     obj.scale.x = this.scale.x;
                     obj.scale.y = this.scale.y;
                 }
             }
         },
 
-        addDisplay:  function(display, container) {
+        addDisplay: function(display, container) {
             this.displayObjects.push(display);
             return this.state.addDisplay(display, container);
         },
 
-        removeDisplay:  function(display) {
+        removeDisplay: function(display) {
             this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
             return this.state.removeDisplay(display);
         },

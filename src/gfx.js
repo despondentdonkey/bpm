@@ -17,6 +17,12 @@ define(['lib/pixi'], function(pixi) {
             },
         });
 
+        // Custom property to sync with game object properties.
+        Object.defineProperty(pixi.DisplayObject.prototype, 'syncGameObjectProperties', {
+            get: function() { return this._bpmSyncGameObjectProperties; },
+            set: function(val) { this._bpmSyncGameObjectProperties = val; },
+        });
+
         this.renderer.view.tabIndex = 0;
         if (parent) {
             parent.appendChild(this.renderer.view);
