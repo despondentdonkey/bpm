@@ -105,13 +105,25 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         },
 
         add: function(obj) {
-            this.objectsToAdd.push(obj);
-            return obj;
+            var ret = obj;
+            if (!_.isArray(obj))
+                obj = [obj];
+
+            for (var i = 0; i < obj.length; i++)
+                this.objectsToAdd.push(obj[i]);
+
+            return ret;
         },
 
         remove: function(obj) {
-            this.objectsToRemove.push(obj);
-            return obj;
+            var ret = obj;
+            if (!_.isArray(obj))
+                obj = [obj];
+
+            for (var i = 0; i < obj.length; i++)
+                this.objectsToRemove.push(obj);
+
+            return ret;
         },
 
         addDisplay: function(display, container) {
@@ -413,20 +425,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         init: function() {
             Menu.prototype.init.call(this);
 
-            this.startButton = new ui.Button('Start', this.buttonStyle, function() {
-                setState(new Field());
-            }, this);
+            this.buttons = {
+                start: new ui.Button('Start', this.buttonStyle, function() { setState(new Field()); }, this),
+                options: new ui.Button('Options', this.buttonStyle, function() { setState(new OptionsMenu(this)); }, this)
+            }
 
-            this.startButton.setPos(gfx.width / 2 - 5, gfx.height / 2);
+            this.buttons.start.setPos(gfx.width / 2 - 5, gfx.height / 2);
+            this.buttons.options.setPos(gfx.width / 2 - 5, gfx.height / 1.5);
 
-
-            this.optionsButton = new ui.Button('Options', this.buttonStyle, function() {
-                setState(new OptionsMenu(this));
-            }, this);
-            this.optionsButton.setPos(gfx.width / 2 - 5, gfx.height / 1.5);
-
-            this.add(this.startButton);
-            this.add(this.optionsButton);
+            this.add(_.values(this.buttons));
         },
 
         /*
