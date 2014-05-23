@@ -181,16 +181,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         this.combo = 0;
         this.comboGoal = 4;
 
-        this.pauseMenu = new PauseMenu(this);
-        this.questMenu = new QuestMenu(this);
-        this.perkMenu = new PerkMenu(this);
-        this.upgradeMenu = new UpgradeMenu(this);
-        this.optionsMenu = new OptionsMenu(this);
-
         this.menus = [
-            this.pauseMenu, this.questMenu, this.perkMenu,
-            this.upgradeMenu, this.optionsMenu
+            [PerkMenu, 'P'],
+            [UpgradeMenu, 'U'],
+            [QuestMenu, 'Q', 'I'],
+            [PauseMenu, input.ESCAPE]
         ];
+
     },{
         init: function() {
             State.prototype.init.call(this);
@@ -358,8 +355,18 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
                 }
             }
 
-            for (var i = 0; i < this.menus.length; i++)
-                this.menus[i].monitor();
+            // Listen for menu hotkeys and set closeButton on instantiated menu
+            for (var i = 0, menus = this.menus; i < menus.length; i++) {
+                var M = menus[i][0];
+                for (var j = 1, keys = menus[i]; j < keys.length; j++) {
+                    if (input.key.isReleased(keys[j])) {
+                        var m = new M(this);
+                        // set the close button to the button used for opening
+                        m.closeButton = keys[j];
+                        cacheState(this, m);
+                    }
+                }
+            }
         },
 
         onCached: function() {
@@ -372,11 +379,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
 
         onBlur: function() {
             // Pause game when window loses focus
-            cacheState(this, this.pauseMenu);
+            cacheState(this, new PauseMenu(this));
         },
 
         onFocus: function() {
-
         },
 
         _addEventListeners: function() {
@@ -395,6 +401,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         this.buttonStyle = {
             font: 'bold 24px arial'
         };
+        this.closeButton;
     }, {
         init: function() {
             State.prototype.init.call(this);
@@ -403,38 +410,17 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
 
         update: function(delta) {
             State.prototype.update.call(this, delta);
-            if (this.isClosed()) {
-                restoreState(this.prevState);
-            }
+            if (input.key.isReleased(this.closeButton))
+                this.close();
         },
 
-        monitor: function() {
-            // Watch for condition to open, cache current state and switch to menu when opened
-            // call this in prevState's update method; use to abstract all menu-related functionality
-            // out of parent state and into menu state
-            if (this.isOpened()) {
-                if (this.prevState instanceof State) {
-                    cacheState(this.prevState, this);
-                } else {
-                    setState(this);
-                }
-            }
-        },
-
-        isClosed: function() {
-            // Predicate to specify how this menu will be closed
-            // defaults to same method as open
-            return this.isOpened();
-        },
-
-        isOpened: function() {
-            // Predicate to specify how this menu will be opened
-            return input.key.isReleased(input.ESCAPE);
+        close: function() {
+            restoreState(this.prevState);
         }
     });
 
+    // TODO: Put options in here vv
     var PauseMenu = createClass(Menu, function PauseMenu(prevState) {
-        this.pauseKey = input.ESCAPE;
     }, {
         init: function() {
             Menu.prototype.init.call(this);
@@ -459,14 +445,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
 
             this.addDisplay(back);
             this.addDisplay(text);
-        },
-
-        isClosed: function() {
-            return (input.mouse.isReleased(input.MOUSE_LEFT) || input.key.isReleased(this.pauseKey));
-        },
-
-        isOpened: function() {
-            return input.key.isReleased(this.pauseKey);
         }
     });
 
@@ -478,22 +456,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
 
             this.buttons = {
                 start: new ui.Button('Start', this.buttonStyle, function() { setState(new Field()); }, this),
-                options: new ui.Button('Options', this.buttonStyle, function() { setState(new OptionsMenu(this)); }, this)
             }
 
             this.buttons.start.setPos(gfx.width / 2 - 5, gfx.height / 2);
-            this.buttons.options.setPos(gfx.width / 2 - 5, gfx.height / 1.5);
 
             this.add(_.values(this.buttons));
-        },
-
-        /*
-        isOpened: function() {
-        },
-
-        isClosed: function() {
         }
-        */
     });
 
     var UpgradeMenu = createClass(Menu, function UpgradeMenu(prevState) {
@@ -518,16 +486,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
             this.buttons.buy.setPos(gfx.width - 50, gfx.height - 50);
             _.each(_.tail(bvals), function(b, i) { b.setPos(50, 50 * i); });
             this.add(bvals);
-        },
-
-        isOpened: function() {
-            var r = input.key.isReleased;
-            return (r('U'));
-        },
-
-        isClosed: function() {
-            var r = input.key.isReleased;
-            return (r(input.ESCAPE) || r('U'));
         }
     });
 
@@ -538,16 +496,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
             Menu.prototype.init.call(this);
             console.log('Entering Perk Menu');
 
-        },
-
-        isOpened: function() {
-            var r = input.key.isReleased;
-            return (r('P'));
-        },
-
-        isClosed: function() {
-            var r = input.key.isReleased;
-            return (r(input.ESCAPE) || r('P'));
         }
     });
 
@@ -558,38 +506,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
             Menu.prototype.init.call(this);
             console.log('Entering Quest Menu');
 
-        },
-
-        isOpened: function() {
-            var r = input.key.isReleased;
-            return (r('Q') || r('I'));
-        },
-
-        isClosed: function() {
-            var r = input.key.isReleased;
-            return (r(input.ESCAPE) || (r('Q') || r('I')));
         }
-    });
-
-    var OptionsMenu = createClass(Menu, function OptionsMenu(prevState) {
-
-    }, {
-        init: function() {
-            Menu.prototype.init.call(this);
-            console.log('Entering Options Menu');
-
-        },
-
-        isOpened: function() {
-            var r = input.key.isReleased;
-            return (r('O'));
-        },
-
-        isClosed: function() {
-            var r = input.key.isReleased;
-            return (r(input.ESCAPE) || r('O'));
-        }
-
     });
 
     return {
