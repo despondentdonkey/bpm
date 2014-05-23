@@ -3,8 +3,17 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
     var current = {
         init: false,
         state: null,
-        cached: {}
+        cached: {},
     };
+
+    var getID;
+
+    (function() {
+        var idCounter = 0;
+        getID = function() {
+            return idCounter++;
+        };
+    })();
 
     // Static Methods
     function setState(state, persist) {
@@ -56,6 +65,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
         this.objectsToAdd = [];
         this.objectsToRemove = [];
         this.paused = false;
+        this.id = getID();
     }, {
         init: function() {},
 
