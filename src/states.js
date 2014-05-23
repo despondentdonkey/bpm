@@ -31,32 +31,38 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
 
     function cacheState(state, newState) {
         // Caches passed state, switches to newState
-        //      cached states are saved by constructor, so only one class is ever saved a time
-
-        // Save current state
-        var constructor = state.constructor;
-        current.cached[constructor] = state;
-        state.onCached();
 
         if (newState instanceof State) {
+            var constructor = state.constructor;
+            current.cached[''+state.id] = state;
+            state.onCached();
+
             setState(newState, true);
         }
     }
 
     function restoreState(state) {
-        // Restores a cached state with matching constructor of passed state
-        // May return unexpected results - make sure you know that the state you are restoring was cached
-        var constructor = state.constructor;
-        if (_.has(current.cached, constructor)) {
-            log('restoring state ' + state.constructor.name);
-            state = current.cached[constructor];
-            delete current.cached[constructor];
+        // Restores a state if cached, if not cached, sets state normally
+        if (isCached(state)) {
+            var sid = ''+state.id;
+            log('restoring state ' + state.constructor.name + ' id: ' + sid);
+            state = current.cached[sid];
+            delete current.cached[sid];
 
             setState(state);
             current.init = true;
             state.onRestore();
+        } else {
+            setState(state);
         }
     }
+
+    function isCached(state) {
+        // Returns ID of cached state
+        if (_.has(current.cached, state.id))
+            return state.id;
+    }
+
 
     // Classes
     var State = createClass(null, function State(_super) {
