@@ -1,7 +1,16 @@
 define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
-    var BasicObject = createClass(null, function() {
+    var getID;
+    (function() {
+        var counter = 0;
+        getID = function() {
+            return 'o' + counter++;
+        };
+    })();
+
+    var BasicObject = createClass(events.EventHandler, function() {
         this.state = null;
+        this.id = getID();
     }, {
         init: function(state) {
             this.state = state;

@@ -11,7 +11,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     (function() {
         var idCounter = 0;
         getID = function() {
-            return idCounter++;
+            return 's' + idCounter++;
         };
     })();
 
@@ -34,7 +34,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
         if (newState instanceof State) {
             var constructor = state.constructor;
-            current.cached[''+state.id] = state;
+            current.cached[state.id] = state;
             state.onCached();
 
             setState(newState, true);
@@ -44,7 +44,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     function restoreState(state) {
         // Restores a state if cached, if not cached, sets state normally
         if (isCached(state)) {
-            var sid = ''+state.id;
+            var sid = state.id;
             log('restoring state ' + state.constructor.name + ' id: ' + sid);
             state = current.cached[sid];
             delete current.cached[sid];
