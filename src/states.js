@@ -65,7 +65,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
 
     // Classes
-    var State = createClass(null, function State(_super) {
+    var State = createClass(events.EventHandler, function State(_super) {
         this.displayObjects = [];
         this.objects = [];
         this.objectsToAdd = [];
@@ -192,19 +192,17 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         init: function() {
             State.prototype.init.call(this);
 
-            events.create('test');
-
-            events.listen('test', function(e) {
+            this.addListener('test', function(e) {
                 console.log('event stuff: ', 'HI');
                 console.log('this', this);
-            }, false, events);
+            }, false);
 
-            events.listen('test', function(e) {
+            this.addListener('test', function(e) {
                 console.log('event stuff: ', e);
                 console.log('this', this);
             }, true);
 
-            events.emit('test', this, {
+            this.triggerEvent('test', {
                 cow: 'hi',
             });
 

@@ -1,4 +1,4 @@
-define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
+define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, events) {
 
     var getID;
     (function() {

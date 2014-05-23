@@ -1,57 +1,59 @@
 define(function() {
     /*
         ### events.js ###
-        Global event system.
+        event system.
     */
 
-    this.events = {};
 
-    // Creates a new event which you can add listeners to.
-    function create(name) {
-        this.events[name] = {
-            listeners: [],
-        };
-    }
+    var EventHandler = createClass(null, function() {
+        this.events = {};
+    }, {
+        addListener: function(name, func, oneShot) {
+            if (this.events[name] === undefined || this.events[name].listeners === undefined)
+                this.events[name] = { listeners: [] };
 
-    // Adds a listener function to an event. Passing true to oneShot will automatically remove this listener.
-    function listen(name, func, oneShot, context) {
-        var listeners = this.events[name].listeners;
-        var listener = {
-            func: func,
-            context: context,
-            oneShot: oneShot,
-        };
+            var listeners = this.events[name].listeners;
+            var listener = {
+                func: func,
+                oneShot: oneShot
+            };
 
-        listeners.push(listener);
-        return listener;
-    }
+            listeners.push(listener);
+            return listener;
+        },
 
-    // Removes a listener from an event. Must pass the listener object which is returned by the listen function.
-    function remove(name, listener) {
-        var listeners = this.events[name].listeners;
-        listeners.splice(listeners.indexOf(listener), 1);
-    }
+        // Pass listener to remove specific event listener, only pass name to remove all event listeners
+        removeListener: function(name, listener) {
+            if (!this.events[name])
+                throw new Error('Event ' + name + ' not registered');
+            if (!this.events[name].listeners)
+                throw new Error('EventHandler.removeListener called before EventHandler.addListener');
 
-    /* Emit an event which triggers all listeners.
-        context: Changes 'this' in the listener function to the context unless the listener has its own context.
-        obj: Passed to the listener function. */
-    function emit(name, context, obj) {
-        var listeners = this.events[name].listeners;
-        for (var i=0; i<listeners.length; ++i) {
-            var listener = listeners[i];
-            listener.func.call(listener.context || context, obj);
-            if (listener.oneShot) {
-                remove(name, listener);
-                i--; // We removed something from listeners so adjust the iterator.
+            if (!listener) {
+                this.events[name].listeners = [];
+            } else {
+                var listeners = this.events[name].listeners;
+                listeners.splice(listeners.indexOf(listener), 1);
+            }
+
+            return listener;
+        },
+
+        triggerEvent: function(name) {
+            var listeners = this.events[name].listeners;
+            for (var i=0; i<listeners.length; ++i) {
+                var listener = listeners[i];
+                listener.func.call(this, _.tail(arguments));
+                if (listener.oneShot) {
+                    this.removeListener(name, listener);
+                    i--; // We removed something from listeners so adjust the iterator.
+                }
             }
         }
-    }
+    });
 
     return {
-        events: this.events,
-        create: create,
-        listen: listen,
-        remove: remove,
-        emit: emit,
+        EventHandler: EventHandler,
+        global: new EventHandler()
     };
 });
