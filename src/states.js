@@ -139,6 +139,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
 
         removeDisplay: function(display) {
             this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
+            if (display.parent === undefined) {
+                console.error('DisplayObject parent is undefined. Adding the display multiple times may have caused this.');
+            }
             display.parent.removeChild(display);
             return display;
         },
