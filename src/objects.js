@@ -203,6 +203,11 @@ define(['bpm', 'res', 'gfx', 'input'], function(bpm, res, gfx, input) {
 
             BasicObject.prototype.update.call(this, delta);
             this.currentTime -= delta;
+
+            if (this.onTick) {
+                this.onTick(1-(this.currentTime/this.duration), this.currentTime, this.duration);
+            }
+
             if (this.currentTime <= 0) {
                 if (this.onComplete) {
                     this.onComplete();
