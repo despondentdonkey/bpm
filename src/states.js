@@ -198,6 +198,37 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
                 this.add(randBub(0));
             }, this)));
 
+
+            this.roundTimer = new objects.Timer(60 * 1000, 'oneshot', function() {
+                console.log('Round Complete!');
+            });
+
+            var roundCirc = new gfx.pixi.Graphics();
+            var roundCircRadius = 48;
+            roundCirc.x = gfx.width-roundCircRadius;
+            roundCirc.y = roundCircRadius;
+            roundCirc.depth = -10;
+            this.addDisplay(roundCirc);
+
+            var drawRoundCirc = function(ratio, color, alpha) {
+                roundCirc.beginFill(color, alpha);
+                    roundCirc.moveTo(0,0);
+                    for (var i=0; i<ratio*360; ++i) {
+                        var rad = i * DEG2RAD;
+                        roundCirc.lineTo(Math.sin(rad) * roundCircRadius,  -Math.cos(rad) * roundCircRadius);
+                    }
+                roundCirc.endFill();
+            };
+
+            this.roundTimer.onTick = function(ratio) {
+                roundCirc.clear();
+                drawRoundCirc(1, 0x000000, 0.8);
+                drawRoundCirc(ratio, 0xffff00, 0.6);
+            };
+
+            this.add(this.roundTimer);
+
+
             this.comboTimeBar = new objects.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13);
             this.comboTimeBar.x = gfx.width/2 - this.comboTimeBar.width/2;
             this.comboTimeBar.depth = -100;
