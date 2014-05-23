@@ -1,4 +1,4 @@
-define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, gfx, res, input, ui) {
+define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, objects, gfx, res, input, ui, events) {
 
     var current = {
         init: false,
@@ -191,6 +191,22 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui'], function(bpm, objects, g
     },{
         init: function() {
             State.prototype.init.call(this);
+
+            events.create('test');
+
+            events.listen('test', function(e) {
+                console.log('event stuff: ', 'HI');
+                console.log('this', this);
+            }, false, events);
+
+            events.listen('test', function(e) {
+                console.log('event stuff: ', e);
+                console.log('this', this);
+            }, true);
+
+            events.emit('test', this, {
+                cow: 'hi',
+            });
 
             var buttonTest = new ui.Button('Pause Game', {font: 'bold 12px arial'}, _.bind(function() {
                 this.onBlur();

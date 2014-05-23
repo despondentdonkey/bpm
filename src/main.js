@@ -14,8 +14,8 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
                            || function(func) { setTimeout(func, 1000/60) };
 
     function run() {
-        //states.setState(new states.Field());
-        states.setState(new states.MainMenu());
+        states.setState(new states.Field());
+        //states.setState(new states.MainMenu());
 
         res.load(function() {
             gfx.init(800, 600, document.getElementById('canvas'));
