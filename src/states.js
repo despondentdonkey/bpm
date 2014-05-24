@@ -243,7 +243,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             var roundCircRadius = 48;
             roundCirc.x = gfx.width-roundCircRadius;
             roundCirc.y = roundCircRadius;
-            roundCirc.depth = -10;
+            roundCirc.depth = gfx.layers.gui;
             this.addDisplay(roundCirc);
 
             var drawRoundCirc = function(ratio, color, alpha) {
@@ -267,12 +267,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
             this.comboTimeBar = new objects.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13);
             this.comboTimeBar.x = gfx.width/2 - this.comboTimeBar.width/2;
-            this.comboTimeBar.depth = -100;
+            this.comboTimeBar.depth = gfx.layers.gui;
             this.comboTimeBar.setRatio(0);
             this.add(this.comboTimeBar);
 
             this.background = this.addDisplay(new gfx.pixi.TilingSprite(res.tex.background, 800, 600));
-            this.background.depth = 100;
+            this.background.depth = gfx.layers.background;
 
             this.statusText = this.addDisplay(new gfx.pixi.Text('', {
                 stroke: 'black',
@@ -292,16 +292,16 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             this.comboText.position.x = gfx.width/2;
             this.comboText.position.y = this.comboTimeBar.height;
 
-            this.statusText.depth = -10;
-            this.comboText.depth = -10;
+            this.statusText.depth = gfx.layers.gui;
+            this.comboText.depth = gfx.layers.gui;
 
             this.bulletBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
             this.glareBatch = new gfx.pixi.SpriteBatch();
             this.armorBatch = new gfx.pixi.SpriteBatch();
 
-            this.bubbleBatch.depth = 2;
-            this.glareBatch.depth = 1;
+            this.bubbleBatch.depth = gfx.layers.bubbles;
+            this.glareBatch.depth = gfx.layers.bubble-1;
 
             this.shooter = this.add(new objects.Shooter());
 

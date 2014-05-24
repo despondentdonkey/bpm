@@ -240,7 +240,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.x = gfx.width/2;
             this.y = gfx.height/1.2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
-            this.graphic.depth = -10;
+            this.graphic.depth = gfx.layers.gui;
 
             this.ammoText = this.state.addDisplay(new gfx.pixi.Text('', {
                 stroke: 'black',
@@ -251,10 +251,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.ammoText.anchor.x = 0.5;
             this.ammoText.x = this.x;
             this.ammoText.y = this.y + 10;
-            this.ammoText.depth = -10;
+            this.ammoText.depth = gfx.layers.gui;
 
             this.ammoLoader = this.state.addDisplay(new gfx.pixi.Graphics());
-            this.ammoLoader.depth = -10;
+            this.ammoLoader.depth = gfx.layers.gui;
 
             this.ammoTimer = this.state.add(new Timer(3000, 'loop', _.bind(function() {
                 bpm.player.pins++;

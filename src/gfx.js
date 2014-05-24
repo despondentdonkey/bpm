@@ -111,6 +111,12 @@ define(['lib/pixi'], function(pixi) {
         render: render,
         createSpriteSheet: createSpriteSheet,
         NineSlice: NineSlice,
-        pixi: pixi
+        pixi: pixi,
+        layers: {
+            background: 100,
+            bubble: 5,
+            default: 0,
+            gui: -10,
+        },
     };
 });
