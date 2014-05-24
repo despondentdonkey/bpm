@@ -1,9 +1,14 @@
-Elemental - located at the Wizard's place?
+Elemental -
+        -P: located at the Wizard's place?
+        -S: Yeah, this and Perks will be with the Wiz
+
     Each upgrade has 5 levels of upgrading
     Only 1 upgrade can be active at any time
     These are a big deal - should take some effort to earn
 
     -P: These are pretty boring for being such a big deal. In addition to these effects it should also grant something new or these should be easier to acquire.
+    -S: I think they mostly just sound boring. In practice these will be crazy. I also don't want to make things so easy to acquire that you get all of the upgrades and the game gets boring.
+        Do you have any ideas?
 
 
     Fire - each upgrade increases damage
@@ -49,7 +54,7 @@ Elemental - located at the Wizard's place?
         5 - 50% chance of insta-kill
 
 
-Weapons - located at the Blacksmiths' place?
+Weapons - located at the Blacksmiths' place? Yes
     Each weapon has 4 upgrades; each upgrade can be upgraded 10x
     Easier to obtain than elements
 
@@ -57,38 +62,39 @@ Weapons - located at the Blacksmiths' place?
     This could help balance extra OP upgrades
 
     Pin Shooter
-        1. Power Pins - x | 6
+        1. Power Pins - 7 | 6
             Extra big pins for extra big damage
             50% damage increase
             each upgrade increases damage by 10%
 
-        2. Pushback Pins - x | 5
+        2. Pushback Pins - 5 | 5
             Pins incur a small push back on bubble
             each upgrade: 10% pushback distance
 
             -P: Not sure if this would work well with ice.
 
-        3. Protected Pins - x | 7
+        3. Protected Pins - 7 | 7
             Pins take an extra hit to be destroyed (pins bounce off bubbles)
             each upgrade: +1 extra hit
 
-        4. Particle Pins - x | 9
+        4. Particle Pins - 8 | 9
             On collision with a bubble, the pin will shatter into small pins, each damaging bubbles for 25% weapon damage.
             each upgrade: +5% damage
 
 
     Rifle
-        1. Automatic fire - x | 8
+        1. Automatic fire - 9 | 8
             Can hold mouse down to fire (base-level)
             Shoot speed increases by 10% with every upgrade
 
-        2. Guided Sights - x | 3
+        2. Guided Sights - 0 | 3
             Can see where your shot is headed (think Unicorn ability on Peggle)
             Upgrades increase amount of guideline until 7x
             8. Special! Heat seaking pullets head towards your enemies
             9 & 10. Upgrade pull strength
 
             -P: Not much use and not worth the trouble programming imo.
+            -S: I agree
 
         3.
 
@@ -96,13 +102,13 @@ Weapons - located at the Blacksmiths' place?
 
 
     Shotgun
-        1. More Pellets - x | 7
+        1. More Pellets - 8 | 7
             Shoots +1 pellets with every upgrade
 
-        2. Stronger Pellets - x | 6
+        2. Stronger Pellets - 6 | 6
             Each shotgun pellet increases damage by 5% with every upgrade
 
-        3. Shrapnel Pellets - x | 4
+        3. Shrapnel Pellets - 2 | 4
             Each shotgun pellet has a 10% chance to explode into 2 smaller pellets each dealing 25% damage
             Each shrapnel pellet retains its parent's elemental ability
             Each upgrade does the following:
@@ -111,9 +117,10 @@ Weapons - located at the Blacksmiths' place?
                 Increase damage by 1.5%
 
             -P: A little too similar to the Pin Shooter upgrade and way better. There's also going to be a ton of shotgun bullets already.
+            -S: Yeah, good point
 
         4.
 
 
 * all perks are active all the time - passive skills
-Perks - located where?
+Perks - located where? Wizards tower
