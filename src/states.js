@@ -72,8 +72,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         this.objectsToRemove = [];
         this.paused = false;
         this.id = getID();
+
+        this.initialized = false;
     }, {
-        init: function() {},
+        init: function() {
+            if (this.initialized) {
+                console.error("State has been reinitialized. Only call 'init' if object has been destroyed.");
+            }
+            this.initialized = true;
+        },
 
         // When this state has been switched
         destroy: function() {
@@ -86,6 +93,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             while (this.displayObjects.length > 0) {
                 this.removeDisplay(this.displayObjects[0]);
             }
+
+            this.initialized = false;
         },
 
         update: function(delta) {
