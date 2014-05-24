@@ -20,13 +20,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     }
 
     function pauseState(stateToPause, pauseMenu) {
-        current.state = pauseMenu;
-        current.init = false;
+        if (pauseMenu) {
+            current.state = pauseMenu;
+            current.init = false;
+        }
         stateToPause.paused = true;
-        stateToPause.onCached();
+        stateToPause.onPause();
     }
 
-    function unpauseState(state) {
+    function restoreState(state) {
         if (state.paused) {
             setState(state);
             current.init = true;
@@ -132,7 +134,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             return display;
         },
 
-        onCached: function() {},
+        onPause: function() {},
         onRestore: function() {}
     });
 
@@ -155,7 +157,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             [PerkMenu, 'P'],
             [UpgradeMenu, 'U'],
             [QuestMenu, 'Q', 'I'],
-            [PauseMenu, input.ESCAPE]
+            [FieldPauseMenu, input.ESCAPE]
         ];
 
     },{
@@ -346,7 +348,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
                 var M = menus[i][0];
                 for (var j = 1, keys = menus[i]; j < keys.length; j++) {
                     if (input.key.isReleased(keys[j])) {
-                        var m = new M(this);
+                        console.log("HI");
+                        var m = new M(null, this);
+                        pauseState(this, m);
                         // set the close button to the button used for opening
                         m.closeButton = keys[j];
                         //cacheState(this, m);
@@ -355,7 +359,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             }
         },
 
-        onCached: function() {
+        onPause: function() {
             this._removeEventListeners();
         },
 
@@ -365,7 +369,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
         onBlur: function() {
             // Pause game when window loses focus
-            pauseState(this, new FieldPauseMenu(null, this));
+            pauseState(this);
         },
 
         onFocus: function() {
@@ -383,9 +387,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     });
 
 
-    // The T is for test
-    var TMenu = createClass(State, function(prevMenu) {
+    var Menu = createClass(State, function(prevMenu, cachedState) {
         this.prevMenu = prevMenu;
+        this.buttonStyle = {
+            font: 'bold 24px arial'
+        };
+        this.cachedState = cachedState;
     }, {
         init: function() {
             State.prototype.init.call(this);
@@ -393,29 +400,16 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
         update: function(delta) {
             State.prototype.update.call(this, delta);
+            if (this.closeButton) {
+                if (input.key.isReleased(this.closeButton))
+                    this.close();
+            }
         },
 
         close: function() {
             if (this.prevMenu || this.prevMenu !== null) {
                 setState(this.prevMenu);
-            }
-        },
-    });
-
-    var PauseMenu = createClass(TMenu, function(prevMenu, cachedState) {
-        this.cachedState = cachedState;
-    }, {
-        init: function() {
-            TMenu.prototype.init.call(this);
-        },
-
-        update: function(delta) {
-            TMenu.prototype.update.call(this, delta);
-        },
-
-        close: function() {
-            TMenu.prototype.close.call(this);
-            if (this.prevMenu === null && this.cachedState) {
+            } else if (this.cachedState) {
                 this.destroy();
                 current.state = this.cachedState;
                 current.init = true;
@@ -423,14 +417,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
                 this.cachedState.onRestore();
             }
         },
-
     });
 
     // TODO: Put options in here vv
-    var FieldPauseMenu = createClass(PauseMenu, function PauseMenu(prevState, cachedState) {
+    var FieldPauseMenu = createClass(Menu, function(prevState, cachedState) {
     }, {
         init: function() {
-            PauseMenu.prototype.init.call(this);
+            Menu.prototype.init.call(this);
 
             var back = new gfx.pixi.Graphics();
             back.beginFill('0', 0.5);
@@ -454,7 +447,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         },
 
         update: function(delta) {
-            PauseMenu.prototype.update.call(this, delta);
+            Menu.prototype.update.call(this, delta);
 
             if (input.mouse.isReleased(input.MOUSE_MIDDLE)) {
                 setState(new AnotherPauseMenu(this, null));
@@ -467,10 +460,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     });
 
     // TODO: Put options in here vv
-    var AnotherPauseMenu = createClass(PauseMenu, function PauseMenu(prevState, cachedState) {
+    var AnotherPauseMenu = createClass(Menu, function(prevState, cachedState) {
     }, {
         init: function() {
-            PauseMenu.prototype.init.call(this);
+            Menu.prototype.init.call(this);
 
             var back = new gfx.pixi.Graphics();
             back.beginFill('0', 0.5);
@@ -494,38 +487,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         },
 
         update: function(delta) {
-            PauseMenu.prototype.update.call(this, delta);
+            Menu.prototype.update.call(this, delta);
             if (input.mouse.isReleased(input.MOUSE_MIDDLE)) {
                 this.close();
             }
         },
     });
 
-
-    var Menu = createClass(State, function Menu(prevState) {
-        this.prevState = prevState;
-        this.buttonStyle = {
-            font: 'bold 24px arial'
-        };
-        this.closeButton;
-    }, {
-        init: function() {
-            State.prototype.init.call(this);
-            this.paused = false;
-        },
-
-        update: function(delta) {
-            State.prototype.update.call(this, delta);
-            if (input.key.isReleased(this.closeButton))
-                this.close();
-        },
-
-        close: function() {
-            //restoreState(this.prevState);
-            this.destroy();
-            current.state = this.prevState;
-        }
-    });
 
     var MainMenu = createClass(Menu, function MainMenu(prevState) {
 
@@ -594,7 +562,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         Field: Field,
         Testing: Testing,
         State: State,
-        PauseMenu: PauseMenu,
         MainMenu: MainMenu,
         UpgradeMenu: UpgradeMenu,
         PerkMenu: PerkMenu,
