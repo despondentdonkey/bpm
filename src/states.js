@@ -158,13 +158,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     });
 
 
-    var Testing = createClass(State, function Testing() {
-
-    }, {
-
-    });
-
-
     var Field = createClass(State, function Field() {
         this.comboTime = 1000;
         this.comboTimer = this.comboTime;
@@ -173,9 +166,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         this.comboGoal = 4;
 
         this.menus = [
-            [PerkMenu, 'P'],
             [UpgradeMenu, 'U'],
-            [QuestMenu, 'Q', 'I'],
             [FieldPauseMenu, input.ESCAPE]
         ];
 
@@ -433,6 +424,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         },
     });
 
+
     // TODO: Put options in here vv
     var FieldPauseMenu = createClass(Menu, function(prevState) {
     }, {
@@ -524,13 +516,62 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         }
     });
 
-    var UpgradeMenu = createClass(Menu, function UpgradeMenu(prevState) {
 
+    var UpgradeMenu = createClass(Menu, function(prevState) {
     }, {
         init: function() {
-            Menu.prototype.init.call(this);
-            console.log('Entering Upgrade Menu');
+            this.tabNames = [];
+            this.tabs = [];
 
+            this.ui = [];
+            this.uiBuilders = [];
+
+            this.addTab('Town', this.buildTownUi);
+            this.addTab('Blacksmith', this.buildSmithUi);
+            this.addTab('Wizard', this.buildWizardUi);
+
+            this.setUi(this.tabNames[0]);
+        },
+
+        addTab: function(name, builder) {
+            this.tabNames.push(name);
+            this.uiBuilders[name] = builder;
+
+            // Add the tab objects.
+            var index = this.tabNames.indexOf(name);
+            var prevTab = index > 0 ? this.tabs[index-1] : null;
+            var newTab = new ui.Button(name, this.buttonStyle, function() {
+                if (this.uiName !== name) {
+                    this.setUi(name);
+                }
+            }, this);
+
+            if (prevTab) {
+                newTab.x = prevTab.x + prevTab.width + 32;
+            }
+
+            this.tabs.push(newTab);
+            this.add(newTab);
+        },
+
+        setUi: function(name) {
+            if (this.uiName) {
+                this.remove(this.ui);
+            }
+
+            this.uiName = name;
+            this.ui = this.uiBuilders[name].call(this);
+            this.add(this.ui);
+        },
+
+        buildTownUi: function() {
+            var quest = new ui.Button("The Quest", this.buttonStyle);
+            quest.x = 32;
+            quest.y = 100;
+            return [quest];
+        },
+
+        buildSmithUi: function() {
             this.buttons = {
                 buy: new ui.Button('Buy', this.buttonStyle, function() { log('kaching!'); }, this),
                 upgrade0: new ui.Button('Upgrade 0', this.buttonStyle, function() { log('selected'); }, this),
@@ -543,41 +584,26 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
             var bvals = _.values(this.buttons);
 
-            this.buttons.buy.setPos(gfx.width - 50, gfx.height - 50);
-            _.each(_.tail(bvals), function(b, i) { b.setPos(50, 50 * i); });
-            this.add(bvals);
-        }
-    });
+            this.buttons.buy.setPos(gfx.width - this.buttons.buy.width - 5, gfx.height - 50);
+            _.each(_.tail(bvals), function(b, i) { b.setPos(50, 100 + 50 * i); });
 
-    var PerkMenu = createClass(Menu, function PerkMenu(prevState) {
+            return bvals;
+        },
 
-    }, {
-        init: function() {
-            Menu.prototype.init.call(this);
-            console.log('Entering Perk Menu');
-
-        }
-    });
-
-    var QuestMenu = createClass(Menu, function QuestMenu(prevState) {
-
-    }, {
-        init: function() {
-            Menu.prototype.init.call(this);
-            console.log('Entering Quest Menu');
-
-        }
+        buildWizardUi: function() {
+            var perk = new ui.Button("Perk", this.buttonStyle);
+            perk.x = 32;
+            perk.y = 100;
+            return [perk];
+        },
     });
 
     return {
         current: current,
         setState: setState,
         Field: Field,
-        Testing: Testing,
         State: State,
         MainMenu: MainMenu,
         UpgradeMenu: UpgradeMenu,
-        PerkMenu: PerkMenu,
-        QuestMenu: QuestMenu,
     };
 });
