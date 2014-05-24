@@ -19,24 +19,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         current.init = false;
     }
 
-    function pauseState(stateToPause, pauseMenu) {
-        if (pauseMenu) {
-            current.state = pauseMenu;
-            current.init = false;
-        }
-        stateToPause.paused = true;
-        stateToPause.onPause();
-    }
-
-    function restoreState(state) {
-        if (state.paused) {
-            setState(state);
-            current.init = true;
-            state.paused = false;
-            state.onRestore();
-        }
-    }
-
     // Classes
     var State = createClass(null, function State(_super) {
         this.displayObjects = [];
@@ -132,6 +114,34 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             }
             display.parent.removeChild(display);
             return display;
+        },
+
+        pause: function(pauseState) {
+            if (pauseState) {
+                if (typeof pauseState === 'function') {
+                    current.state = new pauseState(null, this);
+                } else if (typeof pauseState === 'object') {
+                    current.state = pauseState;
+                }
+                this.pauseState = current.state;
+                current.init = false;
+            }
+
+            this.paused = true;
+            this.onPause();
+        },
+
+        restore: function() {
+            if (this.paused) {
+                if (this.pauseState) {
+                    setState(this);
+                    current.init = true;
+                    this.pauseState = null;
+                }
+
+                this.paused = false;
+                this.onRestore();
+            }
         },
 
         onPause: function() {},
@@ -348,12 +358,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
                 var M = menus[i][0];
                 for (var j = 1, keys = menus[i]; j < keys.length; j++) {
                     if (input.key.isReleased(keys[j])) {
-                        console.log("HI");
                         var m = new M(null, this);
-                        pauseState(this, m);
+                        this.pause(m);
                         // set the close button to the button used for opening
                         m.closeButton = keys[j];
-                        //cacheState(this, m);
                     }
                 }
             }
@@ -369,7 +377,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
         onBlur: function() {
             // Pause game when window loses focus
-            pauseState(this);
+            this.pause(FieldPauseMenu);
         },
 
         onFocus: function() {
@@ -450,7 +458,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             Menu.prototype.update.call(this, delta);
 
             if (input.mouse.isReleased(input.MOUSE_MIDDLE)) {
-                setState(new AnotherPauseMenu(this, null));
+                setState(new AnotherPauseMenu(this));
             }
 
             if (input.mouse.isPressed(input.MOUSE_LEFT)) {
@@ -459,7 +467,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         },
     });
 
-    // TODO: Put options in here vv
     var AnotherPauseMenu = createClass(Menu, function(prevState, cachedState) {
     }, {
         init: function() {
