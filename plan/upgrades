@@ -3,6 +3,8 @@ Elemental - located at the Wizard's place?
     Only 1 upgrade can be active at any time
     These are a big deal - should take some effort to earn
 
+    -P: These are pretty boring for being such a big deal. In addition to these effects it should also grant something new or these should be easier to acquire.
+
 
     Fire - each upgrade increases damage
         1 - 10% damage; time- 2 seconds
@@ -55,34 +57,38 @@ Weapons - located at the Blacksmiths' place?
     This could help balance extra OP upgrades
 
     Pin Shooter
-        1. Power Pins
+        1. Power Pins - x | 6
             Extra big pins for extra big damage
             50% damage increase
             each upgrade increases damage by 10%
 
-        2. Pushback Pins
+        2. Pushback Pins - x | 5
             Pins incur a small push back on bubble
             each upgrade: 10% pushback distance
 
-        3. Protected Pins
+            -P: Not sure if this would work well with ice.
+
+        3. Protected Pins - x | 7
             Pins take an extra hit to be destroyed (pins bounce off bubbles)
             each upgrade: +1 extra hit
 
-        4. Particle Pins
+        4. Particle Pins - x | 9
             On collision with a bubble, the pin will shatter into small pins, each damaging bubbles for 25% weapon damage.
             each upgrade: +5% damage
 
 
     Rifle
-        1. Automatic fire
+        1. Automatic fire - x | 8
             Can hold mouse down to fire (base-level)
             Shoot speed increases by 10% with every upgrade
 
-        2. Guided Sights
+        2. Guided Sights - x | 3
             Can see where your shot is headed (think Unicorn ability on Peggle)
             Upgrades increase amount of guideline until 7x
             8. Special! Heat seaking pullets head towards your enemies
             9 & 10. Upgrade pull strength
+
+            -P: Not much use and not worth the trouble programming imo.
 
         3.
 
@@ -90,19 +96,21 @@ Weapons - located at the Blacksmiths' place?
 
 
     Shotgun
-        1. More Pellets
+        1. More Pellets - x | 7
             Shoots +1 pellets with every upgrade
 
-        2. Stronger Pellets
+        2. Stronger Pellets - x | 6
             Each shotgun pellet increases damage by 5% with every upgrade
 
-        3. Shrapnel Pellets
+        3. Shrapnel Pellets - x | 4
             Each shotgun pellet has a 10% chance to explode into 2 smaller pellets each dealing 25% damage
             Each shrapnel pellet retains its parent's elemental ability
             Each upgrade does the following:
                 Increase chance by 10%
                 Increase pellet count by 1.3 (every 3 levels get a free pellet)
                 Increase damage by 1.5%
+
+            -P: A little too similar to the Pin Shooter upgrade and way better. There's also going to be a ton of shotgun bullets already.
 
         4.
 
