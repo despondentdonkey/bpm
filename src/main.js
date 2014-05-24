@@ -15,7 +15,6 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
 
     function run() {
         states.setState(new states.Field());
-        //states.setState(new states.ATEST());
         //states.setState(new states.MainMenu());
 
         res.load(function() {
