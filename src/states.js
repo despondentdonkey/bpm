@@ -119,7 +119,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         pause: function(pauseState) {
             if (pauseState) {
                 if (typeof pauseState === 'function') {
-                    current.state = new pauseState(null, this);
+                    current.state = new pauseState(this);
                 } else if (typeof pauseState === 'object') {
                     current.state = pauseState;
                 }
@@ -358,7 +358,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
                 var M = menus[i][0];
                 for (var j = 1, keys = menus[i]; j < keys.length; j++) {
                     if (input.key.isReleased(keys[j])) {
-                        var m = new M(null, this);
+                        var m = new M(this);
                         this.pause(m);
                         // set the close button to the button used for opening
                         m.closeButton = keys[j];
@@ -395,12 +395,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     });
 
 
-    var Menu = createClass(State, function(prevMenu, cachedState) {
-        this.prevMenu = prevMenu;
+    var Menu = createClass(State, function(prevState) {
+        this.prevState = prevState;
         this.buttonStyle = {
             font: 'bold 24px arial'
         };
-        this.cachedState = cachedState;
     }, {
         init: function() {
             State.prototype.init.call(this);
@@ -415,20 +414,20 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         },
 
         close: function() {
-            if (this.prevMenu || this.prevMenu !== null) {
-                setState(this.prevMenu);
-            } else if (this.cachedState) {
+            if (this.prevState instanceof Menu) {
+                setState(this.prevState);
+            } else if (this.prevState instanceof State) {
                 this.destroy();
-                current.state = this.cachedState;
+                current.state = this.prevState;
                 current.init = true;
-                this.cachedState.paused = false;
-                this.cachedState.onRestore();
+                this.prevState.paused = false;
+                this.prevState.onRestore();
             }
         },
     });
 
     // TODO: Put options in here vv
-    var FieldPauseMenu = createClass(Menu, function(prevState, cachedState) {
+    var FieldPauseMenu = createClass(Menu, function(prevState) {
     }, {
         init: function() {
             Menu.prototype.init.call(this);
@@ -467,7 +466,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         },
     });
 
-    var AnotherPauseMenu = createClass(Menu, function(prevState, cachedState) {
+    var AnotherPauseMenu = createClass(Menu, function(prevState) {
     }, {
         init: function() {
             Menu.prototype.init.call(this);
