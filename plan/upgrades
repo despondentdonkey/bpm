@@ -1,6 +1,6 @@
+// Wizard
+
 Elemental -
-        -P: located at the Wizard's place?
-        -S: Yeah, this and Perks will be with the Wiz
 
     Each upgrade has 5 levels of upgrading
     Only 1 upgrade can be active at any time
@@ -9,6 +9,7 @@ Elemental -
     -P: These are pretty boring for being such a big deal. In addition to these effects it should also grant something new or these should be easier to acquire.
     -S: I think they mostly just sound boring. In practice these will be crazy. I also don't want to make things so easy to acquire that you get all of the upgrades and the game gets boring.
         Do you have any ideas?
+    -P: I was thinking these could be like talent trees. But weapons seem to be like that already. I don't know we should be able to play around with it, just gotta implement it.
 
 
     Fire - each upgrade increases damage
@@ -53,8 +54,12 @@ Elemental -
         4 - 40% chance of insta-kill
         5 - 50% chance of insta-kill
 
+* all perks are active all the time - passive skills
+Perks - located where? Wizards tower
 
-Weapons - located at the Blacksmiths' place? Yes
+// Blacksmith
+
+Weapons
     Each weapon has 4 upgrades; each upgrade can be upgraded 10x
     Easier to obtain than elements
 
@@ -121,6 +126,15 @@ Weapons - located at the Blacksmiths' place? Yes
 
         4.
 
+General Upgrades
 
-* all perks are active all the time - passive skills
-Perks - located where? Wizards tower
+    Bullet speed
+    Bullet storage
+    Bullet regen
+    Town defense
+    Auto shooter - shoots basic pins, located in bottom corners with 45 degree rotation
+        First shooter - bottom left
+        Second shooter - bottom right
+        Fire rate
+        Damage
+        Life
