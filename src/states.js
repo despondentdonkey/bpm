@@ -366,6 +366,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             }
         },
 
+        destroy: function() {
+            State.prototype.destroy.call(this);
+            this._removeEventListeners();
+        },
+
         onPause: function() {
             this._removeEventListeners();
         },
@@ -519,6 +524,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     var UpgradeMenu = createClass(Menu, function(prevState) {
     }, {
         init: function() {
+            Menu.prototype.init.call(this);
+
             this.tabNames = [];
             this.tabs = [];
 
