@@ -218,14 +218,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             }
 
             if (this.currentTime <= 0) {
-                if (this.onComplete) {
-                    this.onComplete();
-                }
-
                 if (this.type === 'oneshot') {
                     this.state.remove(this);
                 } else if (this.type === 'loop') {
                     this.currentTime = this.duration;
+                }
+
+                if (this.onComplete) {
+                    this.onComplete();
                 }
             }
         },
