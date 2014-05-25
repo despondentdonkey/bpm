@@ -212,8 +212,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
 
             this.roundTimer = new objects.Timer(60 * 1000, 'oneshot', _.bind(function() {
-                console.log('Round Complete!');
-                setState(new RoundCompleteMenu(null, this.xp));
+                this.pause(RoundEndPauseMenu);
             }, this));
 
             var roundCirc = new gfx.pixi.Graphics();
@@ -503,6 +502,45 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             if (input.mouse.isReleased(input.MOUSE_MIDDLE)) {
                 this.close();
             }
+        },
+    });
+
+
+    var RoundEndPauseMenu = createClass(Menu, function(prevState) {
+    }, {
+        init: function() {
+            Menu.prototype.init.call(this);
+
+            var back = new gfx.pixi.Graphics();
+            back.beginFill('0', 0.5);
+            back.drawRect(0, 0, gfx.width, gfx.height);
+            back.endFill();
+            back.depth = gfx.layers.gui-10;
+            this.addDisplay(back);
+
+            var text = new gfx.pixi.Text('Round Complete!', {
+                stroke: 'black',
+                strokeThickness: 8,
+                align: 'center',
+                fill: 'white',
+                font: 'bold 64px arial'
+            });
+            text.depth = back.depth - 1;
+            text.anchor.x = text.anchor.y = 0.5;
+            text.x = gfx.width/2;
+            text.y = gfx.height/2;
+            this.addDisplay(text);
+
+            var button = new ui.Button('Continue', this.buttonStyle, function() {
+                this.prevState.destroy();
+                setState(new RoundCompleteMenu(null, this.prevState.xp));
+            }, this);
+            button.x = gfx.width/2 - button.width/2;
+            button.y = text.y + text.height;
+            button.up.depth = back.depth - 1;
+            button.down.depth = button.up.depth;
+            button.displayText.depth = button.up.depth-1;
+            this.add(button);
         },
     });
 
