@@ -1,0 +1,23 @@
+What a quest needs:
+
+    Name: "My Quest"
+    Description: This could be story information or anything. This is not the precise details on what you should do. e.g. kill 4 bubbles that should be automated
+    Reward: 100  # Money
+    ID: "m04", "s02" # m for main, s for sidequest, number will be used for priority sorting in the quest list for the ui.
+    Unlocks: ["mo5", "s08"] # if this quest is completed then it will add the array of quests (from ids) to the quest list.
+    Details: {
+        // Some of these will have to be made special for a particular quest. They will also need to provide a description somehow.
+        multiplier: 10, // Achieve a multiplier of 10
+        popBubbles: 20, // Pop 20 bubbles
+        fightBigBubble: true, // Fight the big bubble boss.
+    }
+
+A possible example of how to create a new detail:
+
+    addDetail('multiplier', 'Achieve a multiplier of VAL'); // this design will most likely change
+    // How to implement it. In Field.update
+    if (curQuest.detail.multiplier) {
+        if (multiplier >= curQuest.detail.multiplier) {
+            curQuest.complete('multiplier');
+        }
+    }
