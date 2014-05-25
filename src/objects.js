@@ -510,7 +510,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             }
 
             if (this.hp <= -1) {
-                bpm.player.xp += this.worth * this.state.multiplier;
+                this.state.xp += this.worth * this.state.multiplier;
                 this.state.combo++;
                 this.state.comboTimer = this.state.comboTime;
                 this.state.remove(this);

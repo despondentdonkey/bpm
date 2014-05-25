@@ -166,6 +166,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         this.combo = 0;
         this.comboGoal = 4;
 
+        this.xp = 0;
+
         this.menus = [
             [UpgradeMenu, 'U'],
             [FieldPauseMenu, input.ESCAPE]
@@ -209,10 +211,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             }, this)));
 
 
-            this.roundTimer = new objects.Timer(60 * 1000, 'oneshot', function() {
+            this.roundTimer = new objects.Timer(60 * 1000, 'oneshot', _.bind(function() {
                 console.log('Round Complete!');
-                setState(new RoundCompleteMenu());
-            });
+                setState(new RoundCompleteMenu(null, this.xp));
+            }, this));
 
             var roundCirc = new gfx.pixi.Graphics();
             var roundCircRadius = 48;
@@ -333,7 +335,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         update: function(delta) {
             State.prototype.update.call(this, delta);
 
-            this.statusText.setText('XP: ' + bpm.player.xp);
+            this.statusText.setText('XP: ' + this.xp);
 
             this.comboText.setText(this.combo + ' / ' + this.comboGoal
             + '\nx' + this.multiplier);
@@ -614,7 +616,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     });
 
 
-    var RoundCompleteMenu = createClass(Menu, function(prevState) {
+    var RoundCompleteMenu = createClass(Menu, function(prevState, xp) {
+        this.xp = xp;
     }, {
         init: function() {
             Menu.prototype.init.call(this);
@@ -624,6 +627,21 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
                 fill: 'white',
                 align: 'left',
             }));
+
+            bpm.player.xp += this.xp;
+
+            var xpText = new gfx.pixi.Text('Experience earned: ' + this.xp +
+            '\nTotal experience: ' + bpm.player.xp, {
+                stroke: 'black',
+                strokeThickness: 4,
+                fill: 'white',
+                align: 'left',
+            });
+
+            xpText.x = 200;
+            xpText.y = 200;
+            this.addDisplay(xpText);
+
 
             var button = new ui.Button('Continue', this.buttonStyle, function() {
                 setState(new UpgradeMenu());
