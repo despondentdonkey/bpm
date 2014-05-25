@@ -4,7 +4,6 @@ define(function() {
         event system.
     */
 
-
     var EventHandler = createClass(null, function() {
         this.events = {};
     }, {
@@ -39,7 +38,11 @@ define(function() {
             return listener;
         },
 
+        // Triggers event 'name'. Any additional arguments are passed to listener callback
         triggerEvent: function(name) {
+            if (!this.events[name])
+                throw new Error('EventHandler: event ' + name + ' not defined.');
+
             var listeners = this.events[name].listeners;
             for (var i=0; i<listeners.length; ++i) {
                 var listener = listeners[i];
@@ -51,6 +54,7 @@ define(function() {
             }
         }
     });
+
 
     return {
         EventHandler: EventHandler,
