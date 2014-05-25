@@ -211,6 +211,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
             this.roundTimer = new objects.Timer(60 * 1000, 'oneshot', function() {
                 console.log('Round Complete!');
+                setState(new RoundCompleteMenu());
             });
 
             var roundCirc = new gfx.pixi.Graphics();
@@ -511,7 +512,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             Menu.prototype.init.call(this);
 
             this.buttons = {
-                start: new ui.Button('Start', this.buttonStyle, function() { setState(new Field()); }, this),
+                start: new ui.Button('Start', this.buttonStyle, function() { setState(new UpgradeMenu()); }, this),
             }
 
             this.buttons.start.setPos(gfx.width / 2 - 5, gfx.height / 2);
@@ -574,7 +575,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             var quest = new ui.Button("The Quest", this.buttonStyle);
             quest.x = 32;
             quest.y = 100;
-            return [quest];
+
+            var startRound = new ui.Button("Start Round", this.buttonStyle, function() {
+                setState(new Field());
+            });
+
+            startRound.x = gfx.width - startRound.width - 10;
+            startRound.y = gfx.height - startRound.height - 10;
+
+            return [quest, startRound];
         },
 
         buildSmithUi: function() {
@@ -601,6 +610,27 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             perk.x = 32;
             perk.y = 100;
             return [perk];
+        },
+    });
+
+
+    var RoundCompleteMenu = createClass(Menu, function(prevState) {
+    }, {
+        init: function() {
+            Menu.prototype.init.call(this);
+            this.addDisplay(new gfx.pixi.Text('Round Complete!', {
+                stroke: 'black',
+                strokeThickness: 4,
+                fill: 'white',
+                align: 'left',
+            }));
+
+            var button = new ui.Button('Continue', this.buttonStyle, function() {
+                setState(new UpgradeMenu());
+            });
+            button.x = gfx.width - button.width - 10;
+            button.y = gfx.height - button.height - 10;
+            this.add(button);
         },
     });
 
