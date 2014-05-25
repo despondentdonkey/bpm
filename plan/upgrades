@@ -11,8 +11,16 @@ Elemental -
         Do you have any ideas?
     -P: I was thinking these could be like talent trees. But weapons seem to be like that already. I don't know we should be able to play around with it, just gotta implement it.
 
+    Elements have a base ability and 4 unlockable abilities.
+
 
     Fire - each upgrade increases damage
+        Base Ability Increase
+
+        Viral Fire
+            - Bubbles have a chance to light each other on fire
+
+
         1 - 10% damage; time- 2 seconds
         2 - 15% damage; time- 3 seconds
         3 - 20% damage; time- 4 seconds
@@ -46,6 +54,8 @@ Elemental -
             hitting a frozen bubble with ice ammo hits for an additional 150% damage
             hitting a frozen bubble once more will cause the bubble to shatter - insta-kill
 
+
+    ## 1 Secret Elements after you beat the game the first time
     // meh, needs improvement
     Death (secret) - each upgrade increases chance of insta-kill
         1 - 10% chance of insta-kill
@@ -67,8 +77,8 @@ Weapons
     This could help balance extra OP upgrades
 
     Pin Shooter
-        1. Power Pins - 7 | 6
-            Extra big pins for extra big damage
+        1. Exploding Pins - 7 | 6
+            Exploding pins for extra big damage
             50% damage increase
             each upgrade increases damage by 10%
 
@@ -125,6 +135,8 @@ Weapons
             -S: Yeah, good point
 
         4.
+
+    ## 1 Additional Weapon after you beat the game
 
 General Upgrades
 
