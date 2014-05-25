@@ -29,11 +29,25 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'bpm'], function(time, gfx, 
     }
 
     function update() {
-        if (states.current.state) {
-            if (!states.current.init) {
-                states.current.state.init();
-                states.current.init = true;
+        // If a new state exists then we must begin a state switch.
+        if (states.current.newState) {
+            // If there's currently a state, set it to the previous state and destroy it.
+            if (states.current.state) {
+                states.current.prevState = states.current.state;
+                if (states.current.destroyOld) {
+                    states.current.prevState.destroy();
+                }
             }
+
+            // Set the current state to the new state, initialize and clear the new state.
+            states.current.state = states.current.newState;
+            if (states.current.initNew) {
+                states.current.state.init();
+            }
+            states.current.newState = null;
+        }
+
+        if (states.current.state) {
             states.current.state.update(time.delta);
         }
 

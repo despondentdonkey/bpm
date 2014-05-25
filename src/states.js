@@ -1,22 +1,25 @@
 define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, objects, gfx, res, input, ui, events) {
 
     var current = {
-        init: false,
+        initNew: true, // Initialize the new state?
+        destroyOld: true, // Destroy the old state?
         state: null,
+        newState: null, // The new state to switch to
+        prevState: null,
     };
 
     // Static Methods
-    function setState(state, persist) {
-        // Sets state; if persist === true, destroy is not called on current state
-        if (current.state) {
-            if (!persist) {
-                current.state.destroy();
-            }
-            current.state = null; // I think this helps a bug with switching states. It stopped, so it's staying for now.
-        }
+    function setState(state, options) {
+        options = options || {};
+        _.defaults(options, {
+            initNew: true,
+            destroyOld: true,
+        });
 
-        current.state = state;
-        current.init = false;
+        current.initNew = options.initNew;
+        current.destroyOld = options.destroyOld;
+
+        current.newState = state;
     }
 
     // Classes
@@ -128,12 +131,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         pause: function(pauseState) {
             if (pauseState) {
                 if (typeof pauseState === 'function') {
-                    current.state = new pauseState(this);
+                    setState(new pauseState(this), { destroyOld: false });
                 } else if (typeof pauseState === 'object') {
-                    current.state = pauseState;
+                    setState(pauseState, { destroyOld: false });
                 }
                 this.pauseState = current.state;
-                current.init = false;
             }
 
             this.paused = true;
@@ -143,8 +145,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         restore: function() {
             if (this.paused) {
                 if (this.pauseState) {
-                    setState(this);
-                    current.init = true;
+                    setState(this, { initNew: false });
                     this.pauseState = null;
                 }
 
@@ -415,9 +416,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             if (this.prevState instanceof Menu) {
                 setState(this.prevState);
             } else if (this.prevState instanceof State) {
-                this.destroy();
-                current.state = this.prevState;
-                current.init = true;
+                setState(this.prevState, { initNew: false });
                 this.prevState.paused = false;
                 this.prevState.onRestore();
             }
