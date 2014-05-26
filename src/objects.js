@@ -244,37 +244,63 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     });
 
 
-    // types = oneshot, loop
-    var Timer = createClass(BasicObject, function(duration, type, onComplete) {
-        this.duration = duration;
-        this.currentTime = duration;
-        this.onComplete = onComplete;
-        this.type = type;
+    // Any performance problems with these are mostly likely due to the collisions rather than rendering.
+    var Bullet = createClass(GameObject, function(tex, x, y, angle) {
+        this.x = x;
+        this.y = y;
+        this.speedX = Math.cos(angle);
+        this.speedY = -Math.sin(angle);
+        this.tex = tex;
     }, {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
+
+            this.graphic = this.addDisplay(new gfx.pixi.Sprite(this.tex), this.state.bulletBatch);
+            this.width = this.graphic.width;
+            this.height = this.graphic.width;
+
+            this.speed = 0;
+            this.lifeTime = 0;
+            this.lifeTimer = 0;
+        },
+
+        destroy: function(state) {
+            GameObject.prototype.destroy.call(this, state);
+        },
+
         update: function(delta) {
-            if (this.paused) return;
+            GameObject.prototype.update.call(this, delta);
+            var speed = this.speed * delta;
+            this.x += this.speedX * speed;
+            this.y += this.speedY * speed;
 
-            BasicObject.prototype.update.call(this, delta);
-            this.currentTime -= delta;
+            this.angle = -Math.atan2(this.speedY, this.speedX);
 
-            if (this.onTick) {
-                this.onTick(1-(this.currentTime/this.duration), this.currentTime, this.duration);
+            this.lifeTimer -= delta;
+
+            // y = sqrt(1 -x) + x/4
+            var lifeRatio = this.lifeTimer / this.lifeTime;
+            this.graphic.alpha = Math.sqrt(lifeRatio) + (1-lifeRatio)/4;
+
+            if (this.lifeTimer <= 0) {
+                this.state.remove(this);
             }
 
-            if (this.currentTime <= 0) {
-                if (this.type === 'oneshot') {
-                    this.state.remove(this);
-                } else if (this.type === 'loop') {
-                    this.currentTime = this.duration;
-                }
+            var bounds = this.getBounds();
+            if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
+                this.speedX = -this.speedX;
+            }
 
-                if (this.onComplete) {
-                    this.onComplete();
-                }
+            if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
+                this.speedY = -this.speedY;
+            }
+
+            var collisions = this.getCollisions('bubble');
+            for (var i=0; i<collisions.length; ++i) {
+                collisions[i].onBulletCollision(this);
             }
         },
     });
-
 
     var Shooter = createClass(GameObject, function() {
 
@@ -343,20 +369,50 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             }
         },
 
-        shoot: function() {}
+        shoot: function() {},
+        spawnBullet: function() {}
     });
 
     var PinShooter = createClass(Shooter, function() {
 
     }, {
+        spawnBullet: function(x, y, angle) {
+            var b = new Bullet(res.tex.pin, x, y, angle);
+            b.init = function(state) {
+                Bullet.prototype.init.call(b, state);
+                b.speed = 0.2;
+                b.lifeTime = 6000;
+                b.lifeTimer = b.lifeTime;
+            }
+
+            b.destroy = function(state) {
+                state.pinEmitter.emit(b.x, b.y, 3);
+                Bullet.prototype.destroy.call(b, state);
+            };
+
+            return b;
+        },
+
         shoot: function() {
-            this.state.add(new Pin(this.x, this.y, this.angle));
+            this.state.add(this.spawnBullet(this.x, this.y, this.angle));
         }
     });
 
     var Shotgun = createClass(Shooter, function() {
 
     }, {
+        spawnBullet: function(x, y, angle) {
+            var b = new Bullet(res.tex.shotgunBullet, x, y, angle);
+            b.init = function(state) {
+                Bullet.prototype.init.call(b, state);
+                b.speed = 0.25;
+
+                b.lifeTime = 6000;
+                b.lifeTimer = b.lifeTime;
+            };
+
+            return b;
+        },
         shoot: function() {
             var bulletOffset = 15 * DEG2RAD;
             this.state.add(new ShotgunBullet(this.x, this.y, this.angle));
@@ -368,108 +424,22 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     var Rifle = createClass(Shooter, function() {
 
     }, {
+        spawnBullet: function(x, y, angle) {
+            var b = new Bullet(this, res.tex.rifleBullet, x, y, angle);
+            b.init = function(state) {
+                Bullet.prototype.init.call(b, state);
+                b.speed = 0.6;
+
+                b.lifeTime = 6000;
+                b.lifeTimer = b.lifeTime;
+            };
+
+            return b;
+        },
+
         shoot: function() {
             this.state.add(new RifleBullet(this.x, this.y, this.angle));
         }
-    });
-
-    // Any performance problems with these are mostly likely due to the collisions rather than rendering.
-    var Bullet = createClass(GameObject, function(tex, x, y, angle) {
-        this.x = x;
-        this.y = y;
-        this.speedX = Math.cos(angle);
-        this.speedY = -Math.sin(angle);
-        this.tex = tex;
-    }, {
-        init: function(state) {
-            GameObject.prototype.init.call(this, state);
-
-            this.graphic = this.addDisplay(new gfx.pixi.Sprite(this.tex), this.state.bulletBatch);
-            this.width = this.graphic.width;
-            this.height = this.graphic.width;
-
-            this.speed = 0;
-            this.lifeTime = 0;
-            this.lifeTimer = 0;
-        },
-
-        destroy: function(state) {
-            GameObject.prototype.destroy.call(this, state);
-        },
-
-        update: function(delta) {
-            GameObject.prototype.update.call(this, delta);
-            var speed = this.speed * delta;
-            this.x += this.speedX * speed;
-            this.y += this.speedY * speed;
-
-            this.angle = -Math.atan2(this.speedY, this.speedX);
-
-            this.lifeTimer -= delta;
-
-            // y = sqrt(1 -x) + x/4
-            var lifeRatio = this.lifeTimer / this.lifeTime;
-            this.graphic.alpha = Math.sqrt(lifeRatio) + (1-lifeRatio)/4;
-
-            if (this.lifeTimer <= 0) {
-                this.state.remove(this);
-            }
-
-            var bounds = this.getBounds();
-            if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
-                this.speedX = -this.speedX;
-            }
-
-            if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
-                this.speedY = -this.speedY;
-            }
-
-            var collidedBubble = this.getCollisions(this.state.bubbles)
-            if (collidedBubble) {
-                collidedBubble.onBulletCollision(this);
-            }
-        },
-    });
-
-    var Pin = createClass(Bullet, function(x, y, angle) {
-        Bullet.call(this, res.tex.pin, x, y, angle);
-    }, {
-        init: function(state) {
-            Bullet.prototype.init.call(this, state);
-            this.speed = 0.2;
-
-            this.lifeTime = 6000;
-            this.lifeTimer = this.lifeTime;
-        },
-
-        destroy: function(state) {
-            this.state.pinEmitter.emit(this.x, this.y, 3);
-            Bullet.prototype.destroy.call(this, state);
-        },
-    });
-
-    var ShotgunBullet = createClass(Bullet, function(x, y, angle) {
-        Bullet.call(this, res.tex.shotgunBullet, x, y, angle);
-    }, {
-        init: function(state) {
-            Bullet.prototype.init.call(this, state);
-            this.speed = 0.25;
-
-            this.lifeTime = 6000;
-            this.lifeTimer = this.lifeTime;
-        },
-    });
-
-    var RifleBullet = createClass(Bullet, function(x, y, angle) {
-        Bullet.call(this, res.tex.rifleBullet, x, y, angle);
-    }, {
-        init: function(state) {
-            Bullet.prototype.init.call(this, state);
-            this.speed = 0.6;
-
-            this.lifeTime = 6000;
-            this.lifeTimer = this.lifeTime;
-        },
     });
 
 
@@ -641,6 +611,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
     });
 
+
     var Particle = createClass(GameObject, function(emitter, tex, opt) {
         this.x = opt.x;
         this.y = opt.y;
@@ -733,6 +704,36 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
     });
 
+    // types = oneshot, loop
+    var Timer = createClass(BasicObject, function(duration, type, onComplete) {
+        this.duration = duration;
+        this.currentTime = duration;
+        this.onComplete = onComplete;
+        this.type = type;
+    }, {
+        update: function(delta) {
+            if (this.paused) return;
+
+            BasicObject.prototype.update.call(this, delta);
+            this.currentTime -= delta;
+
+            if (this.onTick) {
+                this.onTick(1-(this.currentTime/this.duration), this.currentTime, this.duration);
+            }
+
+            if (this.currentTime <= 0) {
+                if (this.type === 'oneshot') {
+                    this.state.remove(this);
+                } else if (this.type === 'loop') {
+                    this.currentTime = this.duration;
+                }
+
+                if (this.onComplete) {
+                    this.onComplete();
+                }
+            }
+        },
+    });
 
     var StatusBar = createClass(GameObject, function(back, front, width, height) {
         this.backSliceTextures = back;
