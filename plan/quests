@@ -15,9 +15,31 @@ What a quest needs:
 A possible example of how to create a new detail:
 
     addDetail('multiplier', 'Achieve a multiplier of VAL'); // this design will most likely change
+
+    addDetail('popBubbles', function(goal) { // Another possible example
+        return "Pop " + goal + " bubbles."; // Shown while quest is selected.
+    }, function(status, goal) {
+        return status + " bubbles popped out of " + goal; // Shown while quest is in progress. If not specified then it will just show the default (first) detail description.
+    });
+
     // How to implement it. In Field.update
     if (curQuest.detail.multiplier) {
         if (multiplier >= curQuest.detail.multiplier) {
             curQuest.complete('multiplier');
         }
     }
+
+What each quest instance needs
+
+    details // An object containing quest details
+        name, value // e.g. multiplier: 10
+        status // detail status. e.g. with bubble count 20/50 bubbles the 20 would be status. If status is not given then we just log the detail's description.
+
+    reward
+    name
+    description
+    id
+    unlocks
+
+    complete(detailName) // Completes a detail of a quest
+    completedDetails // The names of the details completed
