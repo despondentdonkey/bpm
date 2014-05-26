@@ -43,9 +43,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             y: 0.5
         };
         this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
-
     }, {
-
         init: function(state) {
             BasicObject.prototype.init.call(this, state);
         },
@@ -177,6 +175,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             };
         },
 
+<<<<<<< HEAD
         // Returns true if an object is colliding with this object.
         isColliding: function(obj) {
             var bounds = this.getBounds();
@@ -217,6 +216,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 }
             }
 
+=======
+        // Takes string id, returns array of colliding objects
+        getCollisions:  function(id) {
+>>>>>>> In progress: Clean-up code, comment, reduce globals
             var result = [];
             for (var i=0; i<objects.length; ++i) {
                 var obj = objects[i];
@@ -251,6 +254,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         this.speedX = Math.cos(angle);
         this.speedY = -Math.sin(angle);
         this.tex = tex;
+
+        this.currentElement;
     }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
@@ -312,8 +317,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
             this.graphic.depth = gfx.layers.gui;
 
+            this.currentElement = bpm.player.currentElement;
+
             this.ammo = 100;
             this.ammoMax = 1000;
+            bpm.player.ammoMax = this.ammoMax;
 
             this.ammoText = this.state.addDisplay(new gfx.pixi.Text('', {
                 stroke: 'black',
@@ -338,16 +346,16 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             GameObject.prototype.update.call(this);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
 
-            this.ammoText.setText(bpm.player.ammo);
+            this.ammoText.setText(this.ammo);
 
-            if (bpm.player.ammo > 0) {
+            if (this.ammo > 0) {
                 if (input.mouse.isPressed(input.MOUSE_LEFT)) {
                     this.shoot();
                     bpm.player.ammo--;
                 }
             }
 
-            if (bpm.player.ammo < bpm.player.ammoMax) {
+            if (this.ammo < this.ammoMax) {
                 this.ammoTimer.paused = false;
 
                 this.ammoLoader.visible = true;
@@ -358,6 +366,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 this.ammoTimer.paused = true;
                 this.ammoLoader.visible = false;
             }
+
+            bpm.player.ammo = this.ammo;
         },
 
         drawAmmoLoaderCircle: function(color, ratio) {
@@ -369,13 +379,13 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             }
         },
 
+        // calls spawnBullet with additional functionality
         shoot: function() {},
+        // creates a customized instance of Bullet
         spawnBullet: function() {}
     });
 
-    var PinShooter = createClass(Shooter, function() {
-
-    }, {
+    var PinShooter = createClass(Shooter, function() {}, {
         spawnBullet: function(x, y, angle) {
             var b = new Bullet(res.tex.pin, x, y, angle);
             b.init = function(state) {
@@ -383,7 +393,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 b.speed = 0.2;
                 b.lifeTime = 6000;
                 b.lifeTimer = b.lifeTime;
-            }
+            };
 
             b.destroy = function(state) {
                 state.pinEmitter.emit(b.x, b.y, 3);
@@ -394,13 +404,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         shoot: function() {
-            this.state.add(this.spawnBullet(this.x, this.y, this.angle));
-        }
+            return this.state.add(this.spawnBullet(this.x, this.y, this.angle));
+        },
     });
 
-    var Shotgun = createClass(Shooter, function() {
-
-    }, {
+    var Shotgun = createClass(Shooter, function() {}, {
         spawnBullet: function(x, y, angle) {
             var b = new Bullet(res.tex.shotgunBullet, x, y, angle);
             b.init = function(state) {
@@ -415,15 +423,13 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
         shoot: function() {
             var bulletOffset = 15 * DEG2RAD;
-            this.state.add(new ShotgunBullet(this.x, this.y, this.angle));
-            this.state.add(new ShotgunBullet(this.x, this.y, this.angle+bulletOffset));
-            this.state.add(new ShotgunBullet(this.x, this.y, this.angle-bulletOffset));
+            return this.state.add([new ShotgunBullet(this.x, this.y, this.angle),
+                                   new ShotgunBullet(this.x, this.y, this.angle+bulletOffset),
+                                   new ShotgunBullet(this.x, this.y, this.angle-bulletOffset)]);
         }
     });
 
-    var Rifle = createClass(Shooter, function() {
-
-    }, {
+    var Rifle = createClass(Shooter, function() {}, {
         spawnBullet: function(x, y, angle) {
             var b = new Bullet(this, res.tex.rifleBullet, x, y, angle);
             b.init = function(state) {
@@ -438,7 +444,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         shoot: function() {
-            this.state.add(new RifleBullet(this.x, this.y, this.angle));
+            return this.state.add(new RifleBullet(this.x, this.y, this.angle));
         }
     });
 
@@ -473,18 +479,20 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
             this.state.bubbles.push(this);
 
+            // Graphics / 2D Specs
             this.addId('bubble');
-            this.speed = 0.03;
-
             this.bubble = new gfx.pixi.Sprite(res.tex.bubble);
             this.glare = new gfx.pixi.Sprite(res.tex.glare);
 
             this.width = this.bubble.width;
             this.height = this.bubble.width;
 
+            // Stats affected by upgrades/etc
             this.hpMax = this.armor*2;
             this.hp = this.hpMax;
+            this.speed = 0.03;
 
+            // Armor
             if (this.armor > 0) {
                 this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.sheets.armor[this.armor-1]), this.armorBatch);
                 this.armorStatus = 'normal';
@@ -523,12 +531,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 this.state.remove(this);
             }
 
-            if (this.elementStatus === 'fire') {
-                this.onFire();
-            }
+            this._updateElements();
 
             // Death/Armor Management
-
             if (this.armor > 0) {
                 if (this.hp < this.hpMax) {
                     // Add crack effect on first bullet collision.
@@ -581,9 +586,16 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.updateDisplayProperties([this.bubble, this.glare]);
         },
 
-        // Adds the fire display and sets its element status to 'fire'.
-        ignite: function() {
-            if (this.elementStatus !== 'fire') {
+        _updateElements: function() {
+            switch(this.currentElement) {
+                case 'fire':
+                    this.fireUpdate();
+                    break;
+            }
+        },
+
+        applyFire: function() {
+            if (this.currentElement !== 'fire') {
                 if (!this.fire) {
                     this.fire = new gfx.pixi.MovieClip(res.sheets.fire);
                     this.fire.width = this.width;
@@ -596,17 +608,25 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 }
 
                 this.addDisplay(this.fire);
-                this.elementStatus = 'fire';
+                this.currentElement = 'fire';
             }
         },
 
         // When the bubble is currently on fire.
-        onFire: function() {
+        fireUpdate: function() {
             this.hp -= 0.01;
 
+<<<<<<< HEAD
             var collidedBubble = this.getCollisions(this.state.bubbles);
             if (collidedBubble) {
                 collidedBubble.ignite();
+=======
+            var collisions = this.getCollisions('bubble');
+            for (var i=0; i<collisions.length; ++i) {
+                var bubble = collisions[i];
+                if (bubble === this) continue;
+                bubble.applyFire();
+>>>>>>> In progress: Clean-up code, comment, reduce globals
             }
         },
     });
