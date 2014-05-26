@@ -29,7 +29,7 @@ A possible example of how to create a new detail:
         }
     }
 
-What each quest instance needs
+What each quest instance needs:
 
     details // An object containing quest details
         name, value // e.g. multiplier: 10
@@ -42,4 +42,21 @@ What each quest instance needs
     unlocks
 
     complete(detailName) // Completes a detail of a quest
+        add detail to completedDetails
+        if all details are completed:
+            set completed to true
+            // Might do the following in RoundCompleteMenu
+            add quests in 'unlocks' to the available quests array
+            give reward
+            set currentQuest to null
+
     completedDetails // The names of the details completed
+
+    completed // Is the quest completed?
+
+Storage of quests:
+
+    // A list of all available quests. This will be sorted in reverse by id. So main quests should be first and those will be sorted by highest id, then sidequests and those will also be sorted by highest id.
+    quests = [];
+    currentQuest; // A quest instance
+

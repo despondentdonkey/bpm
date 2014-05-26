@@ -1,4 +1,4 @@
-define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, objects, gfx, res, input, ui, events) {
+define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], function(bpm, objects, gfx, res, input, ui, events, quests) {
 
     var global = {
         current: null,
@@ -177,6 +177,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
         this.xp = 0;
 
+        if (bpm.player.currentQuest) {
+            this.currentQuest = bpm.player.currentQuest;
+        } else {
+            console.error('No current quest!');
+        }
+
         this.menus = [
             [UpgradeMenu, 'U'],
             [FieldPauseMenu, input.ESCAPE]
@@ -350,6 +356,14 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
             if (this.combo >= this.comboGoal) {
                 this.multiplier++;
+
+                var objective = quests.getObjective('multiplier');
+                if (objective) {
+                    if (this.multiplier >= objective.goal) {
+                        objective.complete();
+                    }
+                }
+
                 this.comboGoal = this.comboGoal + Math.round(Math.sqrt(this.comboGoal * 8));
             }
 
@@ -527,7 +541,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             back.depth = gfx.layers.gui-10;
             this.addDisplay(back);
 
-            var text = new gfx.pixi.Text('Round Complete!', {
+            var text = new gfx.pixi.Text('Day completed!', {
                 stroke: 'black',
                 strokeThickness: 8,
                 align: 'center',
@@ -542,7 +556,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
 
             var button = new ui.Button('Continue', this.buttonStyle, function() {
                 this.prevState.destroy();
-                setState(new RoundCompleteMenu(null, this.prevState.xp));
+                setState(new RoundCompleteMenu(null, this.prevState));
             }, this);
             button.x = gfx.width/2 - button.width/2;
             button.y = text.y + text.height;
@@ -621,18 +635,50 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
         },
 
         buildTownUi: function() {
-            var quest = new ui.Button("The Quest", this.buttonStyle);
-            quest.x = 32;
-            quest.y = 100;
+            var uiList = [];
+
+            var questDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
+            uiList.push(questDescription);
+
+            for (var i=0; i<bpm.player.quests.length; ++i) {
+                var quest = quests.all[bpm.player.quests[i]];
+
+                // Pretty ugly. Binds 'this' to an anonymous function.
+                (_.bind(function(quest) {
+                    var qButton = new ui.Button(quest.name, this.buttonStyle, function() {
+                        bpm.player.currentQuest = quest;
+
+                        var description = quest.description;
+
+                        for (var key in quest.objectives) {
+                            description += '\n' + quest.objectives[key].description;
+                        }
+
+                        questDescription.displayText.setText(description);
+
+                        console.log('CURRENT QUEST', bpm.player.currentQuest);
+                    }, this);
+
+                    qButton.x = 32;
+                    qButton.y = 100 + ((qButton.height+10) * i);
+                    uiList.push(qButton);
+                }, this))(quest);
+            }
 
             var startRound = new ui.Button("Start Round", this.buttonStyle, function() {
-                setState(new Field());
+                if (bpm.player.currentQuest) {
+                    setState(new Field());
+                } else {
+                    console.log('Please select a quest');
+                }
             });
 
             startRound.x = gfx.width - startRound.width - 10;
             startRound.y = gfx.height - startRound.height - 10;
 
-            return [quest, startRound];
+            uiList.push(startRound);
+
+            return uiList;
         },
 
         buildSmithUi: function() {
@@ -663,12 +709,14 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     });
 
 
-    var RoundCompleteMenu = createClass(Menu, function(prevState, xp) {
-        this.xp = xp;
+    var RoundCompleteMenu = createClass(Menu, function(prevState, field) {
+        this.field = field;
+        this.xp = this.field.xp;
     }, {
         init: function() {
             Menu.prototype.init.call(this);
-            this.addDisplay(new gfx.pixi.Text('Round Complete!', {
+
+            this.addDisplay(new gfx.pixi.Text('Day complete!', {
                 stroke: 'black',
                 strokeThickness: 4,
                 fill: 'white',
@@ -685,10 +733,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
                 align: 'left',
             });
 
-            xpText.x = 200;
-            xpText.y = 200;
+            xpText.x = 50;
+            xpText.y = 400;
             this.addDisplay(xpText);
-
 
             var button = new ui.Button('Continue', this.buttonStyle, function() {
                 setState(new UpgradeMenu());
@@ -696,6 +743,52 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
             button.x = gfx.width - button.width - 10;
             button.y = gfx.height - button.height - 10;
             this.add(button);
+
+            // Quest status
+
+            var quest = this.field.currentQuest;
+
+            var completeText = new gfx.pixi.Text('Failed', {
+                stroke: 'black',
+                strokeThickness: 4,
+                fill: 'white',
+                align: 'center',
+            });
+
+            var questText = new gfx.pixi.Text(quest.name, {
+                stroke: 'black',
+                strokeThickness: 4,
+                fill: 'white',
+                align: 'center',
+                font: 'bold 64px arial',
+            });
+
+            if (quest.completed) {
+                bpm.player.money += quest.reward;
+                completeText.setText('Completed\n$' + quest.reward + ' reward\n$' + bpm.player.money + ' total');
+
+                // Remove the current quest from available quests.
+                bpm.player.quests.splice(bpm.player.quests.indexOf(quest.id), 1);
+
+                // Unlock new quests adding them to available quests.
+                if (quest.unlocks) {
+                    for (var i=0; i<quest.unlocks.length; ++i) {
+                        bpm.player.quests.push(quest.unlocks[i]);
+                    }
+                }
+                bpm.player.currentQuest = null;
+            }
+
+            completeText.anchor.x = 0.5;
+
+            questText.x = gfx.width/2 - questText.width/2;
+            questText.y = 100;
+
+            completeText.x = gfx.width/2;
+            completeText.y = questText.y + questText.height + 5;
+
+            this.addDisplay(questText);
+            this.addDisplay(completeText);
         },
     });
 
