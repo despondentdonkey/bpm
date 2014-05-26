@@ -286,6 +286,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
             this.graphic.depth = gfx.layers.gui;
 
+            this.ammo = 100;
+            this.ammoMax = 1000;
+
             this.ammoText = this.state.addDisplay(new gfx.pixi.Text('', {
                 stroke: 'black',
                 strokeThickness: 4,
@@ -301,7 +304,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.ammoLoader.depth = gfx.layers.gui;
 
             this.ammoTimer = this.state.add(new Timer(3000, 'loop', _.bind(function() {
-                bpm.player.pins++;
+                bpm.player.ammo++;
             }, this)));
         },
 
@@ -309,26 +312,16 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             GameObject.prototype.update.call(this);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
 
-            this.ammoText.setText(bpm.player.pins);
+            this.ammoText.setText(bpm.player.ammo);
 
-            if (bpm.player.pins > 0) {
+            if (bpm.player.ammo > 0) {
                 if (input.mouse.isPressed(input.MOUSE_LEFT)) {
-                    var weapon = bpm.player.currentWeapon;
-                    if (weapon === 'shotgun') {
-                        var bulletOffset = 15 * DEG2RAD;
-                        this.state.add(new ShotgunBullet(this.x, this.y, this.angle));
-                        this.state.add(new ShotgunBullet(this.x, this.y, this.angle+bulletOffset));
-                        this.state.add(new ShotgunBullet(this.x, this.y, this.angle-bulletOffset));
-                    } else if (weapon === 'rifle') {
-                        this.state.add(new RifleBullet(this.x, this.y, this.angle));
-                    } else if (weapon === 'pinshooter') {
-                        this.state.add(new Pin(this.x, this.y, this.angle));
-                    }
-                    bpm.player.pins--;
+                    this.shoot();
+                    bpm.player.ammo--;
                 }
             }
 
-            if (bpm.player.pins < bpm.player.pinMax) {
+            if (bpm.player.ammo < bpm.player.ammoMax) {
                 this.ammoTimer.paused = false;
 
                 this.ammoLoader.visible = true;
@@ -349,6 +342,35 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 this.ammoLoader.lineTo(this.x + (-Math.cos(rad) * 48),  y + (Math.sin(rad) * 32));
             }
         },
+
+        shoot: function() {}
+    });
+
+    var PinShooter = createClass(Shooter, function() {
+
+    }, {
+        shoot: function() {
+            this.state.add(new Pin(this.x, this.y, this.angle));
+        }
+    });
+
+    var Shotgun = createClass(Shooter, function() {
+
+    }, {
+        shoot: function() {
+            var bulletOffset = 15 * DEG2RAD;
+            this.state.add(new ShotgunBullet(this.x, this.y, this.angle));
+            this.state.add(new ShotgunBullet(this.x, this.y, this.angle+bulletOffset));
+            this.state.add(new ShotgunBullet(this.x, this.y, this.angle-bulletOffset));
+        }
+    });
+
+    var Rifle = createClass(Shooter, function() {
+
+    }, {
+        shoot: function() {
+            this.state.add(new RifleBullet(this.x, this.y, this.angle));
+        }
     });
 
     // Any performance problems with these are mostly likely due to the collisions rather than rendering.
@@ -780,9 +802,12 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     return {
         GameObject: GameObject,
         Timer: Timer,
-        Shooter: Shooter,
+        //Shooter: Shooter,
         Bubble: Bubble,
         Emitter: Emitter,
         StatusBar: StatusBar,
+        PinShooter: PinShooter,
+        Rifle: Rifle,
+        Shotgun: Shotgun
     };
 });

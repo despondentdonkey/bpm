@@ -307,6 +307,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.addDisplay(this.glareBatch);
             this.addDisplay(this.armorBatch);
 
+            this.shooter = this.add(new objects.Rifle());
 
             this.pinEmitter = new objects.Emitter(res.tex.pinParticle, {
                 angleMin: 0,

@@ -2,8 +2,8 @@ define(function() {
     return {
         player: {
             money: 0,
-            pins: 10000,
-            pinMax: 10000,
+            ammo: 10000,
+            ammoMax: 10000,
             xp: 0,
             day: 1,
 
