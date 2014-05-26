@@ -1,4 +1,6 @@
 define(function() {
+
+    var currentWeapon;
     return {
         player: {
             money: 0,
@@ -13,5 +15,9 @@ define(function() {
             quests: ['m00', 's00'], // Quests available
             currentQuest: null,
         },
+
+        state: {
+            current: null,
+        }
     };
 });
