@@ -1,25 +1,34 @@
 define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, objects, gfx, res, input, ui, events) {
 
-    var current = {
-        initNew: true, // Initialize the new state?
-        destroyOld: true, // Destroy the old state?
-        state: null,
-        newState: null, // The new state to switch to
-        prevState: null,
+    var global = {
+        current: null,
+        previous: null,
+        switchState: null,
     };
 
     // Static Methods
-    function setState(state, options) {
+    function setState(newState, options) {
         options = options || {};
         _.defaults(options, {
             initNew: true,
             destroyOld: true,
         });
 
-        current.initNew = options.initNew;
-        current.destroyOld = options.destroyOld;
+        global.switchState = _.bind(function() {
+            // If there's currently a state, set it to the previous state and destroy it.
+            if (global.current) {
+                global.previous = global.current;
+                if (options.destroyOld) {
+                    global.previous.destroy();
+                }
+            }
 
-        current.newState = state;
+            // Set the current state to the new state, initialize and clear the new state.
+            global.current = newState;
+            if (options.initNew) {
+                global.current.init();
+            }
+        }, this);
     }
 
     // Classes
@@ -135,7 +144,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
                 } else if (typeof pauseState === 'object') {
                     setState(pauseState, { destroyOld: false });
                 }
-                this.pauseState = current.state;
+                this.pauseState = global.current;
             }
 
             this.paused = true;
@@ -691,7 +700,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events'], function(bpm, 
     });
 
     return {
-        current: current,
+        global: global,
         setState: setState,
         Field: Field,
         State: State,
