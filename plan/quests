@@ -4,7 +4,7 @@ What a quest needs:
     Description: This could be story information or anything. This is not the precise details on what you should do. e.g. kill 4 bubbles that should be automated
     Reward: 100  # Money
     ID: "m04", "s02" # m for main, s for sidequest, number will be used for priority sorting in the quest list for the ui.
-    Unlocks: ["mo5", "s08"] # if this quest is completed then it will add the array of quests (from ids) to the quest list.
+    Unlocks: ["mo5", "s08"] # if this quest is completed then it will add the array of quests (from ids) to the quest list. If unlocks is not specified it will unlock the next sequence e.g. m02 unlocks mo3
     Details: {
         // Some of these will have to be made special for a particular quest. They will also need to provide a description somehow.
         multiplier: 10, // Achieve a multiplier of 10
