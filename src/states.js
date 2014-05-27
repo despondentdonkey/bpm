@@ -184,7 +184,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         }
 
         this.menus = [
-            [UpgradeMenu, 'U'],
+            [TownMenu, 'U'],
             [FieldPauseMenu, input.ESCAPE]
         ];
 
@@ -226,7 +226,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             }, this)));
 
 
-            this.roundTimer = new objects.Timer(60 * 1000, 'oneshot', _.bind(function() {
+            this.roundTimer = new objects.Timer(10 * 1000, 'oneshot', _.bind(function() {
                 this.pause(RoundEndPauseMenu);
             }, this));
 
@@ -575,7 +575,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             Menu.prototype.init.call(this);
 
             this.buttons = {
-                start: new ui.Button('Start', this.buttonStyle, function() { setState(new UpgradeMenu()); }, this),
+                start: new ui.Button('Start', this.buttonStyle, function() { setState(new TownMenu()); }, this),
             }
 
             this.buttons.start.setPos(gfx.width / 2 - 5, gfx.height / 2);
@@ -584,61 +584,48 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         }
     });
 
-
-    var UpgradeMenu = createClass(Menu, function(prevState) {
+    var TabMenu = createClass(Menu, function(prevState) {
     }, {
+        currentTab: null,
+
         init: function() {
             Menu.prototype.init.call(this);
 
-            this.tabNames = [];
             this.tabs = [];
 
-            this.ui = [];
-            this.uiBuilders = [];
-
-            this.addTab('Town', this.buildTownUi);
-            this.addTab('Blacksmith', this.buildSmithUi);
-            this.addTab('Wizard', this.buildWizardUi);
-
-            this.setUi(this.tabNames[0]);
+            this.addTab('Town', TownMenu);
+            this.addTab('Blacksmith', SmithMenu);
+            this.addTab('Wizard', WizardMenu);
         },
 
-        addTab: function(name, builder) {
-            this.tabNames.push(name);
-            this.uiBuilders[name] = builder;
-
-            // Add the tab objects.
-            var index = this.tabNames.indexOf(name);
-            var prevTab = index > 0 ? this.tabs[index-1] : null;
+        addTab: function(name, State) {
             var newTab = new ui.Button(name, this.buttonStyle, function() {
-                if (this.uiName !== name) {
-                    this.setUi(name);
+                if (name !== TabMenu.prototype.currentTab) {
+                    TabMenu.prototype.currentTab = name;
+                    setState(new State());
                 }
             }, this);
+
+            this.tabs.push(newTab);
+
+            var index = this.tabs.indexOf(newTab);
+            var prevTab = index > 0 ? this.tabs[index-1] : null;
 
             if (prevTab) {
                 newTab.x = prevTab.x + prevTab.width + 32;
             }
 
-            this.tabs.push(newTab);
             this.add(newTab);
         },
+    });
 
-        setUi: function(name) {
-            if (this.uiName) {
-                this.remove(this.ui);
-            }
-
-            this.uiName = name;
-            this.ui = this.uiBuilders[name].call(this);
-            this.add(this.ui);
-        },
-
-        buildTownUi: function() {
-            var uiList = [];
+    var TownMenu = createClass(TabMenu, function(prevState) {
+    }, {
+        init: function() {
+            TabMenu.prototype.init.call(this);
 
             var questDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
-            uiList.push(questDescription);
+            this.add(questDescription);
 
             for (var i=0; i<bpm.player.quests.length; ++i) {
                 var quest = quests.all[bpm.player.quests[i]];
@@ -661,7 +648,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
                     qButton.x = 32;
                     qButton.y = 100 + ((qButton.height+10) * i);
-                    uiList.push(qButton);
+                    this.add(qButton);
                 }, this))(quest);
             }
 
@@ -676,12 +663,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             startRound.x = gfx.width - startRound.width - 10;
             startRound.y = gfx.height - startRound.height - 10;
 
-            uiList.push(startRound);
-
-            return uiList;
+            this.add(startRound);
         },
+    });
 
-        buildSmithUi: function() {
+    var SmithMenu = createClass(TabMenu, function(prevState) {
+    }, {
+        init: function() {
+            TabMenu.prototype.init.call(this);
+
             this.buttons = {
                 buy: new ui.Button('Buy', this.buttonStyle, function() { log('kaching!'); }, this),
                 upgrade0: new ui.Button('Upgrade 0', this.buttonStyle, function() { log('selected'); }, this),
@@ -697,17 +687,21 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.buttons.buy.setPos(gfx.width - this.buttons.buy.width - 5, gfx.height - 50);
             _.each(_.tail(bvals), function(b, i) { b.setPos(50, 100 + 50 * i); });
 
-            return bvals;
-        },
-
-        buildWizardUi: function() {
-            var perk = new ui.Button("Perk", this.buttonStyle);
-            perk.x = 32;
-            perk.y = 100;
-            return [perk];
+            this.add(bvals);
         },
     });
 
+    var WizardMenu = createClass(TabMenu, function(prevState) {
+    }, {
+        init: function() {
+            TabMenu.prototype.init.call(this);
+
+            var perk = new ui.Button("Perk", this.buttonStyle);
+            perk.x = 32;
+            perk.y = 100;
+            this.add(perk);
+        },
+    });
 
     var RoundCompleteMenu = createClass(Menu, function(prevState, field) {
         this.field = field;
@@ -738,7 +732,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.addDisplay(xpText);
 
             var button = new ui.Button('Continue', this.buttonStyle, function() {
-                setState(new UpgradeMenu());
+                setState(new TownMenu());
             });
             button.x = gfx.width - button.width - 10;
             button.y = gfx.height - button.height - 10;
@@ -798,6 +792,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         Field: Field,
         State: State,
         MainMenu: MainMenu,
-        UpgradeMenu: UpgradeMenu,
+        TownMenu: TownMenu,
     };
 });
