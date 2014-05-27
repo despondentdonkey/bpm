@@ -22,6 +22,12 @@ function randomRange(min, max) {
 
 // Error Handling
 
+function error(message, trace) {
+    if (trace)
+        console.trace();
+    throw new Error('BPM2 -- Error > ' + message);
+}
+
 function warn(message, trace) {
     // wrapper for console.warn
     // can use to track bugs during alpha, beta, into prod
