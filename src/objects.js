@@ -175,7 +175,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             };
         },
 
-<<<<<<< HEAD
         // Returns true if an object is colliding with this object.
         isColliding: function(obj) {
             var bounds = this.getBounds();
@@ -216,10 +215,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 }
             }
 
-=======
-        // Takes string id, returns array of colliding objects
-        getCollisions:  function(id) {
->>>>>>> In progress: Clean-up code, comment, reduce globals
             var result = [];
             for (var i=0; i<objects.length; ++i) {
                 var obj = objects[i];
@@ -255,7 +250,20 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         this.speedY = -Math.sin(angle);
         this.tex = tex;
 
+        // Elements
         this.currentElement;
+        this.fireStats = {
+            damage: 0.01,
+            duration: 1200
+        };
+
+        this.iceStats = {
+
+        };
+
+        this.lightningStats = {
+
+        };
     }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
@@ -302,14 +310,33 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
             var collisions = this.getCollisions('bubble');
             for (var i=0; i<collisions.length; ++i) {
+                this.onBubbleCollision(collisions[i]);
                 collisions[i].onBulletCollision(this);
+            }
+        },
+
+        onBubbleCollision: function(bubble) {
+            switch(this.currentElement) {
+                case 'fire':
+                    console.log('applying fire to bubble');
+                    bubble.applyFire(this.fireStats);
+                    console.log(bubble);
+                    break;
+
+                case 'ice':
+                    bubble.applyIce(this.iceStats);
+                    break;
+
+                case 'lightning':
+                    bubble.applyLightning(this.lightningStats);
+                    break;
             }
         },
     });
 
-    var Shooter = createClass(GameObject, function() {
-
-    }, {
+    // Shooter applies the element and upgrades onto the bullets it generates
+    // Also controls ammo reloading system + graphics
+    var Shooter = createClass(GameObject, function() {}, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
             this.x = gfx.width/2;
@@ -350,8 +377,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
             if (this.ammo > 0) {
                 if (input.mouse.isPressed(input.MOUSE_LEFT)) {
-                    this.shoot();
-                    bpm.player.ammo--;
+                    // bullets can be an array of bullets or just a single bullet
+                    var bullets = this.shoot();
+                    this.ammo--;
                 }
             }
 
@@ -379,15 +407,31 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             }
         },
 
+        // Called immediately after shoot
+        setElement: function(element) {
+            var accepts = ['fire', 'ice', 'lightning'];
+            if (!_.contains(accepts, element))
+                throw new Error('Shooter.setElement: Invalid element passed: ' + element);
+
+            this.currentElement = element;
+            bpm.player.currentElement = element;
+        },
+
         // calls spawnBullet with additional functionality
         shoot: function() {},
-        // creates a customized instance of Bullet
-        spawnBullet: function() {}
+        // creates and returns a customized instance of Bullet
+        // make sure the returned bullet of this function is used in children's invocations
+        spawnBullet: function(tex, x, y, angle) {
+            var b = new Bullet(tex, x, y, angle);
+            if (this.currentElement)
+                b.currentElement = this.currentElement;
+            return b;
+        }
     });
 
     var PinShooter = createClass(Shooter, function() {}, {
         spawnBullet: function(x, y, angle) {
-            var b = new Bullet(res.tex.pin, x, y, angle);
+            var b = Shooter.prototype.spawnBullet.call(this, res.tex.pin, x, y, angle);
             b.init = function(state) {
                 Bullet.prototype.init.call(b, state);
                 b.speed = 0.2;
@@ -410,7 +454,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
     var Shotgun = createClass(Shooter, function() {}, {
         spawnBullet: function(x, y, angle) {
-            var b = new Bullet(res.tex.shotgunBullet, x, y, angle);
+            var b = Shooter.prototype.spawnBullet.call(this, res.tex.shotgunBullet, x, y, angle);
             b.init = function(state) {
                 Bullet.prototype.init.call(b, state);
                 b.speed = 0.25;
@@ -492,6 +536,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.hp = this.hpMax;
             this.speed = 0.03;
 
+
             // Armor
             if (this.armor > 0) {
                 this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.sheets.armor[this.armor-1]), this.armorBatch);
@@ -530,6 +575,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             if (bounds.y1 >= gfx.height) {
                 this.state.remove(this);
             }
+
 
             this._updateElements();
 
@@ -571,11 +617,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
             if (this.hp > -1) {
                 this.state.remove(bullet);
-
-                // apply element
-                if (bpm.player.currentElement === 'fire') {
-                    this.ignite();
-                }
             }
         },
 
@@ -586,47 +627,53 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.updateDisplayProperties([this.bubble, this.glare]);
         },
 
+
+        // Elements
+        // Applied by bullets, anything defined here should be either passed from the pin
+        // or should be related to the graphics/dimensions of the bubble
         _updateElements: function() {
             switch(this.currentElement) {
                 case 'fire':
-                    this.fireUpdate();
+                    this.updateFire();
                     break;
             }
         },
 
-        applyFire: function() {
+        removeElement: function(which) {
+            this.currentElement = null;
+            this.removeDisplay(which);
+        },
+
+        applyFire: function(fireStats) {
             if (this.currentElement !== 'fire') {
                 if (!this.fire) {
                     this.fire = new gfx.pixi.MovieClip(res.sheets.fire);
-                    this.fire.width = this.width;
-                    this.fire.height = this.height;
                     this.fire.play();
                     this.fire.animationSpeed = 0.3;
+
+                    this.fire.width = this.width;
+                    this.fire.height = this.height;
+
                     this.fire.syncGameObjectProperties = { scale: false };
                     this.fire.alpha = 0.7;
                     this.fire.depth = -4;
                 }
 
+                this.fireStats = fireStats;
                 this.addDisplay(this.fire);
                 this.currentElement = 'fire';
             }
         },
 
-        // When the bubble is currently on fire.
-        fireUpdate: function() {
-            this.hp -= 0.01;
+        updateFire: function() {
+            if (this.fireStats) {
+                this.hp -= this.fireStats.damage;
 
-<<<<<<< HEAD
             var collidedBubble = this.getCollisions(this.state.bubbles);
             if (collidedBubble) {
-                collidedBubble.ignite();
-=======
-            var collisions = this.getCollisions('bubble');
-            for (var i=0; i<collisions.length; ++i) {
-                var bubble = collisions[i];
-                if (bubble === this) continue;
-                bubble.applyFire();
->>>>>>> In progress: Clean-up code, comment, reduce globals
+                bubble.applyFire(this.fireStats);
+            } else {
+                warn('Bubble.fireStats not defined!');
             }
         },
     });
