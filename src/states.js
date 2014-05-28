@@ -183,6 +183,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             console.error('No current quest!');
         }
 
+        this.skipDay = false;
+        this.timeBonus = 0; // Ratio of round timer when quest is completed.
+
         this.menus = [
             [TownMenu, 'U'],
             [FieldPauseMenu, input.ESCAPE]
@@ -335,7 +338,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                 this.add(randBub(3));
             }
 
-
             this.addDisplay(this.bulletBatch);
             this.addDisplay(this.bubbleBatch);
             this.addDisplay(this.glareBatch);
@@ -374,6 +376,21 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                     this.combo = 0;
                     this.comboGoal = 4;
                     this.multiplier = 1;
+                }
+            }
+
+            if (this.currentQuest.completed) {
+                if (!this.skipDay) {
+                    this.timeBonus = this.roundTimer.currentTime / this.roundTimer.duration;
+
+                    var skipDayButton = new ui.Button('End Day', {}, function() {
+                        setState(new RoundCompleteMenu(null, this));
+                    }, this);
+                    skipDayButton.x = gfx.width - skipDayButton.width - 16;
+                    skipDayButton.y = 100;
+                    skipDayButton.depth = gfx.layers.gui;
+                    this.add(skipDayButton);
+                    this.skipDay = true;
                 }
             }
 
