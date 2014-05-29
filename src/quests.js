@@ -5,21 +5,26 @@ define(['bpm'], function(bpm) {
     // Contains all possible objectives a quest can have.
     this.objectives = {};
 
-    // Returns the objective from the current quest. If no current quest or objective exists then returns null.
-    this.getObjective = function(objectiveName) {
+    // Calls update on the objective for the current quest. If update returns true then the objective is complete.
+    this.updateObjective = function(objectiveName, eventObject) {
         if (bpm.player.currentQuest) {
             var objective = bpm.player.currentQuest.objectives[objectiveName];
+
             if (objective) {
-                return objective;
+                if (objective.update(eventObject)) {
+                    objective.complete();
+                }
+            } else {
+                console.error("Objective '" + objectiveName + "' does not exist. Check for typos.");
             }
         }
-        return null;
     };
 
     // Creates a new objective for quests and puts it in quests.objectives.
-    var addObjective = function(name, genDescription) {
+    var addObjective = function(name, update, genDescription) {
         this.objectives[name] = {
             name: name,
+            update: update,
             genDescription: genDescription,
         }
     };
@@ -51,10 +56,18 @@ define(['bpm'], function(bpm) {
 
         // Objectives currently are in the format of 'name: value'. We need to convert that into a new object to give more info.
         for (var key in quest.objectives) {
+            var cachedObjective = this.objectives[key]; // The objective from the list of all possible objectives.
+
+            if (!cachedObjective) {
+                console.error("Objective '" + key + "' does not exist in the list of possible objectives.");
+            } else if (!cachedObjective.update) {
+                console.error("Objective '" + key + "' does not have an update function defined.");
+            }
+
             var goal = quest.objectives[key];
 
             // Generate this objectives unique description.
-            var genDescription = this.objectives[key].genDescription;
+            var genDescription = cachedObjective.genDescription;
             var hidden = true;
             var description = '';
 
@@ -70,6 +83,7 @@ define(['bpm'], function(bpm) {
                 status: null,
                 completed: false,
                 hidden: hidden,
+                update: cachedObjective.update,
             };
 
             // The training objective/quest is a free-for-all so it should automatically be completed.
@@ -95,11 +109,13 @@ define(['bpm'], function(bpm) {
 
     // Add objectives
 
-    addObjective('multiplier', function(goal) {
+    addObjective('multiplier', function(e) {
+        return (e.multiplier >= this.goal);
+    }, function(goal) {
         return 'Reach a multiplier of ' + goal + '.';
     });
 
-    addObjective('training');
+    addObjective('training', function() {return true;});
 
     // Add quests
 
@@ -134,6 +150,6 @@ define(['bpm'], function(bpm) {
 
     return {
         all: this.all,
-        getObjective: this.getObjective,
+        updateObjective: this.updateObjective,
     };
 });

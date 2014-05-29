@@ -360,12 +360,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             if (this.combo >= this.comboGoal) {
                 this.multiplier++;
 
-                var objective = quests.getObjective('multiplier');
-                if (objective) {
-                    if (this.multiplier >= objective.goal) {
-                        objective.complete();
-                    }
-                }
+                quests.updateObjective('multiplier', {multiplier: this.multiplier});
 
                 this.comboGoal = this.comboGoal + Math.round(Math.sqrt(this.comboGoal * 8));
             }
