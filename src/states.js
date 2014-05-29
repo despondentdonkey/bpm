@@ -356,6 +356,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.comboText.setText(this.combo + ' / ' + this.comboGoal
             + '\nx' + this.multiplier);
 
+            // Once the combo counter has reached the combo goal we want to increment the multiplier and increase the combo goal. The multiplier should only be increased here.
             if (this.combo >= this.comboGoal) {
                 this.multiplier++;
 
