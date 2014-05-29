@@ -4,7 +4,8 @@
         "name": "My Quest",
         "description": "Hello, are you willing to take on this quest?",
         "reward": 100,
-        "time": 60,
+        "bonus": 100,
+        "time": 20,
         "unlocks": ["m01"],
         "objectives": {
             "multiplier": 3
@@ -24,7 +25,7 @@
         "name": "Training",
         "description": "Gather some experience by shooting bubbles for the day.",
         "reward": 0,
-        "time": 1,
+        "time": 60,
         "unlocks": ["s00"],
         "objectives": {
             "training": true

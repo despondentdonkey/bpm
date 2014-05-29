@@ -728,6 +728,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
     var RoundCompleteMenu = createClass(Menu, function(prevState, field) {
         this.field = field;
         this.xp = this.field.xp;
+        this.timeBonus = this.field.timeBonus;
+        this.quest = this.field.currentQuest;
     }, {
         init: function() {
             Menu.prototype.init.call(this);
@@ -742,7 +744,16 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             bpm.player.day++;
             bpm.player.xp += this.xp;
 
+            var xpBonus = 0;
+            if (this.quest.bonus) {
+                xpBonus = Math.round(this.quest.bonus * this.timeBonus);
+                if (xpBonus > 0) {
+                    bpm.player.xp += xpBonus;
+                }
+            }
+
             var xpText = new gfx.pixi.Text('Experience earned: ' + this.xp +
+            (xpBonus > 0 ? '\nTime bonus: ' + xpBonus : '') +
             '\nTotal experience: ' + bpm.player.xp, {
                 stroke: 'black',
                 strokeThickness: 4,
