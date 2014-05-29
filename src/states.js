@@ -809,6 +809,16 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                     }
                 }
                 bpm.player.currentQuest = null;
+            } else {
+                var text = 'Failed';
+                for (var key in quest.objectives) {
+                    var objective = quest.objectives[key];
+
+                    text += '\n' +
+                        (objective.completed ? 'Completed - ' : 'Failed - ') +
+                        (quest.objectives[key].description);
+                }
+                completeText.setText(text);
             }
 
             completeText.anchor.x = 0.5;
