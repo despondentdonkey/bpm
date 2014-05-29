@@ -232,7 +232,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
 
             // Circle round timer
-            this.roundTimer = new objects.Timer(10 * 1000, 'oneshot', _.bind(function() {
+            this.roundTimer = new objects.Timer((this.currentQuest.time || 60) * 1000, 'oneshot', _.bind(function() {
                 this.remove(this.bubbleSpawner);
                 this.addDisplay(this.roundTimerEndText);
                 this.roundTimerComplete = true;
