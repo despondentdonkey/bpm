@@ -41,9 +41,8 @@ In the quiet city of Pinville a dark evil approaches.
         Visit BubbleLand in phase 6 to meet K. Bubbs
 
 0 -- Quest Conventions
-    QUEST [0-9]+ = Main Questline
-    QUEST [A-Za-z]+[0-9]+ = Sidequests; have descriptor before number
-    FieldQuest [A-Za-z]+[0-9]+ = Sidequests to complete during rounds in Field, between main quests.
+    QUEST m[a-z][0-9]{2,} = Main Questline
+    QUEST s[a-z][0-9]{2,} = Sidequests; have descriptor before number
 
     Text guide:
 
@@ -62,48 +61,42 @@ In the quiet city of Pinville a dark evil approaches.
             ** Quest End **
                 Any dialog here will show after quest is turned in
 
-0 -- Rounds
-    Rounds represent days and progress when you are not currently on a quest.
-    When doing quest, round is paused.
-
 1 -- Introduction
     Mayor: "Thank the heavens you've arrived!"
-            "Without you, our peaceful city would be ruined!"
-            "Take this. It will aid you in your quest."
+            "Without you, our peaceful city of Pinville would be ruined!"
+            "Take this. It will aid you in your valiant quest against the unspeakable evil approaching us as we speak."
             * Receive Pin Shooter *
 
+    # Quest Main: Kill all of the bubbles before they reach the village!
+        Mayor: "Prepare yourself! The battle royale awaits!"
 
-    * Rounds 1 - 3: Normal bubbles increasing regularly *
-
-    QUEST 1: Kill all of the bubbles before they reach the village!
-        Mayor: "Now come! We have a lot of work to do!"
-
-    ** Quest Start - all normal bubbles **
-        Mayor: "Look at those hideous monstrosities! They make me sick."
+    ** Quest Start - a few normal bubbles **
+        Mayor: "Look at those hideous monstrosities!"
                 "SHOOT THEM! KILL THEM ALL!"
 
         * Show basic gameplay tutorial *
         * checkpoint (if you die, start here; skip dialog) *
 
     ** Quest End **
-        Mayor: "Wasn't that awful?? They get soap everywhere and they make everything sopping wet! How are we supposed to live under these conditions!?"
-                "Oh, that's right - that's what you're here for. As promised, here is money. Now don't spend it all in one place, y'hear!"
+
+         Mayor: "Ewwwww, they got their... residue everywhere!"
+                "Here is your reward, soldier. Our citizens thank you for your heroic deeds."
                 * Receive 1 gold *
-                "Why don't you head on down to the blacksmith? You might be able to pick yourself up a taco or something"
+                "Why don't you head on down to the blacksmith and get yourself a taco?"
 
     * Instructions on how to navigate the UI *
     * Make user go to blacksmith *
 
-    Blacksmith: "Well howdy partner! The mayor told me you were-a comin'! He's an... interesting fellow, isn't he?"
-                "Well don't be shy, what would you like to look at?"
+    Blacksmith: "Well howdy partner! The mayor told me you were-a comin'!"
+                "Well don't be shy, what would you like to buy?"
 
     * Display shop window and tutorial on how to navigate the shop *
 
-                "Wait - how much money do you have?"
+                "Wait - you have how much gold?"
                 "..."
                 "Get out."
 
-    QUEST 2: Kill all of the bubbles before they reach the village!
+    # Quest Main: Kill all of the bubbles before they reach the village!
              Gold: Achieve 6x combo
              Silver: 4x combo
              Bronze: 3x combo
@@ -116,24 +109,46 @@ In the quiet city of Pinville a dark evil approaches.
         * Checkpoint *
     ** Quest End **
 
+    # Quest Main:
+    # Quest Side
+    # Quest Side
 
-    FieldQuest Combo1: Achieve a combo of at least 10x
+    * Bubbles begin to increase in frequency *
 
-            Reward: 10g
+    Wizard: "Hello, traveler. My name is The Wizard. I will help you become incredibly strong."
+            "But first, you must not be a whiney little baby. Come see me when you are more experienced."
 
-    * End of round 3 *
-        Mayor: "Are they starting to increase in numbers, or am I crazy?"
-        Wizard via telepathy: "You're crazy."
-        Mayor: "WHAT??! Who said that?! Not again!" - Runs off
+    # Quest Main
+    # Quest Main
+        * wooden bubbles appear *
 
-    Wizard via telepathy: "Hello, traveler. My name is The Wizard. I will help you become incredibly strong."
-            "For every bubble you pop, I shall grant you knowledge points."
-            "These knowledge points can be used to gain abilities you can use to wreak havoc upon your foes."
-            "Come see me in my tower when you are ready."
-            * on tower enter, display UI help *
+    - Mayor, Blacksmith, and Wizard are holding a meeting to discuss the recent events
 
-    * Round 5 - wooden bubbles appear *
-        Mayor: "What's this? They are wearing armor?! Blasphemy!"
+    M: "Is that... armor?!"
+           "Bubblasphemy! What shall we do about this?"
+    BS: "Aye, indeed it be."
+    W: "Interesting..."
+    M: "Well, it's a good thing we hired that intern."
+       "Ahem - hero! It is your job to protect our beautiful city from this new threat!"
+       "Or else."
+        * Dark shadow covers the mayor's face while fading to black around mayor, hiding W and BS - make mayor look evil *
+
+    # Quest Main
+    # Quest Side
+
+    * city square (main area) *
+    W: "It is time. Come to my tower when you are ready."
+
+    * In wizard tower *
+    * display UI help along with wizard's speach*
+    W: "I shall teach you the art of elements. Elements give you an increased advantage over the bubbles."
+            "Each element has a unique power to maximize bubbley carnage."
+            "For every bubble you pop, I shall grant you Knowledge."
+            "Use Knowledge to unlock new elemental abilities."
+            "Use the abilities to destroy your foes."
+
+    * On first purchase of element *
+    W: "Now you are become death; destroyer of worlds."
 
     -- Misc. One-Liners (can be used when needed)
         -- Quest finishers
@@ -193,4 +208,4 @@ In the quiet city of Pinville a dark evil approaches.
 
 10 -- Destroying BubbleLand and K. Bubbs
 
-    - 
+    -
