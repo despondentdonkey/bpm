@@ -640,6 +640,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             var questDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
             this.add(questDescription);
 
+            var dayText = new gfx.pixi.Text('Day ' + bpm.player.day, {fill: 'white'});
+            dayText.x = gfx.width - dayText.width - 10;
+            dayText.y = 10;
+            this.addDisplay(dayText);
+
             for (var i=0; i<bpm.player.quests.length; ++i) {
                 var quest = quests.all[bpm.player.quests[i]];
 
@@ -730,6 +735,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                 align: 'left',
             }));
 
+            bpm.player.day++;
             bpm.player.xp += this.xp;
 
             var xpText = new gfx.pixi.Text('Experience earned: ' + this.xp +

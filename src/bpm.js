@@ -5,8 +5,11 @@ define(function() {
             pins: 10000,
             pinMax: 10000,
             xp: 0,
+            day: 1,
+
             currentWeapon: 'pinshooter',
             currentElement: 'fire',
+
             quests: ['m00', 's00'], // Quests available
             currentQuest: null,
         },
