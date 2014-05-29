@@ -185,6 +185,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             console.error('No current quest!');
         }
 
+        this.roundTimerComplete = false;
         this.skipDay = false;
         this.timeBonus = 0; // Ratio of round timer when quest is completed.
 
@@ -222,16 +223,19 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
 
             // Basic spawner
-            this.add(new objects.Timer(1000, 'loop', _.bind(function() {
+            this.bubbleSpawner = new objects.Timer(1000, 'loop', _.bind(function() {
                 if (!this) // Make sure this state still exists, probably not necessary.
                     return;
                 this.add(randBub(0));
-            }, this)));
+            }, this));
+            this.add(this.bubbleSpawner);
 
 
             // Circle round timer
             this.roundTimer = new objects.Timer(10 * 1000, 'oneshot', _.bind(function() {
-                this.pause(RoundEndPauseMenu);
+                this.remove(this.bubbleSpawner);
+                this.addDisplay(this.roundTimerEndText);
+                this.roundTimerComplete = true;
             }, this));
 
             var roundCirc = new gfx.pixi.Graphics();
@@ -277,6 +281,14 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.statusText.depth = gfx.layers.gui;
             this.comboText.depth = gfx.layers.gui;
 
+
+            this.roundTimerEndText = new gfx.pixi.Text('Pop the remaining bubbles!', {
+                fill: 'white',
+                font: 'bold 16px arial',
+            });
+            this.roundTimerEndText.depth = gfx.layers.gui;
+            this.roundTimerEndText.x = gfx.width/2 - this.roundTimerEndText.width/2;
+            this.roundTimerEndText.y = gfx.height - this.roundTimerEndText.height-5;
 
             this.bulletBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
@@ -373,6 +385,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                     skipDayButton.depth = gfx.layers.gui;
                     this.add(skipDayButton);
                     this.skipDay = true;
+                }
+            }
+
+            if (this.roundTimerComplete) {
+                if (this.bubbles.length <= 0) {
+                    this.pause(RoundEndPauseMenu);
                 }
             }
 
