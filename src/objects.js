@@ -309,10 +309,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 this.speedY = -this.speedY;
             }
 
-            var collisions = this.getCollisions('bubble');
-            for (var i=0; i<collisions.length; ++i) {
-                this.onBubbleCollision(collisions[i]);
-                collisions[i].onBulletCollision(this);
+            var collidedBubble = this.getCollisions(this.state.bubbles);
+            if (collidedBubble) {
+                this.onBubbleCollision(collidedBubble);
+                collidedBubble.onBulletCollision(this);
             }
         },
 
@@ -466,15 +466,15 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
         shoot: function() {
             var bulletOffset = 15 * DEG2RAD;
-            return this.state.add([new ShotgunBullet(this.x, this.y, this.angle),
-                                   new ShotgunBullet(this.x, this.y, this.angle+bulletOffset),
-                                   new ShotgunBullet(this.x, this.y, this.angle-bulletOffset)]);
+            return this.state.add([this.spawnBullet(this.x, this.y, this.angle),
+                                   this.spawnBullet(this.x, this.y, this.angle+bulletOffset),
+                                   this.spawnBullet(this.x, this.y, this.angle-bulletOffset)]);
         }
     });
 
     var Rifle = createClass(Shooter, function() {}, {
         spawnBullet: function(x, y, angle) {
-            var b = new Bullet(this, res.tex.rifleBullet, x, y, angle);
+            var b = Shooter.prototype.spawnBullet.call(this, res.tex.rifleBullet, x, y, angle);
             b.init = function(state) {
                 Bullet.prototype.init.call(b, state);
                 b.speed = 0.6;
@@ -487,7 +487,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         shoot: function() {
-            return this.state.add(new RifleBullet(this.x, this.y, this.angle));
+            return this.state.add(this.spawnBullet(this.x, this.y, this.angle));
         }
     });
 
@@ -685,13 +685,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
         updateFire: function() {
             if (this.fireStats) {
-                this.hp -= this.fireStats.damage;
+                    this.hp -= this.fireStats.damage;
 
-            var collidedBubble = this.getCollisions(this.state.bubbles);
-            if (collidedBubble) {
-                bubble.applyFire(this.fireStats);
-            } else {
-                warn('Bubble.fireStats not defined!');
+                var collidedBubble = this.getCollisions(this.state.bubbles);
+                if (collidedBubble) {
+                    collidedBubble.applyFire(this.fireStats);
+                } else {
+                    warn('Bubble.fireStats not defined!');
+                }
             }
         },
     });

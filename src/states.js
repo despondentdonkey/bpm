@@ -335,7 +335,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             });
             this.add(this.bubbleEmitter);
 
-            this.shooter = this.add(new objects.Shooter());
+            this.shooter = this.add(new objects.Rifle());
 
             var i;
             for (i=0; i<0; ++i) {
