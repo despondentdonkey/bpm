@@ -31,6 +31,7 @@ define(['bpm'], function(bpm) {
 
     // Creates a new quest instance and puts it in quests.all.
     var addQuest = function(id, quest) {
+        quest.id = id;
         quest.completed = false;
         quest.completedObjectives = [];
 
