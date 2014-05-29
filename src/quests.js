@@ -14,8 +14,6 @@ define(['bpm'], function(bpm) {
                 if (objective.update(eventObject)) {
                     objective.complete();
                 }
-            } else {
-                console.error("Objective '" + objectiveName + "' does not exist. Check for typos.");
             }
         }
     };
