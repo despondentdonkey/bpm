@@ -175,6 +175,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         this.combo = 0;
         this.comboGoal = 4;
 
+        this.bubbles = [];
+
         this.xp = 0;
 
         if (bpm.player.currentQuest) {

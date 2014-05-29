@@ -177,25 +177,69 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             };
         },
 
-        getCollisions:  function(id) {
-            var result = [];
-            for (var i=0; i<this.state.objects.length; ++i) {
-                var obj = this.state.objects[i];
-                if (obj instanceof GameObject) {
-                    if (obj !== this && obj.hasId(id)) {
-                        var bounds = this.getBounds();
-                        var objBounds = obj.getBounds();
+        // Returns true if an object is colliding with this object.
+        isColliding: function(obj) {
+            var bounds = this.getBounds();
+            var objBounds = obj.getBounds();
 
-                         if (bounds.x1 < objBounds.x2
-                          && bounds.x2 > objBounds.x1
-                          && bounds.y1 < objBounds.y2
-                          && bounds.y2 > objBounds.y1) {
-                            result.push(obj);
+            return (bounds.x1 < objBounds.x2
+            && bounds.x2 > objBounds.x1
+            && bounds.y1 < objBounds.y2
+            && bounds.y2 > objBounds.y1);
+        },
+
+        /* Returns the first object which collides with this object.
+         * If 'opt' is an object array then it will loop through it rather than the state object list.
+         * If 'opt' is undefined or an id then it will loop through the state object list.
+         * If 'opt' is an object literal then you can specify id, objects, and grouped.
+         * If 'grouped' is true then it will return a list of objects which collide with this object. */
+        getCollisions:  function(opt) {
+            var id;
+            var objects = this.state.objects;
+            var grouped = false;
+
+            // Decide what id, objects, and grouped should be based on parameter.
+            if (_.isArray(opt)) {
+                objects = opt;
+            } else {
+                if (_.isString(opt)) {
+                    id = opt;
+                } else {
+                    _.defaults(opt, {
+                        id: null,
+                        objects: objects,
+                        grouped: grouped,
+                    });
+
+                    id = opt.id;
+                    objects = opt.objects;
+                    grouped = opt.grouped;
+                }
+            }
+
+            var result = [];
+            for (var i=0; i<objects.length; ++i) {
+                var obj = objects[i];
+                if (obj instanceof GameObject && obj !== this) {
+                    var checkingObj;
+
+                    if (id) {
+                        if (obj.hasId(id)) {
+                            checkingObj = obj;
+                        } else {
+                            continue;
                         }
+                    } else {
+                        checkingObj = obj;
+                    }
+
+                    if (this.isColliding(checkingObj)) {
+                        result.push(checkingObj);
+                        if (!grouped) break;
                     }
                 }
             }
-            return result;
+            return result.length > 1 ? result : result[0];
         },
     });
 
@@ -358,9 +402,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 this.speedY = -this.speedY;
             }
 
-            var collisions = this.getCollisions('bubble');
-            for (var i=0; i<collisions.length; ++i) {
-                collisions[i].onBulletCollision(this);
+            var collidedBubble = this.getCollisions(this.state.bubbles)
+            if (collidedBubble) {
+                collidedBubble.onBulletCollision(this);
             }
         },
     });
@@ -435,6 +479,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         init: function(state) {
             GameObject.prototype.init.call(this, state);
 
+            this.state.bubbles.push(this);
+
             this.addId('bubble');
             this.speed = 0.03;
 
@@ -465,6 +511,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
         destroy: function() {
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
+            this.state.bubbles.splice(this.state.bubbles.indexOf(this), 1);
             GameObject.prototype.destroy.call(this);
         },
 
@@ -564,11 +611,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         onFire: function() {
             this.hp -= 0.01;
 
-            var collisions = this.getCollisions('bubble');
-            for (var i=0; i<collisions.length; ++i) {
-                var bubble = collisions[i];
-                if (bubble === this) continue;
-                bubble.ignite();
+            var collidedBubble = this.getCollisions(this.state.bubbles);
+            if (collidedBubble) {
+                collidedBubble.ignite();
             }
         },
     });
