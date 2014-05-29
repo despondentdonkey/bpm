@@ -195,31 +195,29 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         init: function() {
             State.prototype.init.call(this);
 
-            this.addListener('test', function(e) {
-                console.log('event stuff: ', 'HI');
-                console.log('this', this);
-            }, false);
+            var commonTextStyle = {
+                stroke: 'black',
+                strokeThickness: 4,
+                fill: 'white',
+                align: 'left',
+            };
 
-            this.addListener('test', function(e) {
-                console.log('event stuff: ', e);
-                console.log('this', this);
-            }, true);
+            var randBub = function(armor) {
+                return new objects.Bubble(armor, randomRange(32, gfx.width-32), randomRange(-128, -32), Math.random() * 360);
+            };
 
-            this.triggerEvent('test', {
-                cow: 'hi',
-            });
 
-            var buttonTest = new ui.Button('Pause Game', {font: 'bold 12px arial'}, _.bind(function() {
+            this.background = this.addDisplay(new gfx.pixi.TilingSprite(res.tex.background, 800, 600));
+            this.background.depth = gfx.layers.background;
+
+
+            var pauseButton = new ui.Button('Pause Game', {font: 'bold 12px arial'}, _.bind(function() {
                 this.onBlur();
             }, this));
+            pauseButton.x = gfx.width - pauseButton.width - 5;
+            pauseButton.y = gfx.height - pauseButton.height - 5;
+            this.add(pauseButton);
 
-            buttonTest.x = gfx.width - buttonTest.width - 5;
-            buttonTest.y = gfx.height - buttonTest.height - 5;
-
-            this.add(buttonTest);
-
-            var textField = new ui.TextField("Hello, this is gonna be some long text to demonstrate word wrap. Hopefully it will look good. Let's add a bit more text. And some more, and maybe a little more here.", 0, 200, gfx.width-10);
-            //this.add(textField);
 
             // Basic spawner
             this.add(new objects.Timer(1000, 'loop', _.bind(function() {
@@ -229,6 +227,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             }, this)));
 
 
+            // Circle round timer
             this.roundTimer = new objects.Timer(10 * 1000, 'oneshot', _.bind(function() {
                 this.pause(RoundEndPauseMenu);
             }, this));
@@ -259,35 +258,23 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.add(this.roundTimer);
 
 
+            // Combo time meter
             this.comboTimeBar = new objects.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13);
             this.comboTimeBar.x = gfx.width/2 - this.comboTimeBar.width/2;
             this.comboTimeBar.depth = gfx.layers.gui;
             this.comboTimeBar.setRatio(0);
             this.add(this.comboTimeBar);
 
-            this.background = this.addDisplay(new gfx.pixi.TilingSprite(res.tex.background, 800, 600));
-            this.background.depth = gfx.layers.background;
 
-            this.statusText = this.addDisplay(new gfx.pixi.Text('', {
-                stroke: 'black',
-                strokeThickness: 4,
-                fill: 'white',
-                align: 'left',
-            }));
-
-            this.comboText = this.addDisplay(new gfx.pixi.Text('', {
-                stroke: 'black',
-                strokeThickness: 4,
-                fill: 'white',
-                align: 'center',
-            }));
-
+            // Combo and status text (currently xp).
+            this.statusText = this.addDisplay(new gfx.pixi.Text('', commonTextStyle);
+            this.comboText = this.addDisplay(new gfx.pixi.Text('', commonTextStyle);
             this.comboText.anchor.x = 0.5;
             this.comboText.position.x = gfx.width/2;
             this.comboText.position.y = this.comboTimeBar.height;
-
             this.statusText.depth = gfx.layers.gui;
             this.comboText.depth = gfx.layers.gui;
+
 
             this.bulletBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
@@ -297,7 +284,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.bubbleBatch.depth = gfx.layers.bubbles;
             this.glareBatch.depth = gfx.layers.bubble-1;
 
-            this.shooter = this.add(new objects.Shooter());
+            this.addDisplay(this.bulletBatch);
+            this.addDisplay(this.bubbleBatch);
+            this.addDisplay(this.glareBatch);
+            this.addDisplay(this.armorBatch);
+
 
             this.pinEmitter = new objects.Emitter(res.tex.pinParticle, {
                 angleMin: 0,
@@ -325,9 +316,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             });
             this.add(this.bubbleEmitter);
 
-            var randBub = function(armor) {
-                return new objects.Bubble(armor, randomRange(32, gfx.width-32), randomRange(-128, -32), Math.random() * 360);
-            };
+            this.shooter = this.add(new objects.Shooter());
 
             var i;
             for (i=0; i<0; ++i) {
@@ -337,11 +326,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             for (i=0; i<40; i++) {
                 this.add(randBub(3));
             }
-
-            this.addDisplay(this.bulletBatch);
-            this.addDisplay(this.bubbleBatch);
-            this.addDisplay(this.glareBatch);
-            this.addDisplay(this.armorBatch);
 
             // Need to bind event callbacks, otherwise `this === window` on call
             _.bindAll(this, 'onBlur', 'onFocus');
