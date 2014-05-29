@@ -267,8 +267,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
 
             // Combo and status text (currently xp).
-            this.statusText = this.addDisplay(new gfx.pixi.Text('', commonTextStyle);
-            this.comboText = this.addDisplay(new gfx.pixi.Text('', commonTextStyle);
+            this.statusText = this.addDisplay(new gfx.pixi.Text('', commonTextStyle));
+            this.comboText = this.addDisplay(new gfx.pixi.Text('', commonTextStyle));
             this.comboText.anchor.x = 0.5;
             this.comboText.position.x = gfx.width/2;
             this.comboText.position.y = this.comboTimeBar.height;
