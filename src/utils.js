@@ -28,16 +28,28 @@ function error(message, trace) {
     throw new Error('BPM2 -- Error > ' + message);
 }
 
-function warn(message, trace) {
+//function typeError
+
+function warn(trace, message) {
     // wrapper for console.warn
     // can use to track bugs during alpha, beta, into prod
-    console.warn('BPM2 -- Warning > ' + message);
+    console.warn.apply(console, _BPMSetupLogMessage('Warning', trace, message, arguments));
     if (trace)
         console.trace();
 }
 
-function log(message, trace) {
-    console.log('BPM2 -- Message > ' + message);
-    if (trace)
+function log(trace, message) {
+    console.log.apply(console, _BPMSetupLogMessage('Message', trace, message, arguments));
+    if (trace === true)
         console.trace();
+}
+
+function _BPMSetupLogMessage(type, trace, message, args) {
+    var finalMessage = message;
+    var i = 2;
+    if (!_.isBoolean(trace)) {
+        finalMessage = trace;
+        i = 1;
+    }
+    return _.flatten(['BPM -- '+type+' > ' + finalMessage, _.tail(args, i)]);
 }
