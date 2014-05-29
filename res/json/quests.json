@@ -1,0 +1,31 @@
+{
+
+    "m00": {
+        "name": "My Quest",
+        "description": "Hello, are you willing to take on this quest?",
+        "reward": 100,
+        "unlocks": ["m01"],
+        "objectives": {
+            "multiplier": 3
+        }
+    },
+
+    "m01": {
+        "name": "Another Quest",
+        "description": "This is pretty much the same thing.",
+        "reward": 200,
+        "objectives": {
+            "multiplier": 4
+        }
+    },
+
+    "s00": {
+        "name": "Training",
+        "description": "Gather some experience by shooting bubbles for the day.",
+        "reward": 0,
+        "unlocks": ["s00"],
+        "objectives": {
+            "training": true
+        }
+    }
+}

@@ -30,7 +30,7 @@ define(['bpm'], function(bpm) {
     };
 
     // Creates a new quest instance and puts it in quests.all.
-    var addQuest = function(quest) {
+    var addQuest = function(id, quest) {
         quest.completed = false;
         quest.completedObjectives = [];
 
@@ -47,10 +47,10 @@ define(['bpm'], function(bpm) {
                 }
             }
 
-            console.log("Objective '" + objective.description + "' completed for quest '" + quest.name + " (" + quest.id + ")'!");
+            console.log("Objective '" + objective.description + "' completed for quest '" + quest.name + " (" + id + ")'!");
 
             if (quest.completed) {
-                console.log("'" + quest.name + " (" + quest.id + ")' completed!");
+                console.log("'" + quest.name + " (" + id + ")' completed!");
             }
         };
 
@@ -104,7 +104,15 @@ define(['bpm'], function(bpm) {
             quest.objectives[key] = objective;
         }
 
-        this.all[quest.id] = quest;
+        this.all[id] = quest;
+    };
+
+    // Parses JSON for quest data and adds them.
+    this.addJsonQuests = function(json) {
+        var quests = JSON.parse(json);
+        for (var key in quests) {
+            addQuest(key, quests[key]);
+        }
     };
 
     // Add objectives
@@ -117,39 +125,9 @@ define(['bpm'], function(bpm) {
 
     addObjective('training', function() {return true;});
 
-    // Add quests
-
-    addQuest({ id: 'm00',
-        name: 'My Quest',
-        description: 'Hello, are you willing to take on this quest?',
-        reward: 100,
-        unlocks: ['m01'],
-        objectives: {
-            multiplier: 3,
-        },
-    });
-
-    addQuest({ id: 'm01',
-        name: 'Another Quest',
-        description: 'This is pretty much the same thing.',
-        reward: 200,
-        objectives: {
-            multiplier: 4,
-        },
-    });
-
-    addQuest({ id: 's00',
-        name: 'Training',
-        description: 'Gather some experience by shooting bubbles for the day.',
-        reward: 0,
-        unlocks: ['s00'],
-        objectives: {
-            training: true,
-        },
-    });
-
     return {
         all: this.all,
         updateObjective: this.updateObjective,
+        addJsonQuests: this.addJsonQuests,
     };
 });

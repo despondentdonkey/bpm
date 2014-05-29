@@ -4,6 +4,7 @@ define(['gfx'], function(gfx) {
         tex: {},
         sheets: {},
         slices: {},
+        json: {},
     };
 
     var texturesToCreate = {};
@@ -99,6 +100,8 @@ define(['gfx'], function(gfx) {
             buttonUp: new gfx.pixi.Rectangle(4, 4, 24, 24),
             buttonDown: new gfx.pixi.Rectangle(6, 9, 19, 18),
         };
+
+        result.json.quests = this.loader.loadFile('res/json/quests.json');
 
         this.loader.load(function() {
             createQueuedTextures();

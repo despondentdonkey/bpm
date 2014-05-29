@@ -16,4 +16,4 @@ bower.json
 node_modules/*
 
 # resources
-res/*
+res/gfx/*
