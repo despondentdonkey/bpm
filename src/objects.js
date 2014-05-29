@@ -560,6 +560,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 this.state.xp += this.worth * this.state.multiplier;
                 this.state.combo++;
                 this.state.comboTimer = this.state.comboTime;
+                this.state.triggerEvent('bubblePopped');
                 this.state.remove(this);
             } else {
                 if (this.crack) {

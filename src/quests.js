@@ -115,6 +115,7 @@ define(['bpm'], function(bpm) {
     };
 
     // Add objectives
+    addObjective('training', function() {return true;});
 
     addObjective('multiplier', function(e) {
         return (e.multiplier >= this.goal);
@@ -122,7 +123,12 @@ define(['bpm'], function(bpm) {
         return 'Reach a multiplier of ' + goal + '.';
     });
 
-    addObjective('training', function() {return true;});
+    addObjective('popBubbles', function(e) {
+        this.status++;
+        return (this.status >= this.goal);
+    }, function(goal) {
+        return 'Pop ' + goal + ' bubbles.';
+    });
 
     return {
         all: this.all,

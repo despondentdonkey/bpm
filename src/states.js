@@ -189,6 +189,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         this.skipDay = false;
         this.timeBonus = 0; // Ratio of round timer when quest is completed.
 
+        this.addListener('bubblePopped', function() {
+            quests.updateObjective('popBubbles');
+        });
+
         this.menus = [
             [TownMenu, 'U'],
             [FieldPauseMenu, input.ESCAPE]
