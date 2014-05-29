@@ -515,8 +515,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             warn('Bubble armor is not a number');
         }
         this._prevArmor = this.armor;
-
-        this.elementStatus = null;
     }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
@@ -662,6 +660,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 this.fireStats = fireStats;
                 this.addDisplay(this.fire);
                 this.currentElement = 'fire';
+
+                var onFireComplete = _.bind(this.removeElement, this, this.fire);
+                var fireTimer = new Timer(this.fireStats.duration, 'oneshot', onFireComplete);
+                this.state.add(fireTimer);
             }
         },
 
