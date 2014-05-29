@@ -254,7 +254,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         this.currentElement;
         this.fireStats = {
             damage: 0.01,
-            duration: 1200
+            duration: 750,
+            cooldown: 2800
         };
 
         this.iceStats = {
@@ -318,9 +319,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         onBubbleCollision: function(bubble) {
             switch(this.currentElement) {
                 case 'fire':
-                    console.log('applying fire to bubble');
                     bubble.applyFire(this.fireStats);
-                    console.log(bubble);
                     break;
 
                 case 'ice':
@@ -555,6 +554,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         destroy: function() {
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
             this.state.bubbles.splice(this.state.bubbles.indexOf(this), 1);
+
+            // remove current element if it exists (fixes element flickering on destroy)
+            if (this.currentElementObj) {
+                this.removeDisplay(this.currentElementObj);
+            }
             GameObject.prototype.destroy.call(this);
         },
 
@@ -573,9 +577,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             if (bounds.y1 >= gfx.height) {
                 this.state.remove(this);
             }
-
-
-            this._updateElements();
 
             // Death/Armor Management
             if (this.armor > 0) {
@@ -608,6 +609,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                     this.crack.currentFrame = Math.round((1 - (this.hp / this.hpMax)) * (this.crack.totalFrames-1));
                 }
             }
+
+            this._updateElements();
         },
 
         onBulletCollision: function(bullet) {
@@ -638,12 +641,16 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         removeElement: function(which) {
-            this.currentElement = null;
-            this.removeDisplay(which);
+            // Make sure reference to state exists; this is necessary unless you like crashes
+            if (this.state) {
+                this.currentElement = null;
+                this.currentElementObj = null;
+                this.removeDisplay(which);
+            }
         },
 
         applyFire: function(fireStats) {
-            if (this.currentElement !== 'fire') {
+            if (this.currentElement !== 'fire' && !this.elementOnCooldown && this.hp > 0) {
                 if (!this.fire) {
                     this.fire = new gfx.pixi.MovieClip(res.sheets.fire);
                     this.fire.play();
@@ -657,13 +664,22 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                     this.fire.depth = -4;
                 }
 
+                this.currentElementObj = this.fire;
+                this.elementOnCooldown = true;
+
                 this.fireStats = fireStats;
                 this.addDisplay(this.fire);
                 this.currentElement = 'fire';
 
+                // Add fire timer - destroys timer when duration is up
                 var onFireComplete = _.bind(this.removeElement, this, this.fire);
                 var fireTimer = new Timer(this.fireStats.duration, 'oneshot', onFireComplete);
                 this.state.add(fireTimer);
+
+                // Add cooldown timer - must wait this long before being able to catch fire again
+                var onCDComplete = _.bind(function() { this.elementOnCooldown = false; }, this);
+                var fireCDTimer = new Timer(this.fireStats.cooldown, 'oneshot', onCDComplete);
+                this.state.add(fireCDTimer);
             }
         },
 
