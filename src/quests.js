@@ -92,10 +92,10 @@ define(['bpm'], function(bpm) {
             }
 
             objective.complete = function() {
-                if (!objective.completed) {
-                    objective.completed = true;
+                if (!this.completed) {
+                    this.completed = true;
                     if (quest.onObjectiveComplete) {
-                        quest.onObjectiveComplete(objective);
+                        quest.onObjectiveComplete(this);
                     }
                 }
             };
