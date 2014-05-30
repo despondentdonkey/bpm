@@ -673,6 +673,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 this.currentElementObj = this.fire;
                 this.elementOnCooldown = true;
 
+
+                // Update display properties for fire so it will have correct positions without having to wait another frame.
+                this.updateDisplayProperties([this.fire]);
+
                 this.fireStats = fireStats;
                 this.addDisplay(this.fire);
                 this.currentElement = 'fire';
