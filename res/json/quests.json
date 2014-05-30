@@ -1,19 +1,19 @@
 {
 
-    "m00": {
+    "ma00": {
         "name": "My Quest",
         "description": "Hello, are you willing to take on this quest?",
         "reward": 100,
         "bonus": 100,
         "time": 20,
-        "unlocks": ["m01"],
+        "unlocks": ["ma01"],
         "objectives": {
             "multiplier": 3,
             "popBubbles": 10
         }
     },
 
-    "m01": {
+    "ma01": {
         "name": "Another Quest",
         "description": "This is pretty much the same thing.",
         "reward": 200,

@@ -19,7 +19,7 @@ define(['bpm'], function(bpm) {
     };
 
     // A comparator used to sort a list of quest ids.
-    var priorityIds = ['ma', 'mb'];
+    var priorityIds = ['ma', 'mb']; // Order is important here. Earlier indices have higher priority.
     this.idComparator = function(a, b) {
         var stringRegex = /[a-z]+/;
         var numberRegex = /[0-9]+/;

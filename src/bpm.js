@@ -12,7 +12,7 @@ define(function() {
             currentWeapon: null,
             currentElement: 'fire',
 
-            quests: ['m00', 's00'], // Quests available
+            quests: ['ma00', 's00'], // Quests available
             currentQuest: null,
         },
 
