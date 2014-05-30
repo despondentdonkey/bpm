@@ -365,6 +365,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         destroy: function(state) {
+            // Remove things from the state's display
             _.each([this.ammoText, this.ammoLoader],
                    _.bind(this.state.removeDisplay, this.state));
             GameObject.prototype.destroy.call(this, state);
@@ -413,12 +414,12 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         // sets ammo timer on bpm.timers[weaponType]
         // pass time in ms; loops by default
         setAmmoTimer: function(time) {
-            var timer = new Timer(time, 'loop', _.bind(function() {
+            this.ammoTimer = new Timer(time, 'loop', _.bind(function() {
                 this.ammo++;
             }, this));
-            //bpm.timers[weaponType.toLowerCase()] = timer;
-            this.ammoTimer = timer;
-            return timer;
+
+
+            return this.state.add(this.ammoTimer);
         },
 
         // Called immediately after shoot
@@ -445,8 +446,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
     var PinShooter = createClass(Weapon, function() {}, {
         init: function(state) {
-            this.setAmmoTimer(3000);
             Weapon.prototype.init.call(this, state);
+            this.setAmmoTimer(3000);
         },
 
         spawnBullet: function(x, y, angle) {
@@ -472,6 +473,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     });
 
     var Shotgun = createClass(Weapon, function() {}, {
+        init: function(state) {
+            Weapon.prototype.init.call(this, state);
+            this.setAmmoTimer(3000);
+        },
+
         spawnBullet: function(x, y, angle) {
             var b = Weapon.prototype.spawnBullet.call(this, res.tex.shotgunBullet, x, y, angle);
             b.init = function(state) {
@@ -493,6 +499,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     });
 
     var Rifle = createClass(Weapon, function() {}, {
+        init: function(state) {
+            Weapon.prototype.init.call(this, state);
+            this.setAmmoTimer(3000);
+        },
+
         spawnBullet: function(x, y, angle) {
             var b = Weapon.prototype.spawnBullet.call(this, res.tex.rifleBullet, x, y, angle);
             b.init = function(state) {

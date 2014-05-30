@@ -720,6 +720,17 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
             this.add(startRound);
         },
+
+        update: function() {
+            TabMenu.prototype.update.call(this);
+            // TODO TESTING - Remove Me
+            if (input.key.isDown(input.ENTER)) {
+                bpm.player.currentQuest = quests.all["s00"];
+                setState(new Field());
+            }
+        }
+
+
     });
 
     var SmithMenu = createClass(TabMenu, function(prevState) {
