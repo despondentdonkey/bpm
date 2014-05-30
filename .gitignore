@@ -9,11 +9,24 @@
 # dogpantz files
 dailyvim
 dognote
+src/notes.txt
+src/todo
+story_notes
+lib/lode/
+lib/pixi/
+lib/requirejs/
+lib/sfxlib/
+lib/underscore/
+src/*.vim
 
 # project files
 .bowerrc
 bower.json
 node_modules/*
 
+
+Gruntfile.js
+
 # resources
 res/gfx/*
+res/*
