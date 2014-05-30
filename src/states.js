@@ -835,6 +835,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                         bpm.player.quests.push(quest.unlocks[i]);
                     }
                 }
+
+                bpm.player.quests.sort(quests.idComparator);
                 bpm.player.currentQuest = null;
             } else {
                 var text = 'Failed';

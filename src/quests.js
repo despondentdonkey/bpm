@@ -18,6 +18,29 @@ define(['bpm'], function(bpm) {
         }
     };
 
+    // A comparator used to sort a list of quest ids.
+    var priorityIds = ['ma', 'mb'];
+    this.idComparator = function(a, b) {
+        var stringRegex = /[a-z]+/;
+        var numberRegex = /[0-9]+/;
+        stringA = stringRegex.exec(a)[0];
+        stringB = stringRegex.exec(b)[0];
+        numberA = parseInt(numberRegex.exec(a)[0], 10);
+        numberB = parseInt(numberRegex.exec(b)[0], 10);
+
+        for (var i=0; i<priorityIds.length; ++i) {
+            var str = priorityIds[i];
+            if (stringA === str && stringB !== str) {
+                return -1;
+            } else if (stringA !== str && stringB === str) {
+                return 1;
+            }
+        }
+
+        // If the strings are similar or not in the priority list then we sort based on their number.
+        return numberB - numberA;
+    };
+
     // Creates a new objective for quests and puts it in quests.objectives.
     var addObjective = function(name, update, genDescription) {
         this.objectives[name] = {
@@ -133,6 +156,7 @@ define(['bpm'], function(bpm) {
     return {
         all: this.all,
         updateObjective: this.updateObjective,
+        idComparator: this.idComparator,
         addJsonQuests: this.addJsonQuests,
     };
 });
