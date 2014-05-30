@@ -474,6 +474,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
     var Menu = createClass(State, function(prevState) {
         this.prevState = prevState;
+        if (this.prevState instanceof Menu) {
+            this.prevMenu = this.prevState;
+        } else if (this.prevState instanceof State) {
+            this.cachedState = this.prevState;
+        }
         this.buttonStyle = {
             font: 'bold 24px arial'
         };
@@ -491,12 +496,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         },
 
         close: function() {
-            if (this.prevState instanceof Menu) {
-                setState(this.prevState);
-            } else if (this.prevState instanceof State) {
-                setState(this.prevState, { initNew: false });
-                this.prevState.paused = false;
-                this.prevState.onRestore();
+            if (this.prevMenu) {
+                setState(this.prevMenu);
+            } else if (this.cachedState) {
+                setState(this.cachedState, { initNew: false });
+                this.cachedState.paused = false;
+                this.cachedState.onRestore();
             }
         },
     });
