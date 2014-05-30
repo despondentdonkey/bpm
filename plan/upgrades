@@ -122,7 +122,7 @@ Weapons
     We can turn these into a tree system by requiring prerequisite upgrades before being able to unlock other upgrades.
     This could help balance extra OP upgrades
 
-    Pin Shooter
+    Pin Shooter - Technique shots
         1. Exploding Pins - 7 | 6
             Exploding pins for extra big damage
             50% damage increase
@@ -143,7 +143,7 @@ Weapons
             each upgrade: +5% damage
 
 
-    Rifle
+    Rifle - Single fast and strong shots
         1. Automatic fire - 9 | 8
             Can hold mouse down to fire (base-level)
             Shoot speed increases by 10% with every upgrade
@@ -157,17 +157,20 @@ Weapons
             -P: Not much use and not worth the trouble programming imo.
             -S: I agree
 
-        3.
+        3. Armor piercing shots - x | 7
+            Increases damage of bullet by 10% with each upgrade
 
-        4.
+        4. Recoil - x | 8
+            -P: This would be really good for rifles since they are fast they should be able to bounce more than other bullets.
+            When a shot bounces of the edges it will increase the shots damage by 1%, can stack up to 100
 
 
-    Shotgun
+    Shotgun - Spread shots
         1. More Pellets - 8 | 7
             Shoots +1 pellets with every upgrade
 
-        2. Stronger Pellets - 6 | 6
-            Each shotgun pellet increases damage by 5% with every upgrade
+        2. Stronger Pellets - 6 | 5
+            Each shotgun pellet increases damage by 3% with every upgrade
 
         3. Shrapnel Pellets - 2 | 4
             Each shotgun pellet has a 10% chance to explode into 2 smaller pellets each dealing 25% damage
@@ -180,7 +183,12 @@ Weapons
             -P: A little too similar to the Pin Shooter upgrade and way better. There's also going to be a ton of shotgun bullets already.
             -S: Yeah, good point
 
-        4.
+        4. Increase Range - x | 7
+            Increases the distance between each pellet with each shot. 45 degrees by default, 80 degrees max. Shots should be be placed like so if you're pointing at a 90 degree angle:
+                first - 90
+                second - 90 - 45
+                third - 90 + 45
+                    Any additional pellets should be between first-second and first-third
 
     ## 1 Additional Weapon after you beat the game
 
