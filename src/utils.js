@@ -12,6 +12,7 @@ function createClass(Base, def, props) {
 
     Subclass.prototype = _.extend(Object.create(Base.prototype), props);
     Subclass.prototype.constructor = def;
+    //Subclass.prototype.class = def.name;
 
     return Subclass;
 }
@@ -34,7 +35,7 @@ function warn(trace, message) {
     // wrapper for console.warn
     // can use to track bugs during alpha, beta, into prod
     console.warn.apply(console, _BPMSetupLogMessage('Warning', trace, message, arguments));
-    if (trace)
+    if (trace === true)
         console.trace();
 }
 
@@ -46,10 +47,9 @@ function log(trace, message) {
 
 function _BPMSetupLogMessage(type, trace, message, args) {
     var finalMessage = message;
-    var i = 2;
-    if (!_.isBoolean(trace)) {
-        finalMessage = trace;
-        i = 1;
-    }
-    return _.flatten(['BPM -- '+type+' > ' + finalMessage, _.tail(args, i)]);
+    var i = (trace === true) ? 1 : 0;
+
+    var arr = ['BPM '+type+' >>', _.tail(args, i)];
+
+    return _.flatten(arr, true);
 }
