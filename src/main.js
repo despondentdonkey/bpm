@@ -43,7 +43,10 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm'], function(t
 
         input.update();
 
-        if (gfx.sortStageDisplays) {
+        // If a current state exists and we should sort then sort its DisplayObjectContainer.
+        // Then we should also sort the stage just in case there are any global display objects e.g. fps monitor.
+        if (states.global.current && gfx.sortStageDisplays) {
+            gfx.sortDisplays(states.global.current.displayObjectContainer);
             gfx.sortDisplays();
             gfx.sortStageDisplays = false;
         }

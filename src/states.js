@@ -34,7 +34,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
     // Classes
     var State = createClass(events.EventHandler, function State(_super) {
-        this.displayObjects = [];
+        this.displayObjectContainer = new gfx.pixi.DisplayObjectContainer();
         this.objects = [];
         this.objectsToAdd = [];
         this.objectsToRemove = [];
@@ -47,6 +47,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                 console.error("State has been reinitialized. Only call 'init' if object has been destroyed.");
             }
             this.initialized = true;
+            gfx.stage.addChild(this.displayObjectContainer);
         },
 
         // When this state has been switched
@@ -56,9 +57,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                 this.objects[i].destroy(this);
             }
 
-            // Remove any additional displays
-            while (this.displayObjects.length > 0) {
-                this.removeDisplay(this.displayObjects[0]);
+            // Remove all children from display objects.
+            while (this.displayObjectContainer.children.length > 0) {
+                this.displayObjectContainer.removeChildAt(0);
             }
 
             this.initialized = false;
@@ -120,17 +121,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         },
 
         addDisplay: function(display, container) {
-            this.displayObjects.push(display);
             if (container) {
                 container.addChild(display);
             } else {
-                gfx.stage.addChild(display);
+                this.displayObjectContainer.addChild(display);
             }
             return display;
         },
 
         removeDisplay: function(display) {
-            this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
             if (display.parent === undefined) {
                 console.error('DisplayObject parent is undefined. Adding the display multiple times may have caused this.');
             }
@@ -198,7 +197,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             [TownMenu, 'U'],
             [FieldPauseMenu, input.ESCAPE]
         ];
-
     },{
         init: function() {
             State.prototype.init.call(this);
