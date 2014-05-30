@@ -17,9 +17,29 @@ Elemental -
     Fire - each upgrade increases damage
         Base Ability Increase
 
-        Viral Fire
+        Viral Fire - x | 9
             - Bubbles have a chance to light each other on fire
+            Each upgrade increases chance to ignite.
 
+        Embers - x | 8
+            Each bubble on fire has a chance to shoot a small fireball which ignites bubbles and deals small damage.
+            Each upgrade:
+                Increases the amount of bubbles it can affect before destroying by 1
+                Increases damage of ember by small percentage
+                Increases range of the fire ball allowing it to reach bubbles farther away
+
+        Stoking the Fire - x | 7
+            Each upgrade increases:
+                Fire DOT damage
+                Duration of fire
+
+        Fire Burst - x | 5
+            When a bubble catches on fire there will be a small chance to active the fire burst event:
+                When activated a prompt will tell you to quickly double click
+                If successful then a giant burst of fire will occur near the bubble that caught fire
+                this burst will cause significant damage and light all bubbles on fire
+
+                Each upgrade increases the chance of this event.
 
         1 - 10% damage; time- 2 seconds
         2 - 15% damage; time- 3 seconds
@@ -43,6 +63,20 @@ Elemental -
             12% chance for godly bolt - 250% damage - chains 5
             After getting a godly bolt, 10% chance of wrath of zeus - wipe board (500% damage to bosses)
 
+        Initial ability: Strong shock damage
+
+        Chain Lightning - x | 9
+            When a bubble is attacked with an element it will send a stream of lightning to the nearest bubble dealing strong damage.
+            Each upgrade allows for multiple streams a -> b -> c -> d
+
+        Conduction - x | 7
+            If a bubble which is affected by electricity comes into contact with an armorless bubble then it will cause a shockwave dealing AoE damage.
+            Each upgrade increases damage and AoE
+
+        Charging - x | 8
+            When a pin collides with a bubble and succesfully applies electricity, it will increase the speed of the pin and the life of the pin by a small amount.
+            Each upgrade increases the amount of speed and pin life
+
     Ice - each upgrade decreases bubble speed
         1 - 5% damage; slows- 25% for 3 seconds
         2 - 10% damage; slows- 50% for 4 seconds
@@ -54,6 +88,18 @@ Elemental -
             hitting a frozen bubble with ice ammo hits for an additional 150% damage
             hitting a frozen bubble once more will cause the bubble to shatter - insta-kill
 
+        Initial ability: Slows bubble by percentage for limited time
+
+        Black Ice - x | 7
+            Increases the speed reduction for bubbles and length of freeze
+
+        Evasive Cold - x | 6
+            Pushes bubbles back with each hit and causes small AoE damage.
+            Each upgrade increases AoE and pushback
+
+        Brittle Bubbles - x | 8
+            Damaging an already frozen bubbles gives a large percentage increase to damage.
+            Each upgrade increases damage
 
     ## 1 Secret Elements after you beat the game the first time
     // meh, needs improvement
@@ -82,7 +128,7 @@ Weapons
             50% damage increase
             each upgrade increases damage by 10%
 
-        2. Pushback Pins - 5 | 5
+        2. Pushback Pins - 5 | 0
             Pins incur a small push back on bubble
             each upgrade: 10% pushback distance
 
