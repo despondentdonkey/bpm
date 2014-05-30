@@ -651,6 +651,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.addTab('Wizard', WizardMenu);
         },
 
+        close: function() {
+            Menu.prototype.close.call(this);
+        },
+
         addTab: function(name, State) {
             var newTab = new ui.Button(name, this.buttonStyle, function() {
                 if (name !== TabMenu.prototype.currentTab) {
@@ -676,6 +680,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
     }, {
         init: function() {
             TabMenu.prototype.init.call(this);
+
+            if (this.cachedState) {
+                this.cachedState.displayObjectContainer.visible = false;
+            }
 
             var questDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
             this.add(questDescription);
@@ -731,9 +739,14 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                 bpm.player.currentQuest = quests.all["s00"];
                 setState(new Field());
             }
-        }
+        },
 
-
+        close: function() {
+            TabMenu.prototype.close.call(this);
+            if (this.cachedState) {
+                this.cachedState.displayObjectContainer.visible = true;
+            }
+        },
     });
 
     var SmithMenu = createClass(TabMenu, function(prevState) {
