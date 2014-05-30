@@ -362,10 +362,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
             this.ammoLoader = this.state.addDisplay(new gfx.pixi.Graphics());
             this.ammoLoader.depth = gfx.layers.gui;
-
-            this.ammoTimer = this.state.add(new Timer(3000, 'loop', _.bind(function() {
-                this.ammo++;
-            }, this)));
         },
 
         destroy: function(state) {
@@ -388,16 +384,18 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 }
             }
 
-            if (this.ammo < this.ammoMax) {
-                this.ammoTimer.paused = false;
+            if (this.ammoTimer instanceof Timer) {
+                if (this.ammo < this.ammoMax) {
+                    this.ammoTimer.paused = false;
 
-                this.ammoLoader.visible = true;
-                this.ammoLoader.clear();
-                this.drawAmmoLoaderCircle(0, 1);
-                this.drawAmmoLoaderCircle(0x67575e, 1 - (this.ammoTimer.currentTime / this.ammoTimer.duration));
-            } else {
-                this.ammoTimer.paused = true;
-                this.ammoLoader.visible = false;
+                    this.ammoLoader.visible = true;
+                    this.ammoLoader.clear();
+                    this.drawAmmoLoaderCircle(0, 1);
+                    this.drawAmmoLoaderCircle(0x67575e, 1 - (this.ammoTimer.currentTime / this.ammoTimer.duration));
+                } else {
+                    this.ammoTimer.paused = true;
+                    this.ammoLoader.visible = false;
+                }
             }
 
             bpm.player.ammo = this.ammo;
@@ -410,6 +408,17 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 var rad = i * DEG2RAD;
                 this.ammoLoader.lineTo(this.x + (-Math.cos(rad) * 48),  y + (Math.sin(rad) * 32));
             }
+        },
+
+        // sets ammo timer on bpm.timers[weaponType]
+        // pass time in ms; loops by default
+        setAmmoTimer: function(time) {
+            var timer = new Timer(time, 'loop', _.bind(function() {
+                this.ammo++;
+            }, this));
+            //bpm.timers[weaponType.toLowerCase()] = timer;
+            this.ammoTimer = timer;
+            return timer;
         },
 
         // Called immediately after shoot
@@ -435,6 +444,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     });
 
     var PinShooter = createClass(Weapon, function() {}, {
+        init: function(state) {
+            this.setAmmoTimer(3000);
+            Weapon.prototype.init.call(this, state);
+        },
+
         spawnBullet: function(x, y, angle) {
             var b = Weapon.prototype.spawnBullet.call(this, res.tex.pin, x, y, angle);
             b.init = function(state) {
@@ -700,8 +714,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 var collidedBubble = this.getCollisions(this.state.bubbles);
                 if (collidedBubble) {
                     collidedBubble.applyFire(this.fireStats);
-                } else {
-                    warn('Bubble.fireStats not defined!');
                 }
             }
         },

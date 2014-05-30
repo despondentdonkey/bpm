@@ -16,6 +16,12 @@ define(function() {
             currentQuest: null,
         },
 
+        weaponCache: {
+            pinshooter: null,
+            rifle: null,
+            shotgun: null
+        },
+
         state: {
             current: null,
         }

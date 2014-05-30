@@ -435,6 +435,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
             if (this.currentWeapon) {
                 this.remove(this.currentWeapon);
+                //bpm.weaponCache
+                log(this.currentWeapon.class);
                 this.currentWeapon = null;
                 bpm.player.currentWeapon = null;
             }
