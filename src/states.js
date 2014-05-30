@@ -25,6 +25,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
             // Set the current state to the new state, initialize and clear the new state.
             global.current = newState;
+            bpm.state.current = newState;
             if (options.initNew) {
                 global.current.init();
             }
@@ -226,6 +227,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.add(pauseButton);
 
 
+            this.setWeapon(new objects.Rifle());
+
             // Basic spawner
             this.bubbleSpawner = new objects.Timer(1000, 'loop', _.bind(function() {
                 if (!this) // Make sure this state still exists, probably not necessary.
@@ -337,8 +340,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             });
             this.add(this.bubbleEmitter);
 
-            this.shooter = this.add(new objects.Rifle());
-
             var i;
             for (i=0; i<0; ++i) {
                 this.add(randBub(8));
@@ -418,6 +419,29 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         destroy: function() {
             State.prototype.destroy.call(this);
             this._removeEventListeners();
+        },
+
+        /*
+           Sets weapon; updates all global and instance references and adds to state (self)
+            input: weapon - instanceof Weapon
+            output: instanceof Weapon
+        */
+        setWeapon: function(weapon) {
+            if (!(weapon instanceof objects.Weapon) && !_.isFunction(objects[weapon]))
+                throw new TypeError('Field.setWeapon: Incorrect weapon type passed');
+
+            if (_.isString(weapon))
+                weapon = new objects[weapon]();
+
+            if (this.currentWeapon) {
+                this.remove(this.currentWeapon);
+                this.currentWeapon = null;
+                bpm.player.currentWeapon = null;
+            }
+
+            bpm.player.currentWeapon = weapon;
+            this.currentWeapon = weapon;
+            return this.add(weapon);
         },
 
         onPause: function() {

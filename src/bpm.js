@@ -9,7 +9,7 @@ define(function() {
             xp: 0,
             day: 1,
 
-            currentWeapon: 'pinshooter',
+            currentWeapon: null,
             currentElement: 'fire',
 
             quests: ['m00', 's00'], // Quests available

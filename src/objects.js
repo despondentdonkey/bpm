@@ -364,8 +364,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.ammoLoader.depth = gfx.layers.gui;
 
             this.ammoTimer = this.state.add(new Timer(3000, 'loop', _.bind(function() {
-                bpm.player.ammo++;
+                this.ammo++;
             }, this)));
+        },
+
+        destroy: function(state) {
+            _.each([this.ammoText, this.ammoLoader],
+                   _.bind(this.state.removeDisplay, this.state));
+            GameObject.prototype.destroy.call(this, state);
         },
 
         update: function(delta) {
