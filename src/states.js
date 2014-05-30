@@ -294,6 +294,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.roundTimerEndText.x = gfx.width/2 - this.roundTimerEndText.width/2;
             this.roundTimerEndText.y = gfx.height - this.roundTimerEndText.height-5;
 
+            // Sprite Batches
+
             this.bulletBatch = new gfx.pixi.SpriteBatch();
             this.bubbleBatch = new gfx.pixi.SpriteBatch();
             this.glareBatch = new gfx.pixi.SpriteBatch();
@@ -307,7 +309,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.addDisplay(this.glareBatch);
             this.addDisplay(this.armorBatch);
 
-            this.shooter = this.add(new objects.Rifle());
+            // Particle Emitters
 
             this.pinEmitter = new objects.Emitter(res.tex.pinParticle, {
                 angleMin: 0,

@@ -333,9 +333,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
     });
 
-    // Shooter applies the element and upgrades onto the bullets it generates
+    // Weapon applies the element and upgrades onto the bullets it generates
     // Also controls ammo reloading system + graphics
-    var Shooter = createClass(GameObject, function() {}, {
+    var Weapon = createClass(GameObject, function() {}, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
             this.x = gfx.width/2;
@@ -410,7 +410,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         setElement: function(element) {
             var accepts = ['fire', 'ice', 'lightning'];
             if (!_.contains(accepts, element))
-                throw new Error('Shooter.setElement: Invalid element passed: ' + element);
+                throw new Error('Weapon.setElement: Invalid element passed: ' + element);
 
             this.currentElement = element;
             bpm.player.currentElement = element;
@@ -428,9 +428,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         }
     });
 
-    var PinShooter = createClass(Shooter, function() {}, {
+    var PinShooter = createClass(Weapon, function() {}, {
         spawnBullet: function(x, y, angle) {
-            var b = Shooter.prototype.spawnBullet.call(this, res.tex.pin, x, y, angle);
+            var b = Weapon.prototype.spawnBullet.call(this, res.tex.pin, x, y, angle);
             b.init = function(state) {
                 Bullet.prototype.init.call(b, state);
                 b.speed = 0.2;
@@ -451,9 +451,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
     });
 
-    var Shotgun = createClass(Shooter, function() {}, {
+    var Shotgun = createClass(Weapon, function() {}, {
         spawnBullet: function(x, y, angle) {
-            var b = Shooter.prototype.spawnBullet.call(this, res.tex.shotgunBullet, x, y, angle);
+            var b = Weapon.prototype.spawnBullet.call(this, res.tex.shotgunBullet, x, y, angle);
             b.init = function(state) {
                 Bullet.prototype.init.call(b, state);
                 b.speed = 0.25;
@@ -472,9 +472,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         }
     });
 
-    var Rifle = createClass(Shooter, function() {}, {
+    var Rifle = createClass(Weapon, function() {}, {
         spawnBullet: function(x, y, angle) {
-            var b = Shooter.prototype.spawnBullet.call(this, res.tex.rifleBullet, x, y, angle);
+            var b = Weapon.prototype.spawnBullet.call(this, res.tex.rifleBullet, x, y, angle);
             b.init = function(state) {
                 Bullet.prototype.init.call(b, state);
                 b.speed = 0.6;
@@ -889,7 +889,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     return {
         GameObject: GameObject,
         Timer: Timer,
-        //Shooter: Shooter,
+        Weapon: Weapon, // should only be used for instanceof checks
         Bubble: Bubble,
         Emitter: Emitter,
         StatusBar: StatusBar,
