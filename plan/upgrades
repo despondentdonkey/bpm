@@ -113,6 +113,13 @@ Elemental -
 * all perks are active all the time - passive skills
 Perks - located where? Wizards tower
 
+    x | 8 - +30% chance to execute element abilities
+
+    x | 9 - Bullets bounce off bubbles with armor rather than getting destroyed.
+                -P: I like this as a perk so that all bullets have a chance of doing this.
+
+    x | x - Multiplier will also affect bullet damage. (each multiplier will increase damage by 10%)
+
 // Blacksmith
 
 Weapons
@@ -134,7 +141,7 @@ Weapons
 
             -P: Not sure if this would work well with ice.
 
-        3. Protected Pins - 7 | 7
+        3. Protected Pins - 7 | 0
             Pins take an extra hit to be destroyed (pins bounce off bubbles)
             each upgrade: +1 extra hit
 
