@@ -5,14 +5,26 @@
         <script data-main="src/main" src="lib/require.js"></script>
         <style>
             div {
-                display: inline-block;
+                display: block;
+                float: left;
             }
+
+            #wrapper {
+                width: 100%;
+            }
+
+            #bpmCheats {
+                padding-top: 23%;
+            }
+
         </style>
     </head>
 
     <body>
-        <div id="canvas"></div>
-        <div id="stateButtons"></div>
-        <div id="bpmCheats"></div>
+        <div id="wrapper">
+            <div id="canvas"></div>
+            <div id="stateButtons"></div>
+            <div id="bpmCheats"></div>
+        </div>
     </body>
 </html>
