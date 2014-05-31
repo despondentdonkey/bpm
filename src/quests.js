@@ -42,12 +42,12 @@ define(['bpm'], function(bpm) {
     };
 
     // Creates a new objective for quests and puts it in quests.objectives.
-    var addObjective = function(name, update, genDescription) {
-        this.objectives[name] = {
+    var addObjective = function(name, update, genDescription, extension) {
+        this.objectives[name] = _.extend({
             name: name,
             update: update,
             genDescription: genDescription,
-        }
+        }, extension);
     };
 
     // Creates a new quest instance and puts it in quests.all.
@@ -92,21 +92,32 @@ define(['bpm'], function(bpm) {
             var genDescription = cachedObjective.genDescription;
             var hidden = true;
             var description = '';
+            var genStatus;
 
             // If there's a description generator then we can assume that this objective should be visible.
             if (genDescription) {
                 hidden = false;
                 description = genDescription(goal);
+
+                // If genDescription returns an array then that means we also have a genStatus to create.
+                if (_.isArray(description)) {
+                    description = description[0];
+                    (function(genDescription, goal) {
+                        genStatus = function(status) {
+                            return genDescription(goal, status)[1];
+                        };
+                    })(genDescription, goal);
+                }
             }
 
-            var objective = {
+            var objective = _.extend({
                 description: description,
+                genStatus: genStatus,
                 goal: goal,
-                status: null,
+                status: 0,
                 completed: false,
                 hidden: hidden,
-                update: cachedObjective.update,
-            };
+            }, cachedObjective);
 
             // The training objective/quest is a free-for-all so it should automatically be completed.
             if (key === 'training') {
@@ -149,8 +160,9 @@ define(['bpm'], function(bpm) {
     addObjective('popBubbles', function(e) {
         this.status++;
         return (this.status >= this.goal);
-    }, function(goal) {
-        return 'Pop ' + goal + ' bubbles';
+    }, function(goal, status) {
+        return ['Pop ' + goal + ' bubbles',
+                status + ' / ' + goal + ' bubbles popped'];
     });
 
     return {

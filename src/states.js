@@ -681,10 +681,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         init: function() {
             TabMenu.prototype.init.call(this);
 
-            if (this.cachedState) {
-                this.cachedState.displayObjectContainer.visible = false;
-            }
-
             var questDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
             this.add(questDescription);
 
@@ -693,13 +689,37 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             dayText.y = 10;
             this.addDisplay(dayText);
 
+            if (this.cachedState) {
+                this.cachedState.displayObjectContainer.visible = false;
+
+                // Since there's a cached state we assume Field has been paused which must mean there's a current quest. So we display the status of each objective.
+                var description = '';
+                for (var i in bpm.player.currentQuest.objectives) {
+                    var obj = bpm.player.currentQuest.objectives[i];
+
+                    description += '\n';
+
+                    if (obj.completed) {
+                        description += 'Complete - ';
+                    }
+
+                    if (obj.genStatus) {
+                        description += obj.genStatus(obj.status);
+                    } else {
+                        description += obj.description;
+                    }
+                }
+
+                questDescription.text = bpm.player.currentQuest.description + description;
+            }
+
             for (var i=0; i<bpm.player.quests.length; ++i) {
                 var quest = quests.all[bpm.player.quests[i]];
 
                 // Pretty ugly. Binds 'this' to an anonymous function.
                 (_.bind(function(quest) {
                     var qButton = new ui.Button(quest.name, this.buttonStyle, function() {
-                        bpm.player.currentQuest = quest;
+                        this.selectedQuest = quest;
 
                         var description = quest.description;
 
@@ -707,9 +727,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                             description += '\n' + quest.objectives[key].description;
                         }
 
-                        questDescription.displayText.setText(description);
-
-                        console.log('CURRENT QUEST', bpm.player.currentQuest);
+                        questDescription.text = description;
                     }, this);
 
                     qButton.x = 32;
@@ -719,12 +737,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             }
 
             var startRound = new ui.Button("Start Round", this.buttonStyle, function() {
-                if (bpm.player.currentQuest) {
+                if (this.selectedQuest) {
+                    bpm.player.currentQuest = this.selectedQuest;
                     setState(new Field());
                 } else {
                     console.log('Please select a quest');
                 }
-            });
+            }, this);
 
             startRound.x = gfx.width - startRound.width - 10;
             startRound.y = gfx.height - startRound.height - 10;
