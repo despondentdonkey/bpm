@@ -149,7 +149,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
     // w, h optional. If w is specified then word wrap will be enabled to that length.
     var TextField = createClass(GameObject, function(text, x, y, w, h) {
-        this.text = text;
+        this._text = text;
         this.x = x;
         this.y = y;
 
@@ -168,11 +168,20 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             wordWrap: (wordWrapWidth !== undefined),
             wordWrapWidth: wordWrapWidth,
         };
+
+        this.displayText = new gfx.pixi.Text(text, this.textStyle);
+
+        Object.defineProperty(this, 'text', {
+            get: function() { return this._text; },
+            set: function(val) {
+                this._text = val;
+                this.displayText.setText(val);
+            },
+        });
     }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
 
-            this.displayText = new gfx.pixi.Text(this.text, this.textStyle);
             this.displayText.depth = -10;
             this.displayText.x = this.x + this.padding/2;
             this.displayText.y = this.y + this.padding/2;
