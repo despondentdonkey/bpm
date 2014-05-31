@@ -117,8 +117,14 @@ define(function() {
             }
         };
 
+        // Stores a list of rectangles (x,y,w,h) to exclude from input if disableUi is true.
+        var uiExclusionAreas = [];
+
         return {
             x: 0, y: 0,
+
+            // If true then uiExclusions will be active. This should be false when working with ui objects and then true afterwards.
+            disableUi: true,
 
             attach: function(element) { //Attach an element to this instance to check for mouse events.
                 element.addEventListener('mousemove', onMouseMove);
@@ -160,6 +166,8 @@ define(function() {
             },
 
             isDown: function(button) {
+                if (this.isInsideUi()) return false;
+
                 for (var i = 0; i < down.length; i++) {
                     if (down[button]) {
                         return true;
@@ -169,6 +177,8 @@ define(function() {
             },
 
             isPressed: function(button) {
+                if (this.isInsideUi()) return false;
+
                 for (var i = 0; i < pressed.length; i++) {
                     if (pressed[i] === button) {
                         return true;
@@ -178,6 +188,8 @@ define(function() {
             },
 
             isReleased: function(button) {
+                if (this.isInsideUi()) return false;
+
                 for (var i = 0; i < released.length; i++) {
                     if (released[i] === button) {
                         return true;
@@ -197,6 +209,31 @@ define(function() {
 
             isMoving: function() {
                 return mouseMoving;
+            },
+
+            // Adds a rectangle to exclude from getting input. Returns rectangle, use to remove from exclusions.
+            addUiExclusionArea: function(x, y, w, h) {
+                var rect = { x:x, y:y, w:w, h:h };
+                uiExclusionAreas.push(rect);
+                return rect;
+            },
+
+            // Removes a rectangle from the exclusion list, get from addUiExclusionArea.
+            removeUiExclusionArea: function(rect) {
+                uiExclusionAreas.splice(uiExclusionAreas.indexOf(rect), 1);
+            },
+
+            // Returns true if exclusions are enabled and the mouse is inside of an exclusion area.
+            isInsideUi: function() {
+                if (this.disableUi) {
+                    for (var i=0; i<uiExclusionAreas.length; ++i) {
+                        var rect = uiExclusionAreas[i];
+                        if (this.isColliding(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             },
 
             print: function() {

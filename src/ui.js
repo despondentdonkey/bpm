@@ -11,10 +11,19 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
     }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
+            this.excludeRect = input.mouse.addUiExclusionArea(this.x, this.y, this.width, this.height);
+        },
+
+        destroy: function(state) {
+            GameObject.prototype.init.call(this, state);
+            input.mouse.removeUiExclusionArea(this.excludeRect);
         },
 
         update: function(delta) {
             GameObject.prototype.update.call(this, delta);
+
+            // Disable exclusion areas while ui uses input methods. Enable at the end of update.
+            input.mouse.disableUi = false;
 
             var isHovering = input.mouse.isColliding(this.x, this.y, this.x+this.width, this.y+this.height);
 
@@ -46,6 +55,8 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 }
                 this.status = isHovering ? 'hover' : 'up';
             }
+
+            input.mouse.disableUi = true;
         },
     });
 
