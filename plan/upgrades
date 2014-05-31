@@ -11,6 +11,10 @@ Elemental -
         Do you have any ideas?
     -P: I was thinking these could be like talent trees. But weapons seem to be like that already. I don't know we should be able to play around with it, just gotta implement it.
 
+    -P: Some of these abilities are unbalanced or some seem like super abilities. I'm thinking that you initially choose one then you have to reach a certain amount of upgrades on that one to get another one.
+        So if we follow that then you can get the seemingly really good abilities like the board wipe ones at the start. So either we have to nerf them or make them on their own tier.
+        Maybe we could something like I said previously but for the board wipe stuff or whatever, that stuff will need all of the other upgrades (not fully upgraded just the first upgrades for each one).
+
     Elements have a base ability and 4 unlockable abilities.
 
 
@@ -41,7 +45,7 @@ Elemental -
 
                 Each upgrade increases the chance of this event.
 
-        Fire Dragon - 8 | x
+        Fire Dragon - 8 | 5
             If X bullets collide with bubble in Y seconds, there is a Z percent chance that
                 A dragon-shaped flame ball will burst from the bubble instantly killing the bubble
                 and will fly straight up, out of igniting and dealing large amounts of damage to any bubble in its path
@@ -75,7 +79,9 @@ Elemental -
 
                 Each upgrade increases the strength of all buff bonuses
 
-        Overload - 8 | x
+            -P: Yeah I didn't think of that. The revision sounds much better.
+
+        Overload - 8 | 5
             Devastating board wipe
             Chance to shoot lightning onto every bubble on screen
             - Click as many times as you can when you see visual indicator
@@ -118,15 +124,16 @@ Elemental -
 * all perks are active all the time - passive skills
 Perks - located where? Wizards tower
 
-    5 | 8 - +30% chance to execute element abilities
+    5 | 2 - +30% chance to execute element abilities
         -S: Idk about this; should elements be applied on chance? You were saying the game feels broken when it's like this; it would feel like the cooldown effect I had implemented earlier.
+        -P: There's a chance to apply the element to the bubble right? You were opting for the chance instead of the cooldown in order to fix the broke feeling. I still think it feels broken either with cooldown or chance but we need some kind of nerf. I don't like this perk much anymore.
 
     9 | 9 - Bullets bounce off bubbles with armor rather than getting destroyed.
                 -P: I like this as a perk so that all bullets have a chance of doing this.
                 -S: I noticed the Lightning ability charging is kind of based on this (not sure if intended - see my revision), but I do like this as a perk.
 
 
-    9 | x - Multiplier will also affect bullet damage. (each multiplier will increase damage by 10%)
+    9 | 9 - Multiplier will also affect bullet damage. (each multiplier will increase damage by 10%)
         -S: Upgradeable; each upgrade increases amount of damage. I say we start with 1 - 3%
 
 // Blacksmith
@@ -189,12 +196,13 @@ Weapons
             Each shotgun pellet increases damage by 3% with every upgrade
 
 
-        4. Increase Range - 7 | 7
+        4. Increase Range - 7 | 0
             Increases the distance between each pellet with each shot. 45 degrees by default, 80 degrees max. Shots should be be placed like so if you're pointing at a 90 degree angle:
                 first - 90
                 second - 90 - 45
                 third - 90 + 45
                     Any additional pellets should be between first-second and first-third
+            -P: This seems lame to me now. If you were to invest in this upgrade first it'd be really boring and almost useless. This is only good with more pellets, so maybe put this in 'More Pellets'.
 
     ## 1 Additional Weapon after you beat the game
 
