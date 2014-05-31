@@ -15,25 +15,25 @@ Elemental -
 
 
     Fire - each upgrade increases damage
-        Base Ability Increase
+        Initial Ability: Damage over time
 
-        Viral Fire - x | 9
+        Viral Fire - 9 | 9
             - Bubbles have a chance to light each other on fire
             Each upgrade increases chance to ignite.
 
-        Embers - x | 8
+        Embers - 8 | 8
             Each bubble on fire has a chance to shoot a small fireball which ignites bubbles and deals small damage.
             Each upgrade:
                 Increases the amount of bubbles it can affect before destroying by 1
                 Increases damage of ember by small percentage
                 Increases range of the fire ball allowing it to reach bubbles farther away
 
-        Stoking the Fire - x | 7
+        Stoking the Fire - 7 | 7
             Each upgrade increases:
                 Fire DOT damage
                 Duration of fire
 
-        Fire Burst - x | 5
+        Fire Burst - 2 | 5
             When a bubble catches on fire there will be a small chance to active the fire burst event:
                 When activated a prompt will tell you to quickly double click
                 If successful then a giant burst of fire will occur near the bubble that caught fire
@@ -41,65 +41,70 @@ Elemental -
 
                 Each upgrade increases the chance of this event.
 
-        1 - 10% damage; time- 2 seconds
-        2 - 15% damage; time- 3 seconds
-        3 - 20% damage; time- 4 seconds
-            5% chance to ignite other bubbles
-        4 - 25% damage; time- 5 seconds
-            10% chance to ignite other bubbles
-        5 - 30% damage; time- 5 seconds
-            15% chance to ignite other bubbles
-            when dot expires, percentage of bubble life missing chance for bubble to explode,
-            100% chance of igniting any bubbles in explosion radius
+        Fire Dragon - 8 | x
+            If X bullets collide with bubble in Y seconds, there is a Z percent chance that
+                A dragon-shaped flame ball will burst from the bubble instantly killing the bubble
+                and will fly straight up, out of igniting and dealing large amounts of damage to any bubble in its path
+
+                Each upgrade
+                    decreases X
+                    increases Y
+                    increases Z
+                    increases amount of damage done by dragon
 
     Lightning - each upgrade increases chain amount
-        1 - 12% damage; chains- 3 targets (total)
-        2 - 18% damage; chains- 4 targets
-        3 - 25% damage; chains- 5 targets
-            3% chance for a godly bolt - 200% damage - chains to 3 targets
-        4 - 35% damage; chains- 6 targets
-            8% chance for godly bolt - 220% damage - chains 4
-        5 - 50% damage; chains- 7 targets
-            12% chance for godly bolt - 250% damage - chains 5
-            After getting a godly bolt, 10% chance of wrath of zeus - wipe board (500% damage to bosses)
-
         Initial ability: Strong shock damage
 
-        Chain Lightning - x | 9
+        Chain Lightning - 9 | 9
             When a bubble is attacked with an element it will send a stream of lightning to the nearest bubble dealing strong damage.
             Each upgrade allows for multiple streams a -> b -> c -> d
 
-        Conduction - x | 7
+        Conduction - 8 | 7
             If a bubble which is affected by electricity comes into contact with an armorless bubble then it will cause a shockwave dealing AoE damage.
             Each upgrade increases damage and AoE
 
-        Charging - x | 8
+        Charging - 5 | 8
             When a pin collides with a bubble and succesfully applies electricity, it will increase the speed of the pin and the life of the pin by a small amount.
             Each upgrade increases the amount of speed and pin life
 
-    Ice - each upgrade decreases bubble speed
-        1 - 5% damage; slows- 25% for 3 seconds
-        2 - 10% damage; slows- 50% for 4 seconds
-        3 - 15% damage; slows- 75% for 5 seconds
-            hitting a slowed bubble with ice ammo hits for an additional 75% damage
-        4 - 18% damage; freezes target for 6 seconds
-            hitting a frozen bubble with ice ammo hits for an additional 100% damage
-        5 - 20% damage; freezes target for 8 seconds
-            hitting a frozen bubble with ice ammo hits for an additional 150% damage
-            hitting a frozen bubble once more will cause the bubble to shatter - insta-kill
+            -S: This would require a reflecting bullet or something, otherwise this does nothing as the bullet will die on collision. revision:
+                After successfully applying electricity onto a bubble, gain a buff affecting all future bullets for X seconds
+                    Increase speed
+                    Increase the life
+                    Small chance for AoE shockwave on every collision
 
+                Each upgrade increases the strength of all buff bonuses
+
+        Overload - 8 | x
+            Devastating board wipe
+            Chance to shoot lightning onto every bubble on screen
+            - Click as many times as you can when you see visual indicator
+            - Increase combo by func(amount of clicks)
+            - Damage dealt to every bubble is based on combo after bonus
+
+
+    Ice - each upgrade decreases bubble speed
         Initial ability: Slows bubble by percentage for limited time
 
-        Black Ice - x | 7
+        Black Ice - 7 | 7
             Increases the speed reduction for bubbles and length of freeze
+            Final upgrade completely freezes bubbles
 
-        Evasive Cold - x | 6
+        Evasive Cold - 7 | 6
             Pushes bubbles back with each hit and causes small AoE damage.
             Each upgrade increases AoE and pushback
 
-        Brittle Bubbles - x | 8
+            -S: revision: 9 | x
+                AoE only if you hit a bubble that is affected by ice
+
+        Brittle Bubbles - 9 | 8
             Damaging an already frozen bubbles gives a large percentage increase to damage.
             Each upgrade increases damage
+
+        Explosive Shatter - 7 | x - prereq: Brittle Bubbles, Black Ice
+            If a bubble is frozen by last upgrade of Black Ice and killed by Brittle Bubbles, explode into a large amount of deadly ice shards dealing heavy damage
+            Each shard inflicts the bonuses of Brittle Bubbles and Black Ice on the bubble it collides with
+            ? Shards last until collided with (may be too OP)
 
     ## 1 Secret Elements after you beat the game the first time
     // meh, needs improvement
@@ -113,12 +118,16 @@ Elemental -
 * all perks are active all the time - passive skills
 Perks - located where? Wizards tower
 
-    x | 8 - +30% chance to execute element abilities
+    5 | 8 - +30% chance to execute element abilities
+        -S: Idk about this; should elements be applied on chance? You were saying the game feels broken when it's like this; it would feel like the cooldown effect I had implemented earlier.
 
-    x | 9 - Bullets bounce off bubbles with armor rather than getting destroyed.
+    9 | 9 - Bullets bounce off bubbles with armor rather than getting destroyed.
                 -P: I like this as a perk so that all bullets have a chance of doing this.
+                -S: I noticed the Lightning ability charging is kind of based on this (not sure if intended - see my revision), but I do like this as a perk.
 
-    x | x - Multiplier will also affect bullet damage. (each multiplier will increase damage by 10%)
+
+    9 | x - Multiplier will also affect bullet damage. (each multiplier will increase damage by 10%)
+        -S: Upgradeable; each upgrade increases amount of damage. I say we start with 1 - 3%
 
 // Blacksmith
 
@@ -135,15 +144,22 @@ Weapons
             50% damage increase
             each upgrade increases damage by 10%
 
-        2. Pushback Pins - 5 | 0
-            Pins incur a small push back on bubble
-            each upgrade: 10% pushback distance
+        X    2. Pushback Pins - 0 | 0
+                Pins incur a small push back on bubble
+                each upgrade: 10% pushback distance
 
-            -P: Not sure if this would work well with ice.
+                -P: Not sure if this would work well with ice.
+                -S: Nope; we'll need a new #2.
 
-        3. Protected Pins - 7 | 0
-            Pins take an extra hit to be destroyed (pins bounce off bubbles)
-            each upgrade: +1 extra hit
+        2.
+
+        X   3. Protected Pins - 0 | 0
+                Pins take an extra hit to be destroyed (pins bounce off bubbles)
+                each upgrade: +1 extra hit
+
+                -S: Perk ability
+
+        3.
 
         4. Particle Pins - 8 | 9
             On collision with a bubble, the pin will shatter into small pins, each damaging bubbles for 25% weapon damage.
@@ -155,21 +171,14 @@ Weapons
             Can hold mouse down to fire (base-level)
             Shoot speed increases by 10% with every upgrade
 
-        2. Guided Sights - 0 | 3
-            Can see where your shot is headed (think Unicorn ability on Peggle)
-            Upgrades increase amount of guideline until 7x
-            8. Special! Heat seaking pullets head towards your enemies
-            9 & 10. Upgrade pull strength
-
-            -P: Not much use and not worth the trouble programming imo.
-            -S: I agree
-
-        3. Armor piercing shots - x | 7
+        3. Armor piercing shots - 9 | 7
             Increases damage of bullet by 10% with each upgrade
+            Final upgrade: additional 10% chance of removing armor
 
-        4. Recoil - x | 8
-            -P: This would be really good for rifles since they are fast they should be able to bounce more than other bullets.
+        4. Recoil - 9 | 8
             When a shot bounces of the edges it will increase the shots damage by 1%, can stack up to 100
+                -P: This would be really good for rifles since they are fast they should be able to bounce more than other bullets.
+                -S: I like it! Good idea. Should also have a visual indication of strength; maybe color?
 
 
     Shotgun - Spread shots
@@ -179,18 +188,8 @@ Weapons
         2. Stronger Pellets - 6 | 5
             Each shotgun pellet increases damage by 3% with every upgrade
 
-        3. Shrapnel Pellets - 2 | 4
-            Each shotgun pellet has a 10% chance to explode into 2 smaller pellets each dealing 25% damage
-            Each shrapnel pellet retains its parent's elemental ability
-            Each upgrade does the following:
-                Increase chance by 10%
-                Increase pellet count by 1.3 (every 3 levels get a free pellet)
-                Increase damage by 1.5%
 
-            -P: A little too similar to the Pin Shooter upgrade and way better. There's also going to be a ton of shotgun bullets already.
-            -S: Yeah, good point
-
-        4. Increase Range - x | 7
+        4. Increase Range - 7 | 7
             Increases the distance between each pellet with each shot. 45 degrees by default, 80 degrees max. Shots should be be placed like so if you're pointing at a 90 degree angle:
                 first - 90
                 second - 90 - 45
