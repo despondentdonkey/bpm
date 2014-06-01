@@ -335,7 +335,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
     // Weapon applies the element and upgrades onto the bullets it generates
     // Also controls ammo reloading system + graphics
-    var Weapon = createClass(GameObject, function() {}, {
+    var Weapon = createClass(GameObject, function Weapon() {
+        this.ammo = 100;
+        this.ammoMax = 100;
+        bpm.player.ammoMax = this.ammoMax;
+    }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
             this.x = gfx.width/2;
@@ -344,10 +348,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.graphic.depth = gfx.layers.gui;
 
             this.currentElement = bpm.player.currentElement;
-
-            this.ammo = 100;
-            this.ammoMax = 1000;
-            bpm.player.ammoMax = this.ammoMax;
+            this.ammoMax = bpm.player.ammoMax;
 
             this.ammoText = this.state.addDisplay(new gfx.pixi.Text('', {
                 stroke: 'black',

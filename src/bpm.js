@@ -1,6 +1,5 @@
 define(function() {
 
-    var currentWeapon;
     return {
         player: {
             money: 0,
@@ -9,17 +8,11 @@ define(function() {
             xp: 0,
             day: 1,
 
-            currentWeapon: null,
+            currentWeapon: 'Rifle',
             currentElement: 'fire',
 
             quests: ['ma00', 's00'], // Quests available
             currentQuest: null,
-        },
-
-        weaponCache: {
-            pinshooter: null,
-            rifle: null,
-            shotgun: null
         },
 
         state: {

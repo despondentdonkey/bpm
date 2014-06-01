@@ -1,5 +1,4 @@
 define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], function(bpm, objects, gfx, res, input, ui, events, quests) {
-
     var global = {
         current: null,
         previous: null,
@@ -176,6 +175,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
         this.comboGoal = 4;
 
         this.bubbles = [];
+        this.savedWeapons = {};
 
         this.xp = 0;
 
@@ -225,7 +225,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.add(pauseButton);
 
 
-            this.setWeapon(new objects.Rifle());
+            this.setWeapon(bpm.player.currentWeapon);
 
             // Basic spawner
             this.bubbleSpawner = new objects.Timer(1000, 'loop', _.bind(function() {
@@ -421,20 +421,27 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
         /*
            Sets weapon; updates all global and instance references and adds to state (self)
-            input: weapon - instanceof Weapon
+            input: weapon - instanceof Weapon OR Case Sensitive String of weapon class name
             output: instanceof Weapon
         */
         setWeapon: function(weapon) {
-            if (!(weapon instanceof objects.Weapon) && !_.isFunction(objects[weapon]))
-                throw new TypeError('Field.setWeapon: Incorrect weapon type passed');
-
-            if (_.isString(weapon))
+            // Restore weapon if there is a saved version
+            // allow for restoring via a String or object
+            if (this.savedWeapons && (this.savedWeapons[weapon.className] || this.savedWeapons[weapon])) {
+                var which = _.isString(weapon) ? weapon : weapon.className;
+                var weapon = this.savedWeapons[which];
+                this.savedWeapons[which] = null;
+            } else if (_.isString(weapon) && _.isFunction(objects[weapon])) {
                 weapon = new objects[weapon]();
+            } else if (!(weapon instanceof objects.Weapon)) {
+                throw new TypeError('Field.setWeapon: Incorrect weapon type passed');
+            }
 
             if (this.currentWeapon) {
+                // Add the current weapon to the list of saved weapons
+                // This will keep the ammo timer going in the background
+                this.savedWeapons[this.currentWeapon.className] = this.currentWeapon;
                 this.remove(this.currentWeapon);
-                //bpm.weaponCache
-                log(this.currentWeapon.class);
                 this.currentWeapon = null;
                 bpm.player.currentWeapon = null;
             }
