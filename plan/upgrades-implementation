@@ -1,0 +1,66 @@
+=== Types ===
+
+upgrades - general, wizard element stuff, blacksmith weapon stuff
+perks
+
+abilities - separate; upgrades and perks should integrate these.
+
+
+=== Upgrades ===
+    Some examples of how easy it should be to make a new upgrade:
+        fireBallUpgrade:
+            enableFireBalls: true,
+            damage: 50%
+
+        fireLonger:
+             fireLengthReduction: 25%
+
+
+=== Abilities - Should be useable by upgrade, perks, or anything that needs them: ===
+
+    enableFireBalls - boolean: If this upgrade is set then it will enable the fireball power
+        name
+        description
+
+    bulletDamage - percentage: If set above 0 then it will add it to a list to allow stacking
+        name
+        description
+
+        // Should be able to support things like:
+            Super Damage Upgrade:
+                bulletDamage: 20%
+            Another Damage Upgrade
+                bulletDamage: 30%
+
+            overall bullet damage 50%
+
+    multiplierGivesDamage - percentage: If above 0 then multiplier will affect damage by that amount. Does not stack like bulletDamage.
+        name
+        description
+
+
+    An upgrade instance should detect if it already has an ability. If it does and you specify it again then that should override rather than stack. This would allow for a layout like:
+
+        Super Damage Upgrade:
+            tier0:
+                bulletDamage: 10%
+            tier1:
+                bulletDamage: 20%
+            tier2:
+                bulletDamage: 50%
+
+        If we didn't implement it then bulletDamage would stack into 80% if you unlocked all upgrades.
+
+
+=== Retrieving upgrade values could be done like so: ===
+
+    // This would tally all of the bulletDamages then give you a value which could be worked with e.g. if (20, 30) then (50 or 1.5)
+    var overallBulletDamage = upgrades.getVal('bulletDamage');
+    thisBullet.damage = overallBulletDamage;
+
+    // For more flexible upgrades
+    var doSomethingWeird = upgrades.getVal('doSomethingWeird'); // would return true/false for this particular ability. Some could also return object literals containing useful info.
+    if (doSomethingWeird) {
+        // Do a bunch of weird things
+    }
+
