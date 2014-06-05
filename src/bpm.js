@@ -1,5 +1,5 @@
 define(function() {
-
+    var input = requirejs('input');
     return {
         player: {
             money: 0,
@@ -17,6 +17,24 @@ define(function() {
 
         state: {
             current: null,
+        },
+
+        // Keep track of all keyboard codes here
+        // allows for easy customizability
+        // entries should correspond to this pattern:
+        //      {Class: Value}, where Value is: input.key.isReleased(Value)
+        //      Value can be an array of possible values
+        hotkeys: {
+            weapons: {
+                'PinShooter': '1',
+                'Shotgun': '2',
+                'Rifle': '3'
+            },
+            menus: {
+                'TownMenu': 'U',
+                'FieldPauseMenu': input.ESCAPE,
+            }
         }
+
     };
 });

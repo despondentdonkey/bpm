@@ -193,10 +193,17 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             quests.updateObjective('popBubbles');
         });
 
-        this.menus = [
-            [TownMenu, 'U'],
-            [FieldPauseMenu, input.ESCAPE]
+        // Hotkey setup
+        // Menus require a unique setup so we can call the constructor from this array
+        this.menuHotkeys = [
+            [TownMenu, bpm.hotkeys.menus['TownMenu']],
+            [FieldPauseMenu, bpm.hotkeys.menus['FieldPauseMenu']]
         ];
+
+        this.hotkeys = {
+            menus: this.menuHotkeys,
+            weapons: bpm.hotkeys.weapons
+        };
     },{
         init: function() {
             State.prototype.init.call(this);
@@ -357,27 +364,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
             this.statusText.setText('XP: ' + this.xp);
 
-            this.comboText.setText(this.combo + ' / ' + this.comboGoal
-            + '\nx' + this.multiplier);
-
-            // Once the combo counter has reached the combo goal we want to increment the multiplier and increase the combo goal. The multiplier should only be increased here.
-            if (this.combo >= this.comboGoal) {
-                this.multiplier++;
-
-                quests.updateObjective('multiplier', {multiplier: this.multiplier});
-
-                this.comboGoal = this.comboGoal + Math.round(Math.sqrt(this.comboGoal * 8));
-            }
-
-            if (this.combo > 0) {
-                this.comboTimer -= delta;
-                this.comboTimeBar.setRatio(this.comboTimer / this.comboTime);
-                if (this.comboTimer < 0) {
-                    this.combo = 0;
-                    this.comboGoal = 4;
-                    this.multiplier = 1;
-                }
-            }
+            this.updateCombo();
 
             if (this.currentQuest.completed) {
                 if (!this.skipDay) {
@@ -400,18 +387,53 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
                 }
             }
 
-            // Listen for menu hotkeys and set closeButton on instantiated menu
-            for (var i = 0, menus = this.menus; i < menus.length; i++) {
-                var M = menus[i][0];
-                for (var j = 1, keys = menus[i]; j < keys.length; j++) {
-                    if (input.key.isReleased(keys[j])) {
-                        var m = new M(this);
-                        this.pause(m);
-                        // set the close button to the button used for opening
-                        m.closeButton = keys[j];
-                    }
+            this.monitorHotkeys(this.hotkeys);
+        },
+
+        updateCombo: function() {
+            this.comboText.setText(this.combo + ' / ' + this.comboGoal
+            + '\nx' + this.multiplier);
+
+            // Once the combo counter has reached the combo goal we want to increment the multiplier and increase the combo goal. The multiplier should only be increased here.
+            if (this.combo >= this.comboGoal) {
+                this.multiplier++;
+
+                quests.updateObjective('multiplier', {multiplier: this.multiplier});
+
+                this.comboGoal = this.comboGoal + Math.round(Math.sqrt(this.comboGoal * 8));
+            }
+
+            if (this.combo > 0) {
+                this.comboTimer -= delta;
+                this.comboTimeBar.setRatio(this.comboTimer / this.comboTime);
+                if (this.comboTimer < 0) {
+                    this.combo = 0;
+                    this.comboGoal = 4;
+                    this.multiplier = 1;
                 }
             }
+        },
+
+        monitorHotkeys: function(hotkeys) {
+            if (!(hotkeys.menus && hotkeys.weapons))
+                throw new TypeError('Field.monitorHotkeys: Invalid hotkey format passed');
+            // Listen for menu hotkeys and set closeKeys on instantiated menu
+            // Menu hotkeys are weird - see the comments in the constructor
+            mkeys = hotkeys.menus;
+            for (var i = 0; i < mkeys.length; i++) {
+                if (_.isFunction(mkeys[i][0]) && input.key.isReleased(mkeys[i][1])) {
+                    var m = new mkeys[i][0](this);
+                    this.pause(m);
+                    // set the close button to the button used for opening
+                    m.closeKeys = mkeys[i][1];
+                }
+            }
+
+            // Weapon Hotkeys - typically pulled straight from bpm.hotkeys.weapons
+            _.each(hotkeys.weapons, _.bind(function(keys, weapon) {
+                if (input.key.isReleased(keys))
+                    this.setWeapon(weapon);
+            }, this));
         },
 
         destroy: function() {
@@ -496,8 +518,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
         update: function(delta) {
             State.prototype.update.call(this, delta);
-            if (this.closeButton) {
-                if (input.key.isReleased(this.closeButton))
+            if (this.closeKeys) {
+                if (input.key.isReleased(this.closeKeys))
                     this.close();
             }
         },
