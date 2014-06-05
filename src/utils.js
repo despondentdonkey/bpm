@@ -12,7 +12,8 @@ function createClass(Base, def, props) {
 
     Subclass.prototype = _.extend(Object.create(Base.prototype), props);
     Subclass.prototype.constructor = def;
-    Subclass.prototype.className = def.name;
+    if (def.name !== "")
+        Subclass.prototype.className = def.name;
 
     return Subclass;
 }

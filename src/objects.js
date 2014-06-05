@@ -8,7 +8,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         };
     })();
 
-    var BasicObject = createClass(events.EventHandler, function() {
+    var BasicObject = createClass(events.EventHandler, function BasicObject() {
         this.state = null;
         this.id = getID();
     }, {
@@ -25,7 +25,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
     });
 
-    var GameObject = createClass(BasicObject, function() {
+    var GameObject = createClass(BasicObject, function GameObject() {
         this.idList = [];
         this.displayObjects = [];
 
@@ -243,7 +243,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
 
     // Any performance problems with these are mostly likely due to the collisions rather than rendering.
-    var Bullet = createClass(GameObject, function(tex, x, y, angle) {
+    var Bullet = createClass(GameObject, function Bullet(tex, x, y, angle) {
         this.x = x;
         this.y = y;
         this.speedX = Math.cos(angle);
@@ -363,6 +363,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
             this.ammoLoader = this.state.addDisplay(new gfx.pixi.Graphics());
             this.ammoLoader.depth = gfx.layers.gui;
+            this.ammoLoaderColors = [0, 0x67575e];
         },
 
         destroy: function(state) {
@@ -386,19 +387,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 }
             }
 
-            if (this.ammoTimer instanceof Timer) {
-                if (this.ammo < this.ammoMax) {
-                    this.ammoTimer.paused = false;
-
-                    this.ammoLoader.visible = true;
-                    this.ammoLoader.clear();
-                    this.drawAmmoLoaderCircle(0, 1);
-                    this.drawAmmoLoaderCircle(0x67575e, 1 - (this.ammoTimer.currentTime / this.ammoTimer.duration));
-                } else {
-                    this.ammoTimer.paused = true;
-                    this.ammoLoader.visible = false;
-                }
-            }
+            this.drawAmmoTimer(this.ammoLoaderColors[0], this.ammoLoaderColors[1]);
 
             bpm.player.ammo = this.ammo;
         },
@@ -415,16 +404,37 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         // sets ammo timer on bpm.timers[weaponType]
         // pass time in ms; loops by default
         setAmmoTimer: function(time) {
-            this.ammoTimer = new Timer(time, 'loop', _.bind(function() {
-                this.ammo++;
-            }, this));
+            if (this.ammoTimer)
+                return this.ammoTimer;
 
+            this.ammoTimer = new Timer(time, 'loop', _.bind(function() {
+                if (this.ammo < this.ammoMax)
+                    this.ammo++;
+            }, this));
 
             return this.state.add(this.ammoTimer);
         },
 
+        drawAmmoTimer: function(backColor, frontColor, ammoTimer) {
+            ammoTimer = ammoTimer || this.ammoTimer;
+            if (ammoTimer instanceof Timer) {
+                if (this.ammo < this.ammoMax) {
+                    ammoTimer.paused = false;
+
+                    this.ammoLoader.visible = true;
+                    this.ammoLoader.clear();
+                    this.drawAmmoLoaderCircle(backColor, 1);
+                    this.drawAmmoLoaderCircle(frontColor, 1 - (ammoTimer.currentTime / ammoTimer.duration));
+                } else {
+                    ammoTimer.paused = true;
+                    this.ammoLoader.visible = false;
+                }
+            }
+        },
+
         // Called immediately after shoot
         setElement: function(element) {
+            element = element.toLowerCase();
             var accepts = ['fire', 'ice', 'lightning'];
             if (!_.contains(accepts, element))
                 throw new Error('Weapon.setElement: Invalid element passed: ' + element);
@@ -445,7 +455,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         }
     });
 
-    var PinShooter = createClass(Weapon, function() {}, {
+    var PinShooter = createClass(Weapon, function PinShooter() {}, {
         init: function(state) {
             Weapon.prototype.init.call(this, state);
             this.setAmmoTimer(3000);
@@ -473,7 +483,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
     });
 
-    var Shotgun = createClass(Weapon, function() {}, {
+    var Shotgun = createClass(Weapon, function Shotgun() {}, {
         init: function(state) {
             Weapon.prototype.init.call(this, state);
             this.setAmmoTimer(3000);
@@ -499,7 +509,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         }
     });
 
-    var Rifle = createClass(Weapon, function() {}, {
+    var Rifle = createClass(Weapon, function Rifle() {}, {
         init: function(state) {
             Weapon.prototype.init.call(this, state);
             this.setAmmoTimer(3000);
@@ -524,7 +534,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     });
 
 
-    var Bubble = createClass(GameObject, function(armor, x, y, angle) {
+    var Bubble = createClass(GameObject, function Bubble(armor, x, y, angle) {
         this.x = x;
         this.y = y;
 
@@ -732,7 +742,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     });
 
 
-    var Particle = createClass(GameObject, function(emitter, tex, opt) {
+    var Particle = createClass(GameObject, function Particle(emitter, tex, opt) {
         this.x = opt.x;
         this.y = opt.y;
 
@@ -781,7 +791,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
     });
 
-    var Emitter = createClass(GameObject, function(tex, opt) {
+    var Emitter = createClass(GameObject, function Emitter(tex, opt) {
         this.setOptions(opt);
         this.texture = tex;
         this.batch = new gfx.pixi.SpriteBatch();
@@ -825,7 +835,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
     });
 
     // types = oneshot, loop
-    var Timer = createClass(BasicObject, function(duration, type, onComplete) {
+    var Timer = createClass(BasicObject, function Timer(duration, type, onComplete) {
         this.duration = duration;
         this.currentTime = duration;
         this.onComplete = onComplete;
@@ -855,7 +865,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
     });
 
-    var StatusBar = createClass(GameObject, function(back, front, width, height) {
+    var StatusBar = createClass(GameObject, function StatusBar(back, front, width, height) {
         this.backSliceTextures = back;
         this.frontSliceTextures = front;
         this.width = width;
