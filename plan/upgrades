@@ -22,6 +22,7 @@ Elemental -
 
     Fire - each upgrade increases damage
         Initial Ability: Damage over time
+        Strategy: Massive AoE spread + Draining Playstyle
 
         Viral Fire - 9 | 9
             - Bubbles have a chance to light each other on fire
@@ -60,16 +61,21 @@ Elemental -
 
     Lightning - each upgrade increases chain amount
         Initial ability: Strong shock damage
+        Strategy: Pin speed bonuses + AoE Shockwaves + Chaining for High Combos
 
         Chain Lightning - 9 | 9
             When a bubble is attacked with an element it will send a stream of lightning to the nearest bubble dealing strong damage.
             Each upgrade allows for multiple streams a -> b -> c -> d
 
+        Charge - 7 | x
+            Increases damage of lightning element and increases the speed of pins affected by lightning.
+
         Conduction - 8 | 7
             If a bubble which is affected by electricity comes into contact with an armorless bubble then it will cause a shockwave dealing AoE damage.
+            Also, if you shoot an armorless bubble, get the AoE shockwave
             Each upgrade increases damage and AoE
 
-        Charging - 9 | 8
+        Overload - 9 | 8
             When a pin collides with a bubble and succesfully applies electricity, it will increase the speed of the pin and the life of the pin by a small amount.
             Each upgrade increases the amount of speed and pin life
 
@@ -81,37 +87,52 @@ Elemental -
 
                 Each upgrade increases the strength of all buff bonuses and/or length of buff
 
+                -S: what if this buff stacked? Each stack would increase the chance of the AoE shockwave
+
             -P: Yeah I didn't think of that. The revision sounds much better.
 
-        Overload - 8 | 5
+
+// ** Old - delete?
+        Overload - 2 | 5
             Devastating board wipe
             Chance to shoot lightning onto every bubble on screen
             - Click as many times as you can when you see visual indicator
             - Increase combo by func(amount of clicks)
             - Damage dealt to every bubble is based on combo after bonus
+// ** ** ** ** **
 
 
     Ice - each upgrade decreases bubble speed
         Initial ability: Slows bubble by percentage for limited time
+        Strategy: Single target damage + AoE Slowing
 
         Black Ice - 7 | 7
             Increases the speed reduction for bubbles and length of freeze
             Final upgrade completely freezes bubbles
 
-        Evasive Cold - 7 | 6
+        // ** Propose to ditch for idea below
+        Evasive Cold - 5 | 6
             Pushes bubbles back with each hit and causes small AoE damage.
             Each upgrade increases AoE and pushback
 
             -S: revision: 9 | x
                 AoE only if you hit a bubble that is affected by ice
+        // ****** ****
+
+        Frostibe - 8 | x
+            Bubbles are permantly slower after being affected by Black Ice
+                - x% of black ice slowness subtracted from speed
+                - x is upgraded
+            If a bubble who is frostbitten is again frozen and subsequently damaged,
+            emit a medium AoE blast of ice crystals
 
         Brittle Bubbles - 9 | 8
             Damaging an already frozen bubbles gives a large percentage increase to damage.
             Each upgrade increases damage
 
-        Explosive Shatter - 7 | x - prereq: Brittle Bubbles, Black Ice
+        Ice Bomb - 7 | x - prereq: Brittle Bubbles, Black Ice
             If a bubble is frozen by last upgrade of Black Ice and killed by Brittle Bubbles, explode into a large amount of deadly ice shards dealing heavy damage
-            Each shard inflicts the bonuses of Brittle Bubbles and Black Ice on the bubble it collides with
+            Each shard inflicts the bonuses of Brittle Bubbles, Black Ice, and Frostbite on the bubble it collides with
             ? Shards last until collided with (may be too OP)
 
     ## 1 Secret Elements after you beat the game the first time
