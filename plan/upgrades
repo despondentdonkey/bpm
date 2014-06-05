@@ -75,31 +75,16 @@ Elemental -
             Also, if you shoot an armorless bubble, get the AoE shockwave
             Each upgrade increases damage and AoE
 
-        Overload - 9 | 8
-            When a pin collides with a bubble and succesfully applies electricity, it will increase the speed of the pin and the life of the pin by a small amount.
-            Each upgrade increases the amount of speed and pin life
+        Overload - 9 | 9
+            After successfully applying electricity onto a bubble, gain a buff affecting all future bullets for X seconds
+                Increase speed
+                Increase the life
+                Small chance for AoE shockwave on every collision
 
-            -S: This would require a reflecting bullet or something, otherwise this does nothing as the bullet will die on collision. revision:
-                After successfully applying electricity onto a bubble, gain a buff affecting all future bullets for X seconds
-                    Increase speed
-                    Increase the life
-                    Small chance for AoE shockwave on every collision
+            Each upgrade increases the strength of all buff bonuses and/or length of buff
 
-                Each upgrade increases the strength of all buff bonuses and/or length of buff
-
-                -S: what if this buff stacked? Each stack would increase the chance of the AoE shockwave
-
-            -P: Yeah I didn't think of that. The revision sounds much better.
-
-
-// ** Old - delete?
-        Overload - 2 | 5
-            Devastating board wipe
-            Chance to shoot lightning onto every bubble on screen
-            - Click as many times as you can when you see visual indicator
-            - Increase combo by func(amount of clicks)
-            - Damage dealt to every bubble is based on combo after bonus
-// ** ** ** ** **
+            -S: what if this buff stacked? Each stack would increase the chance of the AoE shockwave
+            -P: Yeah definitely should stack, it should also increase the speed and life or just speed to a certain point.
 
 
     Ice - each upgrade decreases bubble speed
@@ -119,21 +104,29 @@ Elemental -
                 AoE only if you hit a bubble that is affected by ice
         // ****** ****
 
-        Frostibe - 8 | x
+        Frostbite - 8 | 5
             Bubbles are permantly slower after being affected by Black Ice
+            -P: This would kinda remove the length of freeze upgrade in Black Ice wouldn't it?
                 - x% of black ice slowness subtracted from speed
                 - x is upgraded
+
             If a bubble who is frostbitten is again frozen and subsequently damaged,
             emit a medium AoE blast of ice crystals
+
+            -P: Somewhat similar to Brittle Bubbles but this doesn't seem to go well with the strategy defined for ice. AoE is just for the slowing of bubbles right?
+            Maybe have the AoE just freeze the bubbles, maybe some small damage? Upgrade would increase range
 
         Brittle Bubbles - 9 | 8
             Damaging an already frozen bubbles gives a large percentage increase to damage.
             Each upgrade increases damage
 
-        Ice Bomb - 7 | x - prereq: Brittle Bubbles, Black Ice
+        Ice Bomb - 7 | 5 - prereq: Brittle Bubbles, Black Ice
             If a bubble is frozen by last upgrade of Black Ice and killed by Brittle Bubbles, explode into a large amount of deadly ice shards dealing heavy damage
             Each shard inflicts the bonuses of Brittle Bubbles, Black Ice, and Frostbite on the bubble it collides with
             ? Shards last until collided with (may be too OP)
+
+            -P: What about some sort of percent chance on freeze or charge to activate an event. When activated the next bullet you shoot will be super ice or something and will destroy all bubbles in its path (even armored).
+            It would only be one bullet and it would work well with the strategy of single targets.
 
     ## 1 Secret Elements after you beat the game the first time
     // meh, needs improvement
