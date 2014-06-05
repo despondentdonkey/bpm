@@ -45,28 +45,46 @@ define(function() {
                 }
             },
 
-            isDown: function(key) {
-                for (var i = 0; i < down.length; i++) {
-                    if (down[(typeof key === "number" ? key:key.charCodeAt(0))]) {
-                        return true;
+            isDown: function(keys) {
+                if (!_.isArray(keys))
+                    keys = [keys]
+
+                for (var k = 0; k < keys.length; k++) {
+                    var key = keys[k];
+                    for (var i = 0; i < down.length; i++) {
+                        if (down[(typeof key === "number" ? key : key.charCodeAt(0))]) {
+                            return true;
+                        }
                     }
+                    return false;
                 }
-                return false;
             },
 
-            isPressed: function(key) {
-                for (var i = 0; i < pressed.length; i++) {
-                    if (pressed[i] === (typeof key === "number" ? key:key.charCodeAt(0))) {
-                        return true;
+            isPressed: function(keys) {
+                if (!_.isArray(keys))
+                    keys = [keys]
+
+                for (var k = 0; k < keys.length; k++) {
+                    var key = keys[k];
+                    for (var i = 0; i < pressed.length; i++) {
+                        if (pressed[i] === (typeof key === "number" ? key : key.charCodeAt(0))) {
+                            return true;
+                        }
                     }
+                    return false;
                 }
-                return false;
             },
 
-            isReleased: function(key) {
-                for (var i = 0; i < released.length; i++) {
-                    if (released[i] === (typeof key === "number" ? key:key.charCodeAt(0))) {
-                        return true;
+            isReleased: function(keys) {
+                if (!_.isArray(keys))
+                    keys = [keys]
+
+                for (var k = 0; k < keys.length; k++) {
+                    var key = keys[k];
+                    for (var i = 0; i < released.length; i++) {
+                        if (released[i] === (typeof key === "number" ? key : key.charCodeAt(0))) {
+                            return true;
+                        }
                     }
                 }
                 return false;
