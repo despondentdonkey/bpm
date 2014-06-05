@@ -255,7 +255,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         this.fireStats = {
             damage: 0.01,
             duration: 750,
-            cooldown: 2800
+            applyChance: 10 // in percent (10 === 10%)
         };
 
         this.iceStats = {
@@ -692,7 +692,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         applyFire: function(fireStats) {
-            if (this.currentElement !== 'fire' && !this.elementOnCooldown && this.hp > 0) {
+            if (this.currentElement !== 'fire' && this.hp > 0) {
                 if (!this.fire) {
                     this.fire = new gfx.pixi.MovieClip(res.sheets.fire);
                     this.fire.play();
@@ -707,8 +707,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 }
 
                 this.currentElementObj = this.fire;
-                this.elementOnCooldown = true;
-
 
                 // Update display properties for fire so it will have correct positions without having to wait another frame.
                 this.updateDisplayProperties([this.fire]);
@@ -721,21 +719,21 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 var onFireComplete = _.bind(this.removeElement, this, this.fire);
                 var fireTimer = new Timer(this.fireStats.duration, 'oneshot', onFireComplete);
                 this.state.add(fireTimer);
-
-                // Add cooldown timer - must wait this long before being able to catch fire again
-                var onCDComplete = _.bind(function() { this.elementOnCooldown = false; }, this);
-                var fireCDTimer = new Timer(this.fireStats.cooldown, 'oneshot', onCDComplete);
-                this.state.add(fireCDTimer);
             }
         },
 
         updateFire: function() {
             if (this.fireStats) {
-                    this.hp -= this.fireStats.damage;
+                this.hp -= this.fireStats.damage;
 
-                var collidedBubble = this.getCollisions(this.state.bubbles);
-                if (collidedBubble) {
-                    collidedBubble.applyFire(this.fireStats);
+                // Percentage chance to apply fire to collided bubbles
+                // This helps with perf too, as collisions are only gathered when chance is in range
+                var chance = randomInt(0, 100);
+                if (chance <= this.fireStats.applyChance) {
+                    var collidedBubble = this.getCollisions(this.state.bubbles);
+                    if (collidedBubble) {
+                        collidedBubble.applyFire(this.fireStats);
+                    }
                 }
             }
         },
