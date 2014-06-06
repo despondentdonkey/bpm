@@ -431,7 +431,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
             // Weapon Hotkeys - typically pulled straight from bpm.hotkeys.weapons
             _.each(hotkeys.weapons, _.bind(function(keys, weapon) {
-                if (input.key.isReleased(keys))
+                var className;
+                if (_.isString(weapon))
+                    className = weapon;
+                else if (weapon instanceof objects.Weapon)
+                    className = weapon.className;
+                else
+                    throw new TypeError('Field.monitorHotkeys: Invalid weapon passed anonymous function');
+
+                if (input.key.isReleased(keys) && className !== this.currentWeapon.className)
                     this.setWeapon(weapon);
             }, this));
         },
