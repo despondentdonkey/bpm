@@ -72,6 +72,8 @@ define(['gfx'], function(gfx) {
             rifleBullet: 'rifle-bullet.png',
 
             fire: 'fire-16x25-strip6.png',
+            lightning: 'lightning.png',
+            ice: 'ice.png',
 
             arrow: 'arrow.png',
             background: 'background.jpg',
