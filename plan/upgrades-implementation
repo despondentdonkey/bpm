@@ -66,3 +66,74 @@ abilities - separate; upgrades and perks should integrate these.
         // Do a bunch of weird things
     }
 
+
+=== Some psuedo examples ===
+
+  === Creating a general upgrade. ===
+
+    // Here you specify each upgrade value for every level.
+    createGeneralUpgrade({
+        name: 'Upgrade Town Defense',
+        levels: [
+            { // First upgrade increase town defense by 10% or whatever. It will cost $200
+                townDefense: 10,
+                cost: 200,
+            },
+
+            { // Second upgrade increase town defense by 20% or whatever. It will cost $300
+                townDefense: 20,
+                cost: 300,
+            },
+        ],
+    });
+
+    // Not sure if this should be used since it would make balancing upgrades harder.
+    createGeneralUpgrade({
+        name: 'Upgrade Town Defense',
+
+        // The first upgrade
+        initial: {
+            townDefense: 5,
+            cost: 200,
+        },
+
+        // Subsequent upgrades
+        sequence: {
+            townDefense: 10, // OR "25%" This will increase the value by 10 for the rest of the upgrades if a percent string is specified then it will increase it by that percentage.
+            cost: 300, // Next upgrade will cost an additional 300, can also specify percent string
+        },
+
+        // You should also be able to override a sequence at a specific level. So for instance say you wanted a much bigger increase for the last upgrade. You should be able to have the regular sequence but then for the fifth tier it should work with the overriden value.
+        levels: {
+            5: {
+                townDefense: 200000,
+                cost: 300000000,
+            },
+        },
+    });
+
+  === Creating a perk ===
+    This should be pretty similar to general upgrades except that they cannot be upgraded. It is a one time thing. If we change our minds on that then they should function almost exactly like general upgrades.
+
+    createPerk({
+        name: 'Bullet Resistance',
+        initial: {
+            bulletsBounceOffArmor: true,
+        },
+    });
+
+  === Creating a weapon or element upgrade ===
+    These should be similar to regular upgrades except that they some use prerequisites.
+
+    createWeaponUpgrade({
+        name: 'Mega Pins',
+        id: 'w04', // Probably can be automated but probably not necessary since there's only going to be like 5. Only needed if required by another upgrade.
+        requires: [9, 'w00', 'w01'], // Requires 9 points spent and the first two weapon upgrades.
+        initial: {
+            pinDamage: 20%,
+            superPins: true,
+        },
+        sequence: {
+            pinDamage: 10%,
+        },
+    });
