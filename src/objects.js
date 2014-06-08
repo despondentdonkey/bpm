@@ -250,21 +250,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         this.speedY = -Math.sin(angle);
         this.tex = tex;
 
-        // Elements
         this.currentElement;
-        this.fireStats = {
-            damage: 0.01,
-            duration: 750,
-            applyChance: 10 // in percent (10 === 10%)
-        };
-
-        this.iceStats = {
-
-        };
-
-        this.lightningStats = {
-
-        };
     }, {
         init: function(state) {
             GameObject.prototype.init.call(this, state);
@@ -317,37 +303,26 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         onBubbleCollision: function(bubble) {
-            switch(this.currentElement) {
-                case 'fire':
-                    bubble.applyFire(this.fireStats);
-                    break;
-
-                case 'ice':
-                    bubble.applyIce(this.iceStats);
-                    break;
-
-                case 'lightning':
-                    bubble.applyLightning(this.lightningStats);
-                    break;
-            }
+            bubble.applyElement(this.currentElement);
         },
     });
 
     // Weapon applies the element and upgrades onto the bullets it generates
     // Also controls ammo reloading system + graphics
     var Weapon = createClass(GameObject, function Weapon() {
+        this.availableElements = ['fire', 'ice', 'lightning'];
         this.ammo = 100;
         this.ammoMax = 100;
         bpm.player.ammoMax = this.ammoMax;
     }, {
-        init: function(state) {
+        init: function(state, element) {
             GameObject.prototype.init.call(this, state);
             this.x = gfx.width/2;
             this.y = gfx.height/1.2;
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(res.tex.arrow));
             this.graphic.depth = gfx.layers.gui;
 
-            this.currentElement = bpm.player.currentElement;
+            this.currentElement = element || bpm.player.currentElement;
             this.ammoMax = bpm.player.ammoMax;
 
             this.ammoText = this.state.addDisplay(new gfx.pixi.Text('', {
@@ -435,8 +410,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         // Called immediately after shoot
         setElement: function(element) {
             element = element.toLowerCase();
-            var accepts = ['fire', 'ice', 'lightning'];
-            if (!_.contains(accepts, element))
+            if (!_.contains(this.availableElements, element))
                 throw new Error('Weapon.setElement: Invalid element passed: ' + element);
 
             this.currentElement = element;
@@ -542,6 +516,22 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         this.speedY = 1;
 
         this.worth = 10;
+
+        // Element Settings
+        this.currentElement;
+        this.fireStats = {
+            damage: 0.01,
+            duration: 750,
+            applyChance: 10 // in percent (10 === 10%)
+        };
+
+        this.iceStats = {
+
+        };
+
+        this.lightningStats = {
+
+        };
 
         // Armor settings
         // armor protects bubbles from hits while > 0
@@ -652,7 +642,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 }
             }
 
-            this._updateElements();
+            this.updateElement();
         },
 
         onBulletCollision: function(bullet) {
@@ -670,28 +660,39 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             this.updateDisplayProperties([this.bubble, this.glare]);
         },
 
-
         // Elements
         // Applied by bullets, anything defined here should be either passed from the pin
         // or should be related to the graphics/dimensions of the bubble
-        _updateElements: function() {
-            switch(this.currentElement) {
-                case 'fire':
-                    this.updateFire();
-                    break;
-            }
+        updateElement: function() {
+            this._getElementMethod('update', this.currentElement)();
         },
 
-        removeElement: function(which) {
+        applyElement: function(element) {
+            this._getElementMethod('apply', element)();
+        },
+
+        removeElement: function(element) {
             // Make sure reference to state exists; this is necessary unless you like crashes
             if (this.state) {
                 this.currentElement = null;
                 this.currentElementObj = null;
-                this.removeDisplay(which);
+                this.removeDisplay(element);
             }
         },
 
-        applyFire: function(fireStats) {
+        // Used to get a type of private method from Bubble with a given element
+        _getElementMethod: function(type, element) {
+            if (element) {
+                var eleMethod = this['_' + type + capitalize(element)];
+                if (_.isFunction(eleMethod)) {
+                    return _.bind(eleMethod, this);
+                }
+            }
+            return _.identity;
+        },
+
+
+        _applyFire: function() {
             if (this.currentElement !== 'fire' && this.hp > 0) {
                 if (!this.fire) {
                     this.fire = new gfx.pixi.MovieClip(res.sheets.fire);
@@ -711,7 +712,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 // Update display properties for fire so it will have correct positions without having to wait another frame.
                 this.updateDisplayProperties([this.fire]);
 
-                this.fireStats = fireStats;
                 this.addDisplay(this.fire);
                 this.currentElement = 'fire';
 
@@ -722,7 +722,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             }
         },
 
-        updateFire: function() {
+        _updateFire: function() {
             if (this.fireStats) {
                 this.hp -= this.fireStats.damage;
 
@@ -732,11 +732,27 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 if (chance <= this.fireStats.applyChance) {
                     var collidedBubble = this.getCollisions(this.state.bubbles);
                     if (collidedBubble) {
-                        collidedBubble.applyFire(this.fireStats);
+                        collidedBubble.applyElement('fire');
                     }
                 }
             }
         },
+
+        _applyIce: function() {
+
+        },
+
+        _updateIce: function() {
+
+        },
+
+        _applyLightning: function() {
+
+        },
+
+        _updateLightning: function() {
+
+        }
     });
 
 
