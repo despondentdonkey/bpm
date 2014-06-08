@@ -53,6 +53,8 @@ abilities - separate; upgrades and perks should integrate these.
 
 
 === Retrieving upgrade values could be done like so: ===
+    -S: I think we should have upgrades be a function. We could then get upgrades like this:
+        var overallBulletDamage = upgrades('bulletDamage');
 
     // This would tally all of the bulletDamages then give you a value which could be worked with e.g. if (20, 30) then (50 or 1.5)
     var overallBulletDamage = upgrades.getVal('bulletDamage');
