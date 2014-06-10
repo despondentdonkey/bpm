@@ -21,7 +21,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm'], function(t
 
             input.init(gfx.renderer.view);
             dbg.addStateButtons(states);
-            dbg.addCheats(bpm);
+            dbg.addCheats(bpm, states);
 
             quests.addJsonQuests(res.json.quests.data);
 

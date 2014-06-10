@@ -26,7 +26,7 @@ dbg.addStateButtons = function(states) {
     document.getElementById('stateButtons').appendChild(div);
 };
 
-dbg.addCheats = function(bpm) {
+dbg.addCheats = function(bpm, states) {
     var div = document.createElement('div');
     var box = document.createElement('input');
 
@@ -58,9 +58,9 @@ dbg.addCheats = function(bpm) {
     cheat('bpm.player.pins=10');
     cheat('bpm.player.pins=0');
     cheat('dbg.fpsMonitorShow=!dbg.fpsMonitorShow', 'Toggle FPS Monitor');
-    cheat("bpm.state.current.setWeapon('PinShooter')", 'PinShooter');
-    cheat("bpm.state.current.setWeapon('Shotgun')", 'Shotgun');
-    cheat("bpm.state.current.setWeapon('Rifle')", 'Rifle');
+    cheat("states.global.current.setWeapon('PinShooter')", 'PinShooter');
+    cheat("states.global.current.setWeapon('Shotgun')", 'Shotgun');
+    cheat("states.global.current.setWeapon('Rifle')", 'Rifle');
 
     document.getElementById('bpmCheats').appendChild(div);
 };

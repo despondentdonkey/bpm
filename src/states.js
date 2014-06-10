@@ -24,7 +24,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
             // Set the current state to the new state, initialize and clear the new state.
             global.current = newState;
-            bpm.state.current = newState;
             if (options.initNew) {
                 global.current.init();
             }

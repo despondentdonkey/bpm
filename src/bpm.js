@@ -15,10 +15,6 @@ define(function() {
             currentQuest: null,
         },
 
-        state: {
-            current: null,
-        },
-
         // Keep track of all keyboard codes here
         // allows for easy customizability
         // entries should correspond to this pattern:
