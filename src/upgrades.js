@@ -1,10 +1,12 @@
 define(function() {
-    this.abilities = {};
+    upgrades = {};
+    upgrades.generalUpgrades = [];
+    upgrades.abilities = {};
 
     // Returns the final value of the ability specified.
-    this.getVal = function(name) {
-        var ab = this.abilities[name];
-        var value = ab.values || ab.value;
+    upgrades.getVal = function(name) {
+        var ab = upgrades.abilities[name];
+        var value = ab.values || ab.on;
         if (_.isArray(value)) {
             // Add the values of the array together.
             value = _.reduce(value, function(memo, num) {
@@ -14,16 +16,17 @@ define(function() {
         return value;
     };
 
-    this.getValPercent = function(name, increase) {
+    upgrades.getValPercent = function(name, increase) {
         return this.getVal(name) * 0.01;
     };
 
+    // Abilities
     var addAbility = function(name, defaultVal, genDescription) {
-        this.abilities[name] = {
+        upgrades.abilities[name] = {
             name: name,
             genDescription: genDescription,
             values: _.isArray(defaultVal) ? defaultVal : undefined,
-            value: !_.isArray(defaultVal) ? defaultVal : undefined,
+            on: !_.isArray(defaultVal) ? defaultVal : undefined,
         };
     };
 
@@ -31,9 +34,227 @@ define(function() {
         return 'Increases draining strength of fire by ' + val + '%';
     });
 
-    return {
-        abilities: this.abilities,
-        getVal: this.getVal,
-        getValPercent: this.getValPercent,
+    // Upgrades
+
+    var addGeneralUpgrade = function(options) {
+        var newUpgrade = new GeneralUpgrade(options);
+        console.log('upgrade created', newUpgrade);
+        upgrades.generalUpgrades.push(newUpgrade);
     };
+
+    var GeneralUpgrade = createClass(null, function GeneralUpgrade(o) {
+        this.options = o;
+
+        this.levelNum = 0; // The current level of the upgrade 3/5 = level 3 / length 5
+        this.levels = [];
+
+        this.currentAbilities = {}; // The current level abilities for this upgrade.
+        this.enabled = false; // If true then this upgrade is affecting the global abilities. (true == purchased)
+
+        if (o.initial) {
+            this.levels[0] = o.initial;
+            if (o.sequence) {
+                this.length = o.sequence.length; // How many upgrades are there? 0/5 = length of 5
+
+                // Generate the levels based on the sequence pattern.
+                for (var i=1; i<o.sequence.length; ++i) {
+                    var prevLevel = this.levels[i-1];
+                    var newLevel = {};
+                    for (var key in prevLevel) {
+                        if (_.isUndefined(newLevel[key])) {
+                            newLevel[key] = prevLevel[key];
+                        }
+                        newLevel[key] += o.sequence[key];
+                    }
+                    this.levels[i] = newLevel;
+                }
+
+                // Override levels
+                if (o.levels) {
+                    for (var key in o.levels) {
+                        var index = parseInt(key, 10);
+                        if (index > this.length) {
+                            console.error('Level should not be overridden because it exceeds the length specified in the sequence.');
+                        }
+                        this.levels[index-1] = o.levels[key];
+                    }
+                }
+            } else {
+                // No sequence specified so it is just a one time upgrade.
+                this.length = 1;
+            }
+        } else if (o.levels) {
+            if (_.isArray(o.levels)) {
+                this.length = o.levels.length;
+                this.levels = o.levels;
+            } else {
+                this.length = _.size(o.levels);
+                for (var key in o.levels) {
+                    var index = parseInt(key, 10);
+                    if (index > this.length) {
+                        console.error('Level index exceeds total number of levels. Index: ' + index + ', Length: ' + this.length);
+                    }
+                    this.levels[index-1] = o.levels[key];
+                }
+            }
+        }
+
+        this.addAbilities();
+
+        // TEST: All upgrades enabled and at level 3
+        this.setLevel(3);
+        this.enable();
+    }, {
+        setLevel: function(levelNum) {
+            this.removeAbilities();
+            this.levelNum = levelNum;
+            this.addAbilities();
+
+            // If this upgrade is enabled then we should update the global abilities to the new level.
+            if (this.enabled) {
+                this.update();
+            }
+        },
+
+        // Sends the current abilities for this upgrade to the global abilities.
+        enable: function() {
+            if (this.enabled) return;
+            this.enabled = true;
+
+            if (this.levelNum <= 0) {
+                console.error('Enabling upgrade with level 0. Level should be greater than 0.');
+            }
+
+            for (var key in this.currentAbilities) {
+                var ability = this.currentAbilities[key];
+                var globalAbility = upgrades.abilities[key];
+
+                if (!globalAbility) continue; // Might wanna give an error.
+
+                if (globalAbility.values) {
+                    globalAbility.values.push(ability);
+                } else {
+                    globalAbility.on = ability;
+                }
+
+                console.log('global ability updated', globalAbility);
+            }
+        },
+
+        // Disables and then enables the upgrade effectively updating the global abilities.
+        update: function() {
+            this.disable();
+            this.enable();
+        },
+
+        // Removes the current abilities for this upgrade from the global abilities.
+        disable: function() {
+            if (!this.enabled) return;
+            this.enabled = false;
+
+            for (var key in this.currentAbilities) {
+                var ability = this.currentAbilities[key];
+                var globalAbility = upgrades.abilities[key];
+
+                if (!globalAbility) continue;
+
+                if (globalAbility.values) {
+                    globalAbility.values.splice(globalAbility.values.indexOf(ability), 1);
+                } else if (!_.isUndefined(globalAbility.on)) {
+                    globalAbility.on = false;
+                }
+            }
+        },
+
+        // Adds the abilities for the current level (levelNum) to this.currentAbilities.
+        addAbilities: function() {
+            if (this.levelNum <= 0) return;
+
+            if (!_.isEmpty(this.currentAbilities)) {
+                console.error('Abilities have already been added. You must first remove them before adding again.');
+            }
+
+            var level = this.levels[this.levelNum-1];
+            for (var key in level) {
+                var ability = level[key];
+                if (key !== 'cost') {
+                    this.currentAbilities[key] = ability;
+                }
+            }
+        },
+
+        // Removes the abilities from this.currentAbilities.
+        removeAbilities: function() {
+            if (this.levelNum <= 0) return;
+
+            if (_.isEmpty(this.currentAbilities)) {
+                console.error('Abilities have not been added; nothing to remove.');
+            }
+
+            this.currentAbilities = {};
+        },
+    });
+
+    addGeneralUpgrade({
+        name: 'Fire Power',
+        description: 'Something something',
+
+        initial: {
+            fireStrength: 25,
+            cost: 200,
+        },
+
+        sequence: {
+            length: 5, // Upgrade level count including initial.
+            cost: 100,
+            fireStrength: 10,
+        },
+
+        levels: {
+            5: {
+                fireStrength: 200,
+                cost: 100000,
+            },
+        },
+    });
+
+    addGeneralUpgrade({
+        name: 'Fire Power II',
+        description: 'Something something',
+
+        levels: {
+               1: {
+                fireStrength: 25,
+                cost: 200,
+            }, 4: {
+                fireStrength: 50,
+                cost: 1000,
+            }, 3: {
+                fireStrength: 40,
+                cost: 400,
+            }, 2: {
+                fireStrength: 35,
+                cost: 300,
+            },
+        },
+    });
+
+    addGeneralUpgrade({
+        name: 'Fire Power III',
+        description: 'Something something',
+
+        levels: [{
+                fireStrength: 25,
+                cost: 200,
+            }, {
+                fireStrength: 35,
+                cost: 300,
+            }, {
+                fireStrength: 50,
+                cost: 500,
+            },
+        ],
+    });
+
+    return upgrades;
 });
