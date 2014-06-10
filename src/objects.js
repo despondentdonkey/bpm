@@ -1,4 +1,4 @@
-define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, events) {
+define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, gfx, input, events, upgrades) {
 
     var getID;
     (function() {
@@ -520,7 +520,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         // Element Settings
         this.currentElement;
         this.fireStats = {
-            damage: 0.01,
+            damage: 0.01 * (1+upgrades.getValPercent('fireStrength')),
             duration: 750,
             applyChance: 10 // in percent (10 === 10%)
         };
