@@ -364,7 +364,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
             this.statusText.setText('XP: ' + this.xp);
 
-            this.updateCombo();
+            this.updateCombo(delta);
 
             if (this.currentQuest.completed) {
                 if (!this.skipDay) {
@@ -390,7 +390,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             this.monitorHotkeys(this.hotkeys);
         },
 
-        updateCombo: function() {
+        updateCombo: function(delta) {
             this.comboText.setText(this.combo + ' / ' + this.comboGoal
             + '\nx' + this.multiplier);
 
