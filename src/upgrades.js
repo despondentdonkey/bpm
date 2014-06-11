@@ -1,6 +1,6 @@
 define(function() {
     upgrades = {};
-    upgrades.generalUpgrades = [];
+    upgrades.general = [];
     upgrades.abilities = {};
 
     // Returns the final value of the ability specified.
@@ -37,19 +37,24 @@ define(function() {
     // Upgrades
 
     var addGeneralUpgrade = function(options) {
-        var newUpgrade = new GeneralUpgrade(options);
+        var newUpgrade = new BasicUpgrade(options);
         console.log('upgrade created', newUpgrade);
-        upgrades.generalUpgrades.push(newUpgrade);
+        upgrades.general.push(newUpgrade);
     };
 
-    var GeneralUpgrade = createClass(null, function GeneralUpgrade(o) {
+    // Base class for any upgrade.
+    var BasicUpgrade = createClass(null, function BasicUpgrade(o) {
         this.options = o;
 
         this.levelNum = 0; // The current level of the upgrade 3/5 = level 3 / length 5
         this.levels = [];
 
         this.currentAbilities = {}; // The current level abilities for this upgrade.
+        this.previousAbilities = {}; // The level abilities which have just been switched.
         this.enabled = false; // If true then this upgrade is affecting the global abilities. (true == purchased)
+
+        this.name = o.name;
+        this.description = o.description;
 
         if (o.initial) {
             this.levels[0] = o.initial;
@@ -100,10 +105,6 @@ define(function() {
         }
 
         this.addAbilities();
-
-        // TEST: All upgrades enabled and at level 3
-        this.setLevel(3);
-        this.enable();
     }, {
         setLevel: function(levelNum) {
             this.removeAbilities();
@@ -112,7 +113,11 @@ define(function() {
 
             // If this upgrade is enabled then we should update the global abilities to the new level.
             if (this.enabled) {
-                this.update();
+                if (levelNum <= 0) {
+                    this.disable();
+                } else {
+                    this.update();
+                }
             }
         },
 
@@ -137,7 +142,7 @@ define(function() {
                     globalAbility.on = ability;
                 }
 
-                console.log('global ability updated', globalAbility);
+                console.log('ENABLE: global ability updated', globalAbility);
             }
         },
 
@@ -147,23 +152,12 @@ define(function() {
             this.enable();
         },
 
-        // Removes the current abilities for this upgrade from the global abilities.
+        // Removes the previous abilities for this upgrade from the global abilities.
         disable: function() {
             if (!this.enabled) return;
             this.enabled = false;
 
-            for (var key in this.currentAbilities) {
-                var ability = this.currentAbilities[key];
-                var globalAbility = upgrades.abilities[key];
-
-                if (!globalAbility) continue;
-
-                if (globalAbility.values) {
-                    globalAbility.values.splice(globalAbility.values.indexOf(ability), 1);
-                } else if (!_.isUndefined(globalAbility.on)) {
-                    globalAbility.on = false;
-                }
-            }
+            this.removeGlobalAbilities(this.previousAbilities);
         },
 
         // Adds the abilities for the current level (levelNum) to this.currentAbilities.
@@ -183,15 +177,41 @@ define(function() {
             }
         },
 
-        // Removes the abilities from this.currentAbilities.
+        // Removes the abilities from this.currentAbilities and puts them in this.previousAbilities.
         removeAbilities: function() {
-            if (this.levelNum <= 0) return;
+            if (this.levelNum <= 0) {
+                this.previousAbilities = {};
+                return;
+            }
 
             if (_.isEmpty(this.currentAbilities)) {
                 console.error('Abilities have not been added; nothing to remove.');
             }
 
+            this.previousAbilities = this.currentAbilities;
             this.currentAbilities = {};
+        },
+
+        // Removes an object literal of abilities from the global abilities.
+        removeGlobalAbilities: function(toRemove) {
+            for (var key in toRemove) {
+                var ability = toRemove[key];
+                var globalAbility = upgrades.abilities[key];
+
+                if (!globalAbility) continue;
+
+                if (globalAbility.values) {
+                    var index = globalAbility.values.indexOf(ability);
+                    console.log(globalAbility.values.indexOf(ability));
+                    if (index >= 0) {
+                        globalAbility.values.splice(index, 1);
+                    }
+                } else if (!_.isUndefined(globalAbility.on)) {
+                    globalAbility.on = false;
+                }
+                console.log('removed', globalAbility);
+            }
+
         },
     });
 

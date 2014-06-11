@@ -1,4 +1,4 @@
-define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], function(bpm, objects, gfx, res, input, ui, events, quests) {
+define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgrades'], function(bpm, objects, gfx, res, input, ui, events, quests, upgrades) {
     var global = {
         current: null,
         previous: null,
@@ -805,24 +805,59 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
     });
 
     var SmithMenu = createClass(TabMenu, function(prevState) {
+        this.selectedUpgrade;
     }, {
         init: function() {
             TabMenu.prototype.init.call(this);
 
-            this.buttons = {
-                buy: new ui.Button('Buy', this.buttonStyle, function() { log('kaching!'); }, this),
-                upgrade0: new ui.Button('Upgrade 0', this.buttonStyle, function() { log('selected'); }, this),
-                upgrade1: new ui.Button('Upgrade 1', this.buttonStyle, function() { log('selected'); }, this),
-                upgrade2: new ui.Button('Upgrade 2', this.buttonStyle, function() { log('selected'); }, this),
-                upgrade3: new ui.Button('Upgrade 3', this.buttonStyle, function() { log('selected'); }, this),
-                upgrade4: new ui.Button('Upgrade 4', this.buttonStyle, function() { log('selected'); }, this),
-                upgrade5: new ui.Button('Upgrade 5', this.buttonStyle, function() { log('selected'); }, this),
+            var upgradeDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
+            this.add(upgradeDescription);
+
+            var updateDescription = function(upgrade) {
+                upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
+                for (var key in upgrade.currentAbilities) {
+                    var ability = upgrades.abilities[key];
+                    if (ability) {
+                        upgradeDescription.text += '\n' + ability.genDescription(upgrade.currentAbilities[key]);
+                    }
+                }
+                upgradeDescription.text += '\n' + upgrade.levelNum + ' / ' + upgrade.length;
             };
+
+            this.buttons = {
+                upgrade: new ui.Button('upgrade', this.buttonStyle, function() {
+                    if (!this.selectedUpgrade) return;
+                    if (this.selectedUpgrade.levelNum < this.selectedUpgrade.length) {
+                        this.selectedUpgrade.enabled = true;
+                        this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum+1);
+                        updateDescription(this.selectedUpgrade);
+                    }
+                }, this),
+                downgrade: new ui.Button('downgrade', this.buttonStyle, function() {
+                    if (!this.selectedUpgrade) return;
+                    if (this.selectedUpgrade.levelNum > 0) {
+                        this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum-1);
+                        updateDescription(this.selectedUpgrade);
+                    }
+                }, this),
+            };
+
+            for (var i=0; i<upgrades.general.length; ++i) {
+                var upgrade = upgrades.general[i];
+
+                _.bind((function(upgrade) {
+                    this.buttons['upgrade'+i] = new ui.Button(upgrade.name, this.buttonStyle, function() {
+                        this.selectedUpgrade = upgrade;
+                        updateDescription(this.selectedUpgrade);
+                    }, this);
+                }), this)(upgrade);
+            }
 
             var bvals = _.values(this.buttons);
 
-            this.buttons.buy.setPos(gfx.width - this.buttons.buy.width - 5, gfx.height - 50);
-            _.each(_.tail(bvals), function(b, i) { b.setPos(50, 100 + 50 * i); });
+            this.buttons.upgrade.setPos(gfx.width - this.buttons.upgrade.width - 5, gfx.height - 50);
+            this.buttons.downgrade.setPos(this.buttons.upgrade.x - this.buttons.downgrade.width - 32, gfx.height - 50);
+            _.each(_.tail(bvals, 2), function(b, i) { b.setPos(50, 100 + 50 * i); });
 
             this.add(bvals);
         },
