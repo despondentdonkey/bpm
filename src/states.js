@@ -454,28 +454,32 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             output: instanceof Weapon
         */
         setWeapon: function(weapon) {
-            // Restore weapon if there is a saved version
-            // allow for restoring via a String or object
-            if (this.savedWeapons && (this.savedWeapons[weapon.className] || this.savedWeapons[weapon])) {
-                var which = _.isString(weapon) ? weapon : weapon.className;
-                var weapon = this.savedWeapons[which];
-                this.savedWeapons[which] = null;
-            } else if (_.isString(weapon) && _.isFunction(objects[weapon])) {
-                weapon = new objects[weapon]();
-            } else if (!(weapon instanceof objects.Weapon)) {
+            // Accepts a string or instanceof Weapon
+            var weaponName;
+            if (_.isString(weapon))
+                weaponName = weapon;
+            else if (weapon instanceof objects.Weapon)
+                weaponName = weapon.className;
+            else
                 throw new TypeError('Field.setWeapon: Incorrect weapon type passed');
+
+            // Restore weapon if there is a saved version
+            // otherwise instantiate a new one
+            if (this.savedWeapons && this.savedWeapons[weaponName]) {
+                weapon = this.savedWeapons[weaponName];
+                this.savedWeapons[weaponName] = null;
+            } else if (_.isFunction(objects[weaponName])) {
+                weapon = new objects[weapon]();
             }
 
+            // Add the current weapon to the list of saved weapons
+            // This will keep the ammo timer going in the background
             if (this.currentWeapon) {
-                // Add the current weapon to the list of saved weapons
-                // This will keep the ammo timer going in the background
                 this.savedWeapons[this.currentWeapon.className] = this.currentWeapon;
                 this.remove(this.currentWeapon);
-                this.currentWeapon = null;
-                bpm.player.currentWeapon = null;
             }
 
-            bpm.player.currentWeapon = weapon;
+            bpm.player.currentWeapon = weaponName;
             this.currentWeapon = weapon;
             return this.add(weapon);
         },

@@ -376,7 +376,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             }
         },
 
-        // sets ammo timer on bpm.timers[weaponType]
+        // sets ammo timer
         // pass time in ms; loops by default
         setAmmoTimer: function(time) {
             if (this.ammoTimer)
