@@ -1,24 +1,8 @@
 // Wizard
 
 Elemental -
-
-    Each upgrade has 5 levels of upgrading
-    Only 1 upgrade can be active at any time
-    These are a big deal - should take some effort to earn
-
-    -P: These are pretty boring for being such a big deal. In addition to these effects it should also grant something new or these should be easier to acquire.
-    -S: I think they mostly just sound boring. In practice these will be crazy. I also don't want to make things so easy to acquire that you get all of the upgrades and the game gets boring.
-        Do you have any ideas?
-    -P: I was thinking these could be like talent trees. But weapons seem to be like that already. I don't know we should be able to play around with it, just gotta implement it.
-
-    -P: Some of these abilities are unbalanced or some seem like super abilities. I'm thinking that you initially choose one then you have to reach a certain amount of upgrades on that one to get another one.
-        So if we follow that then you can get the seemingly really good abilities like the board wipe ones at the start. So either we have to nerf them or make them on their own tier.
-        Maybe we could something like I said previously but for the board wipe stuff or whatever, that stuff will need all of the other upgrades (not fully upgraded just the first upgrades for each one).
-
-    -S: Yeah, I think we should make a tier system of some sort with these. It'd be more fun to have stronger abilities later in the game too.
-
     Elements have a base ability and 4 unlockable abilities.
-
+    Only 1 element can be active at any time
 
     Fire - each upgrade increases damage
         Initial Ability: Damage over time
@@ -96,37 +80,57 @@ Elemental -
             Final upgrade completely freezes bubbles
 
         // ** Propose to ditch for idea below
-        Evasive Cold - 5 | 6
+        Evasive Cold - 3 | 6
             Pushes bubbles back with each hit and causes small AoE damage.
             Each upgrade increases AoE and pushback
 
-            -S: revision: 9 | x
+            -S: revision: 2 | x
                 AoE only if you hit a bubble that is affected by ice
         // ****** ****
 
-        Frostbite - 8 | 5
+        Frostbite - 4 | 5
             Bubbles are permantly slower after being affected by Black Ice
             -P: This would kinda remove the length of freeze upgrade in Black Ice wouldn't it?
-                - x% of black ice slowness subtracted from speed
-                - x is upgraded
+            -S: How so? It relies on Black Ice to be stronger, since the strength of Black ice directly impacts the strength of Frostbite
+                also, added another constraint onto this ability below.
 
-            If a bubble who is frostbitten is again frozen and subsequently damaged,
-            emit a medium AoE blast of ice crystals
+                - x% of black ice slowness subtracted from speed
+                - after y seconds, the bubbles thaw and return to normal speed
+                - x and y are upgraded
+
+            #If a bubble who is frostbitten is again frozen and subsequently damaged,
+            #emit a medium AoE blast of ice crystals
 
             -P: Somewhat similar to Brittle Bubbles but this doesn't seem to go well with the strategy defined for ice. AoE is just for the slowing of bubbles right?
-            Maybe have the AoE just freeze the bubbles, maybe some small damage? Upgrade would increase range
+            #Maybe have the AoE just freeze the bubbles, maybe some small damage? Upgrade would increase range
+
+            -S: Yeah, I agree; what about the following to replace everything I put a "#" before
+                - If a frostbitten bubble is frozen again, the bubble leaves an ice trail, inflicting frostbite onto any bubble that comes in contact with it
+            -S: I'm not sure I'm liking this one anymore... It's just too similar to Black Ice. I think Black Ice should be renamed to Frostbite or Deep Freeze, though.
 
         Brittle Bubbles - 9 | 8
             Damaging an already frozen bubbles gives a large percentage increase to damage.
             Each upgrade increases damage
 
         Ice Bomb - 7 | 5 - prereq: Brittle Bubbles, Black Ice
-            If a bubble is frozen by last upgrade of Black Ice and killed by Brittle Bubbles, explode into a large amount of deadly ice shards dealing heavy damage
-            Each shard inflicts the bonuses of Brittle Bubbles, Black Ice, and Frostbite on the bubble it collides with
-            ? Shards last until collided with (may be too OP)
+            #If a bubble is frozen by last upgrade of Black Ice and killed by Brittle Bubbles, explode into a large amount of deadly ice shards dealing heavy damage
+            #Each shard inflicts the bonuses of Brittle Bubbles, Black Ice, and Frostbite on the bubble it collides with
+            #? Shards last until collided with (may be too OP)
 
             -P: What about some sort of percent chance on freeze or charge to activate an event. When activated the next bullet you shoot will be super ice or something and will destroy all bubbles in its path (even armored).
-            It would only be one bullet and it would work well with the strategy of single targets.
+                It would only be one bullet and it would work well with the strategy of single targets.
+            -S: Yeah, I like that; revision replacing the lines with hashtags below:
+
+            Hold down the mouse button to charge your shot; power and chances increase with length held.
+            Each ability listed below has an independent chance of happening, unless nested (so it will be a mix of below abilities on every shot)
+                - Chance of emitting an ice cloud, inflicting Black Ice on all bubbles that come in contact
+                    - Small chance of cloud covering Field
+                - Chance of shooting a very powerful icicle that inflicts up to 300% damage
+                    - Small chance of extra powerful icicle, inflicts up to 500% damage
+                - Chance of gaining buff that increases damage by 25% for 25 seconds
+                    - Small chance of buff increasing damage by 50% for 50 seconds
+
+                - preferrably two more abilities - can't think of any
 
     ## 1 Secret Elements after you beat the game the first time
     // meh, needs improvement
