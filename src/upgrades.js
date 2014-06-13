@@ -1,7 +1,8 @@
 define(function() {
     upgrades = {};
-    upgrades.general = [];
     upgrades.abilities = {};
+    upgrades.general = [];
+    upgrades.perks = [];
 
     // Returns the final value of the ability specified.
     upgrades.getVal = function(name) {
@@ -36,10 +37,14 @@ define(function() {
 
     // Upgrades
 
-    var addGeneralUpgrade = function(options) {
+    var addGeneral = function(options) {
         var newUpgrade = new BasicUpgrade(options);
-        console.log('upgrade created', newUpgrade);
         upgrades.general.push(newUpgrade);
+    };
+
+    var addPerk = function(options) {
+        var newUpgrade = new BasicUpgrade(options);
+        upgrades.perks.push(newUpgrade);
     };
 
     // Base class for any upgrade.
@@ -215,7 +220,7 @@ define(function() {
         },
     });
 
-    addGeneralUpgrade({
+    addGeneral({
         name: 'Fire Power',
         description: 'Something something',
 
@@ -238,7 +243,7 @@ define(function() {
         },
     });
 
-    addGeneralUpgrade({
+    addGeneral({
         name: 'Fire Power II',
         description: 'Something something',
 
@@ -259,7 +264,7 @@ define(function() {
         },
     });
 
-    addGeneralUpgrade({
+    addGeneral({
         name: 'Fire Power III',
         description: 'Something something',
 
@@ -274,6 +279,15 @@ define(function() {
                 cost: 500,
             },
         ],
+    });
+
+    addPerk({
+        name: 'Fire Power Perk',
+        description: 'Something something',
+
+        initial: {
+            fireStrength: 100,
+        },
     });
 
     return upgrades;
