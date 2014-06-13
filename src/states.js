@@ -463,6 +463,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             else
                 throw new TypeError('Field.setWeapon: Incorrect weapon type passed');
 
+            // Prevent switching to the same weapon, creating multiple instances of the weapon
+            if (weaponName === (this.currentWeapon && this.currentWeapon.className))
+                return this.currentWeapon;
+
             // Restore weapon if there is a saved version
             // otherwise instantiate a new one
             if (this.savedWeapons && this.savedWeapons[weaponName]) {
