@@ -864,14 +864,61 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
     });
 
     var WizardMenu = createClass(TabMenu, function(prevState) {
+        this.selectedPerk;
     }, {
         init: function() {
             TabMenu.prototype.init.call(this);
 
-            var perk = new ui.Button("Perk", this.buttonStyle);
-            perk.x = 32;
-            perk.y = 100;
-            this.add(perk);
+            var perkDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
+            this.add(perkDescription);
+
+            var updateDescription = function(perk) {
+                perkDescription.text = perk.name + '\n' + perk.description;
+                for (var key in perk.currentAbilities) {
+                    var ability = upgrades.abilities[key];
+                    if (ability) {
+                        perkDescription.text += '\n' + ability.genDescription(perk.currentAbilities[key]);
+                    }
+                }
+                perkDescription.text += '\n' + (perk.levelNum >= perk.length ? 'Obtained' : '');
+            };
+
+            this.buttons = {
+                buy: new ui.Button('buy', this.buttonStyle, function() {
+                    if (!this.selectedPerk) return;
+                    if (this.selectedPerk.levelNum < this.selectedPerk.length) {
+                        this.selectedPerk.enabled = true;
+                        this.selectedPerk.setLevel(this.selectedPerk.levelNum+1);
+                        updateDescription(this.selectedPerk);
+                    }
+                }, this),
+                refund: new ui.Button('refund', this.buttonStyle, function() {
+                    if (!this.selectedPerk) return;
+                    if (this.selectedPerk.levelNum > 0) {
+                        this.selectedPerk.setLevel(this.selectedPerk.levelNum-1);
+                        updateDescription(this.selectedPerk);
+                    }
+                }, this),
+            };
+
+            for (var i=0; i<upgrades.perks.length; ++i) {
+                var perk = upgrades.perks[i];
+
+                _.bind((function(perk) {
+                    this.buttons['perk'+i] = new ui.Button(perk.name, this.buttonStyle, function() {
+                        this.selectedPerk = perk;
+                        updateDescription(this.selectedPerk);
+                    }, this);
+                }), this)(perk);
+            }
+
+            var bvals = _.values(this.buttons);
+
+            this.buttons.buy.setPos(gfx.width - this.buttons.buy.width - 5, gfx.height - 50);
+            this.buttons.refund.setPos(this.buttons.buy.x - this.buttons.refund.width - 32, gfx.height - 50);
+            _.each(_.tail(bvals, 2), function(b, i) { b.setPos(50, 100 + 50 * i); });
+
+            this.add(bvals);
         },
     });
 
