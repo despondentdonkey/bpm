@@ -9,7 +9,7 @@ define(function() {
             day: 1,
 
             currentWeapon: 'Rifle',
-            currentElement: 'fire',
+            currentElement: 'ice',
 
             quests: ['ma00', 's00'], // Quests available
             currentQuest: null,

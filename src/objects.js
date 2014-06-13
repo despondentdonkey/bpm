@@ -520,13 +520,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         // Element Settings
         this.currentElement;
         this.fireStats = {
+            upgrades: [],
             damage: 0.01,
             duration: 750,
             applyChance: 10 // in percent (10 === 10%)
         };
 
         this.iceStats = {
-
+            duration: 750
         };
 
         this.lightningStats = {
@@ -691,6 +692,17 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             return _.identity;
         },
 
+        // Adds element to display, sets variables.
+        // called in each element after setting up the element Object
+        _setupApplyElement: function(elemStr, elemObj) {
+            this.currentElementObj = elemObj;
+
+            // Update display properties for fire so it will have correct positions without having to wait another frame.
+            this.updateDisplayProperties([elemObj]);
+
+            this.addDisplay(elemObj);
+            this.currentElement = elemStr;
+        },
 
         _applyFire: function() {
             if (this.currentElement !== 'fire' && this.hp > 0) {
@@ -707,13 +719,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                     this.fire.depth = -4;
                 }
 
-                this.currentElementObj = this.fire;
-
-                // Update display properties for fire so it will have correct positions without having to wait another frame.
-                this.updateDisplayProperties([this.fire]);
-
-                this.addDisplay(this.fire);
-                this.currentElement = 'fire';
+                this._setupApplyElement('fire', this.fire);
 
                 // Add fire timer - destroys timer when duration is up
                 var onFireComplete = _.bind(this.removeElement, this, this.fire);
@@ -739,7 +745,24 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         _applyIce: function() {
+            if (this.currentElement !== 'ice') {
+                if (!this.ice) {
+                    // TODO: Add to sprite batch
+                    this.ice = new gfx.pixi.Sprite(res.tex.ice);
+                    this.ice.width = this.width;
+                    this.ice.height = this.height;
 
+                    this.ice.syncGameObjectProperties = { scale: false };
+                    this.ice.alpha = 0.7;
+                    this.ice.depth = -4;
+                }
+
+                this._setupApplyElement('ice', this.ice);
+
+                var onIceComplete = _.bind(this.removeElement, this, this.ice);
+                var iceTimer = new Timer(this.iceStats.duration, 'oneshot', onIceComplete);
+                this.state.add(iceTimer);
+            }
         },
 
         _updateIce: function() {
