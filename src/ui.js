@@ -15,7 +15,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         },
 
         destroy: function(state) {
-            GameObject.prototype.init.call(this, state);
+            GameObject.prototype.destroy.call(this, state);
             input.mouse.removeUiExclusionArea(this.excludeRect);
         },
 
