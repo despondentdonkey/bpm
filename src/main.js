@@ -54,7 +54,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm'], function(t
         gfx.render();
 
         time.update();
-        dbg.fpsMonitor(gfx, time);
+        dbg.fpsMonitor(gfx, time, states.global.current);
 
         requestAnimationFrame(update);
     }
