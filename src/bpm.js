@@ -1,5 +1,5 @@
-define(function() {
-    var input = requirejs('input');
+define(function(require) {
+    var input = require('input');
     return {
         player: {
             money: 0,
