@@ -2,6 +2,7 @@ define(function() {
     upgrades = {};
     upgrades.abilities = {};
     upgrades.general = [];
+    upgrades.weapons = {};
     upgrades.perks = [];
 
     // Returns the final value of the ability specified.
@@ -17,7 +18,7 @@ define(function() {
         return value;
     };
 
-    upgrades.getValPercent = function(name, increase) {
+    upgrades.getValPercent = function(name) {
         return this.getVal(name) * 0.01;
     };
 
@@ -40,6 +41,14 @@ define(function() {
     var addGeneral = function(options) {
         var newUpgrade = new BasicUpgrade(options);
         upgrades.general.push(newUpgrade);
+    };
+
+    var addWeapon = function(options) {
+        if (!_.has(upgrades.weapons, options.weapon)) {
+            upgrades.weapons[options.weapon] = [];
+        }
+        var newUpgrade = new BasicUpgrade(options);
+        upgrades.weapons[options.weapon].push(newUpgrade);
     };
 
     var addPerk = function(options) {
@@ -220,6 +229,8 @@ define(function() {
         },
     });
 
+    // TODO: Replace 'add' functions with JSON once upgrade functionality is finished.
+
     addGeneral({
         name: 'Fire Power',
         description: 'Something something',
@@ -277,6 +288,60 @@ define(function() {
             }, {
                 fireStrength: 50,
                 cost: 500,
+            },
+        ],
+    });
+
+    /*
+       JSON Format for weapons and elements:
+       weapon/element: {
+           id: {
+               name, levels, etc
+           }
+       }
+    */
+
+    addWeapon({
+        weapon: 'pinshooter',
+        name: 'Pin Shooter Fire Power',
+        description: "This isn't related to the pin shooter, I didn't want to make another ability.",
+        levels: [{
+                fireStrength: 25,
+            }, {
+                fireStrength: 50,
+            }, {
+                fireStrength: 200,
+            },
+        ],
+    });
+
+    addWeapon({
+        id: '00',
+        weapon: 'shotgun',
+        name: 'Shotgun Fire Power',
+        description: "This isn't related to the shotgun, I didn't want to make another ability.",
+        levels: [{
+                fireStrength: 25,
+            }, {
+                fireStrength: 50,
+            }, {
+                fireStrength: 200,
+            },
+        ],
+    });
+
+    addWeapon({
+        id: '01',
+        weapon: 'shotgun',
+        name: 'Shotgun Fire Power II',
+        description: "This isn't related to the shotgun, I didn't want to make another ability.",
+        requires: [2, '00'], // TODO: Specifying a number means that it requires that many points, specifying a string means it needs that upgrade with the id purchased.
+        levels: [{
+                fireStrength: 200,
+            }, {
+                fireStrength: 400,
+            }, {
+                fireStrength: 800,
             },
         ],
     });
