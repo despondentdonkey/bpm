@@ -1,4 +1,4 @@
-define(function() {
+define(['lib/simpleStorage'], function(simpleStorage) {
     var input = requirejs('input');
     return {
         player: {
@@ -13,6 +13,27 @@ define(function() {
 
             quests: ['ma00', 's00'], // Quests available
             currentQuest: null,
+        },
+
+        saveData: function() {
+            if (!simpleStorage.canUse()) {
+                console.error('Game cannot be saved. localStorage saving not supported on this browser.');
+                return false;
+            }
+            return simpleStorage.set('player', this.player);
+        },
+
+        loadData: function() {
+            var storedPlayer = simpleStorage.get('player');
+            var exists = !_.isUndefined(storedPlayer);
+            if (exists) {
+                _.extend(this.player, storedPlayer);
+            }
+            return exists;
+        },
+
+        clearData: function() {
+            return simpleStorage.flush();
         },
 
         // Keep track of all keyboard codes here

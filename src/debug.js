@@ -57,6 +57,9 @@ dbg.addCheats = function(bpm, states) {
     cheat('bpm.player.pins=10000');
     cheat('bpm.player.pins=10');
     cheat('bpm.player.pins=0');
+    cheat("bpm.saveData(); console.log('data', localStorage)", 'Save Game');
+    cheat("bpm.loadData(); console.log('data', localStorage); console.log('player', bpm.player)", 'Load Game');
+    cheat("bpm.clearData(); console.log('data', localStorage)", 'Clear Game Data');
     cheat('dbg.fpsMonitorShow=!dbg.fpsMonitorShow', 'Toggle FPS Monitor');
     cheat("states.global.current.setWeapon('PinShooter')", 'PinShooter');
     cheat("states.global.current.setWeapon('Shotgun')", 'Shotgun');
