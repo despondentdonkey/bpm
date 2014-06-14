@@ -15,7 +15,7 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
             ammoMax: 10000,
 
             currentWeapon: 'Rifle',
-            currentElement: 'ice',
+            currentElement: 'lightning',
 
             quests: ['ma00', 's00'], // Quests available
             currentQuest: null,
