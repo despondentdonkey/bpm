@@ -804,14 +804,44 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         },
     });
 
+
     var SmithMenu = createClass(TabMenu, function(prevState) {
         this.selectedUpgrade;
+        this.selectedWeapon;
+        this.tab = 'general';
+        this.tabObjects = [];
     }, {
         init: function() {
             TabMenu.prototype.init.call(this);
 
+            var generalTab = new ui.Button('General', this.buttonStyle, function() {
+                if (this.tab !== 'general') {
+                    this.tab = 'general';
+                    this.remove(this.tabObjects);
+                    this.tabObjects = [];
+                    this.addGeneralContent();
+                }
+            }, this);
+            var weaponTab = new ui.Button('Weapons', this.buttonStyle, function() {
+                if (this.tab !== 'weapons') {
+                    this.tab = 'weapons';
+                    this.remove(this.tabObjects);
+                    this.tabObjects = [];
+                    this.addWeaponContent();
+                }
+            }, this);
+            generalTab.x = 16;
+            generalTab.y = 50;
+            weaponTab.x = generalTab.x + weaponTab.width;
+            weaponTab.y = 50;
+            this.add([generalTab, weaponTab]);
+
+            this.addGeneralContent();
+        },
+
+        addGeneralContent: function() {
             var upgradeDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
-            this.add(upgradeDescription);
+            this.tabObjects.push(upgradeDescription);
 
             var updateDescription = function(upgrade) {
                 upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
@@ -858,8 +888,90 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.buttons.upgrade.setPos(gfx.width - this.buttons.upgrade.width - 5, gfx.height - 50);
             this.buttons.downgrade.setPos(this.buttons.upgrade.x - this.buttons.downgrade.width - 32, gfx.height - 50);
             _.each(_.tail(bvals, 2), function(b, i) { b.setPos(50, 100 + 50 * i); });
+            _.each(bvals, function(b) { this.tabObjects.push(b); }, this);
 
-            this.add(bvals);
+            this.add(this.tabObjects);
+        },
+
+        addWeaponContent: function() {
+            var upgradeButtons = [];
+            var weaponButtons = [];
+
+            var upgradeDescription = new ui.TextField('', 16, 200, gfx.width/2-32, gfx.height - 250);
+            this.tabObjects.push(upgradeDescription);
+
+            var updateDescription = function(upgrade) {
+                upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
+                for (var key in upgrade.currentAbilities) {
+                    var ability = upgrades.abilities[key];
+                    if (ability) {
+                        upgradeDescription.text += '\n' + ability.genDescription(upgrade.currentAbilities[key]);
+                    }
+                }
+                upgradeDescription.text += '\n' + upgrade.levelNum + ' / ' + upgrade.length;
+            };
+
+            var purchaseButton = new ui.Button('upgrade', this.buttonStyle, function() {
+                if (!this.selectedUpgrade) return;
+                if (this.selectedUpgrade.levelNum < this.selectedUpgrade.length) {
+                    this.selectedUpgrade.enabled = true;
+                    this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum+1);
+                    updateDescription(this.selectedUpgrade);
+                }
+            }, this);
+
+            var refundButton = new ui.Button('downgrade', this.buttonStyle, function() {
+                if (!this.selectedUpgrade) return;
+                if (this.selectedUpgrade.levelNum > 0) {
+                    this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum-1);
+                    updateDescription(this.selectedUpgrade);
+                }
+            }, this);
+
+            purchaseButton.setPos(gfx.width - purchaseButton.width - 5, gfx.height - 50);
+            refundButton.setPos(purchaseButton.x - refundButton.width - 32, gfx.height - 50);
+            this.tabObjects.push(purchaseButton, refundButton);
+
+            for (var key in upgrades.weapons) {
+                // Add a button for every weapon.
+                _.bind((function(weapon) {
+                    var weaponButton = new ui.Button(weapon, this.buttonStyle, function() {
+                        this.selectedWeapon = weapon;
+
+                        // Remove previous upgrade buttons before adding more.
+                        for (var i=0; i<upgradeButtons.length; ++i) {
+                            this.remove(upgradeButtons[i]);
+                        }
+
+                        // Add the upgrades for each weapon.
+                        var upgradeList = upgrades.weapons[weapon];
+                        for (var i=0; i<upgradeList.length; ++i) {
+                            var upgrade = upgradeList[i];
+
+                            var button;
+                            (_.bind(function(upgrade) {
+                                button = new ui.Button(upgrade.name, this.buttonStyle, function() {
+                                    this.selectedUpgrade = upgrade; // Make sure to clear this every tab switch.
+                                    updateDescription(this.selectedUpgrade);
+                                }, this);
+                            }, this))(upgrade);
+
+                            button.setPos(gfx.width/2, 100 + 50 * i);
+                            upgradeButtons.push(button);
+                            this.tabObjects.push(button);
+                            this.add(button);
+                        }
+                    }, this);
+                    weaponButtons.push(weaponButton);
+                }), this)(key);
+            }
+
+            _.each(weaponButtons, function(b, i) {
+                b.setPos(50, 100 + 50 * i);
+                this.tabObjects.push(b);
+            }, this);
+
+            this.add(this.tabObjects);
         },
     });
 
