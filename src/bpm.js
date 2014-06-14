@@ -1,5 +1,6 @@
 define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
     var input = requirejs('input');
+
     return {
         playerDefault: {
             money: 105000, // Currency for blacksmith
