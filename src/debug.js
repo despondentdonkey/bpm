@@ -92,3 +92,16 @@ dbg.fpsMonitor = function(gfx, time, state) {
         dbg.fpsMonitorText.visible = false;
     }
 };
+
+
+// Runs a function with provided args, logs time it took to run to console
+dbg.perfTest = function(context, name, func) {
+    if (!window.performance)
+        throw new Error('dbg.performance: window.performance not defined.');
+
+    var t0 = window.performance.now();
+    var ret = func.apply(context, _(arguments).tail(3));
+    var t1 = window.performance.now();
+    console.log('Performance Debug: ' + name + ' took ' + (t1 - t0) + 'ms to run');
+    return ret;
+};
