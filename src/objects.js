@@ -786,7 +786,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 // This helps with perf too, as collisions are only gathered when chance is in range
                 var chance = randomInt(0, 100);
                 if (chance <= this.fireStats.applyChance) {
-                    var collidedBubble = this.getCollisions(this.state.bubbles);
+                    var collidedBubble =  this.getCollisions(this.state.bubbles);
                     if (collidedBubble) {
                         collidedBubble.applyElement('fire');
                     }
@@ -814,11 +814,38 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         _updateIce: function() {
-
+            //_(this.getNearby(10, this.state.bubbles)).invoke('applyElement', 'ice');
         },
 
-        _applyLightning: function() {
+        // chain is an array of all bubbles in current lightning chain
+        // do not provide args on initial call (on pin collision)
+        _applyLightning: function(chain) {
+            if (!this.lightning) {
+                if (!_.isArray(chain)) {
+                    chain = [this];
+                    this.addListener('lightning', function() {
 
+                    });
+                }
+                // setup lightning to scale + angle towards closest
+                this.lightning = new gfx.pixi.Sprite(res.tex.ice);
+                // _setupApplyElement
+                // stop bubble
+                this._oldSpeed = this.speed;
+                this.speed = 0;
+                // keep lightning until chain is reached.
+
+                // get closest bubble, ignoring all in chain
+                if (chain.length < this.lightningSettings.chainLength) {
+                    var closest = this.getClosest(_(this.objects).without(chain), this.lightningStats.range);
+                    if (closest) {
+                        chain.push(closest);
+                        closest.applyElement.call(closest, 'lightning', chain);
+                    }
+                } else {
+                    chain[0].triggerEvent('lightning');
+                }
+            }
         },
 
         _updateLightning: function() {
