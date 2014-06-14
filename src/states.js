@@ -216,7 +216,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             };
 
             var randBub = function(armor) {
-                return new objects.Bubble(armor, randomRange(32, gfx.width-32), randomRange(-128, -32), Math.random() * 360);
+                return new objects.Bubble(armor, randomRange(32, gfx.width-32), randomRange(-128, gfx.height / 4), Math.random() * 360);
             };
 
 
@@ -237,8 +237,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             // Basic spawner
             this.bubbleSpawner = new objects.Timer(1000, 'loop', _.bind(function() {
                 this.add(randBub(0));
+                if (randomRange(1, 10) == 10)
+                    this.add(randBub(3));
             }, this));
-            this.add(this.bubbleSpawner);
+            //this.add(this.bubbleSpawner);
 
 
             // Circle round timer
@@ -343,14 +345,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             });
             this.add(this.bubbleEmitter);
 
-            var i;
+/*            var i;
             for (i=0; i<0; ++i) {
                 this.add(randBub(8));
             }
 
             for (i=0; i<40; i++) {
                 this.add(randBub(3));
-            }
+            }*/
+
 
             // Need to bind event callbacks, otherwise `this === window` on call
             _.bindAll(this, 'onBlur', 'onFocus');
@@ -446,8 +449,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             var actions = {
                 // Spawns 10 bubbles (for testing)
                 'SpawnBubbles': _.bind(function() {
-                    _(10).times(_.bind(function() {
-                        this.add(new objects.Bubble(3, randomRange(32, gfx.width-32), randomRange(-128, gfx.height / 4), Math.random() * 360));
+                    _(1).times(_.bind(function() {
+                        this.add(new objects.Bubble(3, randomRange(32, gfx.width-32), randomRange(-32, gfx.height / 4), Math.random() * 360));
                     }, this));
                 }, this),
                 'Reset': _.bind(function() {
