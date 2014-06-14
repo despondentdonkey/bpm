@@ -235,8 +235,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
             // Basic spawner
             this.bubbleSpawner = new objects.Timer(1000, 'loop', _.bind(function() {
-                if (!this) // Make sure this state still exists, probably not necessary.
-                    return;
                 this.add(randBub(0));
             }, this));
             this.add(this.bubbleSpawner);
