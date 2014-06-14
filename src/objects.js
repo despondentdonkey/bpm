@@ -207,17 +207,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             };
         },
 
-        // Returns true if an object is colliding with this object.
-        isColliding: function(obj) {
-            var bounds = this.getBounds();
-            var objBounds = obj.getBounds();
-
-            return (bounds.x1 < objBounds.x2
-            && bounds.x2 > objBounds.x1
-            && bounds.y1 < objBounds.y2
-            && bounds.y2 > objBounds.y1);
-        },
-
         /* Returns the first object which collides with this object.
          * If 'opt' is an object array then it will loop through it rather than the state object list.
          * If 'opt' is undefined or an id then it will loop through the state object list.
@@ -263,7 +252,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                         checkingObj = obj;
                     }
 
-                    if (this.isColliding(checkingObj)) {
+                    if (this.isNearby(checkingObj, 0)) {
                         result.push(checkingObj);
                         if (!grouped) break;
                     }
@@ -271,6 +260,65 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             }
             return result.length > 1 ? result : result[0];
         },
+
+        /* Pass bounds obj (x1, x2, y1, y2) or GameObject and optional radius
+            returns bool; true if testBounds are within this' bounds + radius */
+        isNearby: function(testBounds, radius) {
+            var myBounds = this.getBounds();
+            testBounds = testBounds instanceof GameObject
+                         ? testBounds.getBounds()
+                         : testBounds;
+
+            if (radius) {
+                myBounds.x1 -= radius;
+                myBounds.x2 += radius;
+                myBounds.y1 -= radius;
+                myBounds.y2 += radius;
+            }
+
+            return (myBounds.x1 < testBounds.x2
+                && myBounds.x2 > testBounds.x1
+                && myBounds.y1 < testBounds.y2
+                && myBounds.y2 > testBounds.y1);
+        },
+
+        /* Returns an array of objects in the provided radius.
+            optionally provide an array of objects to search through (uses this.state.objects by default) */
+        getNearby: function(radius, objects) {
+            var results = [];
+            objects = objects || this.state.objects;
+            for (var i = 0; i < objects.length; i++) {
+                if (objects[i] instanceof GameObject && objects[i] !== this && this.isNearby(objects[i], radius))
+                    results.push(objects[i]);
+            }
+
+            return results;
+        },
+
+        // use distance formula to get distance from an object
+        getDistance: function(obj) {
+            return Math.abs(Math.sqrt(Math.pow(obj.x - this.x, 2) + Math.pow(obj.y - this.y, 2)));
+        },
+
+        /* returns closest object within radius; defaults to this.state.objects; opt argument obj list
+            works like getNearby, but only returns the closest object
+            if returnDist == true, returns an array [GameObject object, Number distance]
+        */
+        getClosest: function(objects, radius, returnDist) {
+            objects = objects || this.state.objects;
+            objects = _.isNumber(radius) ? this.getNearby(radius, objects) : objects;
+            var closest;
+            var distMin;
+            for (var i = 0; i < objects.length; i++) {
+                var dist = this.getDistance(objects[i]);
+                if (!_.isNumber(distMin) || dist < distMin) {
+                    closest = objects[i];
+                    distMin = dist;
+                }
+            }
+
+            return closest;
+        }
     });
 
 
