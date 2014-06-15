@@ -25,6 +25,10 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm'], function(t
 
             quests.addJsonQuests(res.json.quests.data);
 
+            // Switches to the Field with the training quest as default
+            //bpm.player.currentQuest = quests.all["s00"];
+            //states.setState(new states.Field());
+
             update();
         });
 

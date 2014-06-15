@@ -733,6 +733,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             dayText.y = 10;
             this.addDisplay(dayText);
 
+            // If this is a pause menu for Field then display current quest status rather than round selection.
             if (this.cachedState) {
                 this.cachedState.displayObjectContainer.visible = false;
 
@@ -755,52 +756,52 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 }
 
                 questDescription.text = bpm.player.currentQuest.description + description;
-            }
 
-            for (var i=0; i<bpm.player.quests.length; ++i) {
-                var quest = quests.all[bpm.player.quests[i]];
+                var continueButton = new ui.Button('Continue', this.buttonStyle, function() {
+                    this.close();
+                }, this);
 
-                // Pretty ugly. Binds 'this' to an anonymous function.
-                (_.bind(function(quest) {
-                    var qButton = new ui.Button(quest.name, this.buttonStyle, function() {
-                        this.selectedQuest = quest;
+                continueButton.x = gfx.width - continueButton.width - 10;
+                continueButton.y = gfx.height - continueButton.height - 10;
 
-                        var description = quest.description;
+                this.add(continueButton);
+            } else { // This is not a pause menu for Field so we treat it as a round selector.
+                for (var i=0; i<bpm.player.quests.length; ++i) {
+                    var quest = quests.all[bpm.player.quests[i]];
 
-                        for (var key in quest.objectives) {
-                            description += '\n' + quest.objectives[key].description;
-                        }
+                    // Pretty ugly. Binds 'this' to an anonymous function.
+                    (_.bind(function(quest) {
+                        var qButton = new ui.Button(quest.name, this.buttonStyle, function() {
+                            this.selectedQuest = quest;
 
-                        questDescription.text = description;
-                    }, this);
+                            var description = quest.description;
 
-                    qButton.x = 32;
-                    qButton.y = 100 + ((qButton.height+10) * i);
-                    this.add(qButton);
-                }, this))(quest);
-            }
+                            for (var key in quest.objectives) {
+                                description += '\n' + quest.objectives[key].description;
+                            }
 
-            var startRound = new ui.Button("Start Round", this.buttonStyle, function() {
-                if (this.selectedQuest) {
-                    bpm.player.currentQuest = this.selectedQuest;
-                    setState(new Field());
-                } else {
-                    console.log('Please select a quest');
+                            questDescription.text = description;
+                        }, this);
+
+                        qButton.x = 32;
+                        qButton.y = 100 + ((qButton.height+10) * i);
+                        this.add(qButton);
+                    }, this))(quest);
                 }
-            }, this);
 
-            startRound.x = gfx.width - startRound.width - 10;
-            startRound.y = gfx.height - startRound.height - 10;
+                var startRound = new ui.Button("Start Round", this.buttonStyle, function() {
+                    if (this.selectedQuest) {
+                        bpm.player.currentQuest = this.selectedQuest;
+                        setState(new Field());
+                    } else {
+                        console.log('Please select a quest');
+                    }
+                }, this);
 
-            this.add(startRound);
-        },
+                startRound.x = gfx.width - startRound.width - 10;
+                startRound.y = gfx.height - startRound.height - 10;
 
-        update: function() {
-            TabMenu.prototype.update.call(this);
-            // TODO TESTING - Remove Me
-            if (input.key.isDown(input.ENTER)) {
-                bpm.player.currentQuest = quests.all["s00"];
-                setState(new Field());
+                this.add(startRound);
             }
         },
 
