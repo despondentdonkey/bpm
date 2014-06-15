@@ -525,9 +525,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             applyChance: 10 // in percent (10 === 10%)
         };
 
-        console.log(upgrades.getValPercent('fireStrength'));
-        console.log(this.fireStats);
-
         this.iceStats = {
 
         };

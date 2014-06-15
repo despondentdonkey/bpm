@@ -157,6 +157,7 @@ define(function() {
                 }
 
                 console.log('ENABLE: global ability updated', globalAbility);
+                console.log('total', key, upgrades.getVal(key));
             }
         },
 
@@ -216,7 +217,6 @@ define(function() {
 
                 if (globalAbility.values) {
                     var index = globalAbility.values.indexOf(ability);
-                    console.log(globalAbility.values.indexOf(ability));
                     if (index >= 0) {
                         globalAbility.values.splice(index, 1);
                     }
