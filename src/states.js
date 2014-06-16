@@ -866,10 +866,20 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.buttons = {
                 upgrade: new ui.Button('upgrade', this.buttonStyle, function() {
                     if (!this.selectedUpgrade) return;
+
+                    addFloatText = _.bind(function(text) {
+                        var floater = this.add(new ui.FloatText(text));
+                        floater.x = gfx.width - floater.displayText.width/2;
+                        floater.y = gfx.height - floater.displayText.height/2 - 48;
+                    }, this);
+
                     if (this.selectedUpgrade.levelNum < this.selectedUpgrade.length) {
                         this.selectedUpgrade.enabled = true;
                         this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum+1);
                         updateDescription(this.selectedUpgrade);
+                        addFloatText('Purchased');
+                    } else {
+                        addFloatText('Maxed');
                     }
                 }, this),
                 downgrade: new ui.Button('downgrade', this.buttonStyle, function() {

@@ -203,8 +203,35 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         },
     });
 
+    var FloatText = createClass(GameObject, function(text, textOptions) {
+        this.displayText = new gfx.pixi.Text(text, _.defaults(textOptions || {}, {
+            stroke: 'black',
+            strokeThickness: 3,
+            fill: 'white',
+            align: 'left',
+            font: 'bold 18px arial',
+        }));
+        this.displayText.depth = gfx.layers.gui;
+    }, {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
+
+            this.addDisplay(this.displayText);
+
+            var timer = new objects.Timer(1000, 'oneshot', _.bind(function() {
+                this.state.remove(this);
+            }, this));
+            timer.onTick = _.bind(function(ratio) {
+                this.y -= 0.1;
+                this.displayText.alpha = Math.sqrt(1-ratio) * 1.5;
+            }, this);
+            this.state.add(timer);
+        },
+    });
+
     return {
         Button: Button,
         TextField: TextField,
+        FloatText: FloatText,
     };
 });
