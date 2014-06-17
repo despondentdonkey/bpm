@@ -1,4 +1,4 @@
-define(['lib/simpleStorage'], function(simpleStorage) {
+define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
     var input = requirejs('input');
     return {
         player: {
@@ -13,6 +13,12 @@ define(['lib/simpleStorage'], function(simpleStorage) {
 
             quests: ['ma00', 's00'], // Quests available
             currentQuest: null,
+
+            upgrades: {
+                general: {},
+                weapons: {},
+                perks: {},
+            },
         },
 
         saveData: function() {
@@ -28,6 +34,7 @@ define(['lib/simpleStorage'], function(simpleStorage) {
             var exists = !_.isUndefined(storedPlayer);
             if (exists) {
                 _.extend(this.player, storedPlayer);
+                upgrades.load(this.player.upgrades);
             }
             return exists;
         },

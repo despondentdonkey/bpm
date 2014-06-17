@@ -827,6 +827,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 this.remove(this.tabObjects);
                 this.tabObjects = [];
                 this.selectedUpgrade = null;
+                this.selectedWeapon = null;
             }, this);
 
             var generalTab = new ui.Button('General', this.buttonStyle, function() {
@@ -865,6 +866,16 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     addFloatText('Maxed');
                 } else {
                     this.selectedUpgrade.increaseLevel();
+                    if (this.selectedWeapon) {
+                        if (_.isEmpty(bpm.player.upgrades.weapons[this.selectedWeapon])) {
+                            bpm.player.upgrades.weapons[this.selectedWeapon] = {};
+                        }
+
+                        // e.g. weapons.pinshooter['0'] = 2
+                        bpm.player.upgrades.weapons[this.selectedWeapon][this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                    } else {
+                        bpm.player.upgrades.general[this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                    }
                     this.updateDescription(this.selectedUpgrade);
                     addFloatText('Purchased');
                 }
@@ -874,6 +885,16 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 if (!this.selectedUpgrade) return;
                 if (this.selectedUpgrade.levelNum > 0) {
                     this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum-1);
+                    if (this.selectedWeapon) {
+                        if (_.isEmpty(bpm.player.upgrades.weapons[this.selectedWeapon])) {
+                            bpm.player.upgrades.weapons[this.selectedWeapon] = {};
+                        }
+
+                        // Reusing since this probably won't be here in the final version.
+                        bpm.player.upgrades.weapons[this.selectedWeapon][this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                    } else {
+                        bpm.player.upgrades.general[this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                    }
                     this.updateDescription(this.selectedUpgrade);
                 }
             }, this);
@@ -998,6 +1019,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     if (!this.selectedPerk) return;
                     if (!this.selectedPerk.isMaxed()) {
                         this.selectedPerk.increaseLevel();
+                        bpm.player.upgrades.perks[this.selectedPerk.id] = this.selectedPerk.levelNum;
                         updateDescription(this.selectedPerk);
                     }
                 }, this),
@@ -1005,6 +1027,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     if (!this.selectedPerk) return;
                     if (this.selectedPerk.levelNum > 0) {
                         this.selectedPerk.setLevel(this.selectedPerk.levelNum-1);
+                        bpm.player.upgrades.perks[this.selectedPerk.id] = this.selectedPerk.levelNum;
                         updateDescription(this.selectedPerk);
                     }
                 }, this),

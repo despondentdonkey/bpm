@@ -22,6 +22,27 @@ define(function() {
         return this.getVal(name) * 0.01;
     };
 
+    // Updates all upgrade levels to the key map provided.
+    upgrades.load = function(map) {
+        function loadBasic(map, upgrades) {
+            for (var id in map) {
+                for (var i=0; i<upgrades.length; ++i) {
+                    var upgrade = upgrades[i];
+                    if (upgrade.id.toString() === id) {
+                        upgrade.enable();
+                        upgrade.setLevel(map[id]);
+                        break;
+                    }
+                }
+            }
+        }
+        loadBasic(map.general, upgrades.general);
+        loadBasic(map.perks, upgrades.perks);
+        for (var weapon in map.weapons) {
+            loadBasic(map.weapons[weapon], upgrades.weapons[weapon]);
+        }
+    };
+
     // Abilities
     var addAbility = function(name, defaultVal, genDescription) {
         upgrades.abilities[name] = {
@@ -124,7 +145,7 @@ define(function() {
     }, {
         // Increases the level by 1 and enables this upgrade.
         increaseLevel: function() {
-            this.enabled = true;
+            this.enable();
             this.setLevel(this.levelNum + 1);
         },
 
@@ -164,10 +185,6 @@ define(function() {
         enable: function() {
             if (this.enabled) return;
             this.enabled = true;
-
-            if (this.levelNum <= 0) {
-                console.error('Enabling upgrade with level 0. Level should be greater than 0.');
-            }
 
             for (var key in this.currentAbilities) {
                 var ability = this.currentAbilities[key];
