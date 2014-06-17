@@ -1,0 +1,62 @@
+{
+    "0": {
+        "name": "Fire Power",
+        "description": "Something something",
+
+        "initial": {
+            "fireStrength": 25,
+            "cost": 200
+        },
+
+        "sequence": {
+            "length": 5,
+            "cost": 100,
+            "fireStrength": 10
+        },
+
+        "levels": {
+            "5": {
+                "fireStrength": 200,
+                "cost": 100000
+            }
+        }
+    },
+
+    "1": {
+        "name": "Fire Power II",
+        "description": "Something something",
+
+        "levels": {
+               "1": {
+                "fireStrength": 25,
+                "cost": 200
+            }, "4": {
+                "fireStrength": 50,
+                "cost": 1000
+            }, "3": {
+                "fireStrength": 40,
+                "cost": 400
+            }, "2": {
+                "fireStrength": 35,
+                "cost": 300
+            }
+        }
+    },
+
+    "2": {
+        "name": "Fire Power III",
+        "description": "Something something",
+
+        "levels": [{
+                "fireStrength": 25,
+                "cost": 200
+            }, {
+                "fireStrength": 35,
+                "cost": 300
+            }, {
+                "fireStrength": 50,
+                "cost": 500
+            }
+        ]
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "pinshooter": {
+        "0": {
+            "name": "Pin Shooter Fire Power",
+            "description": "This isn't related to the pin shooter, I didn't want to make another ability.",
+            "levels": [{
+                    "fireStrength": 25
+                }, {
+                    "fireStrength": 50
+                }, {
+                    "fireStrength": 200
+                }
+            ]
+        }
+    },
+
+    "shotgun": {
+        "0": {
+            "name": "Shotgun Fire Power",
+            "description": "This isn't related to the shotgun, I didn't want to make another ability.",
+            "levels": [{
+                    "fireStrength": 25
+                }, {
+                    "fireStrength": 50
+                }, {
+                    "fireStrength": 200
+                }
+            ]
+        },
+
+        "1": {
+            "name": "Shotgun Fire Power II",
+            "description": "This isn't related to the shotgun, I didn't want to make another ability.",
+            "levels": [{
+                    "fireStrength": 200
+                }, {
+                    "fireStrength": 400
+                }, {
+                    "fireStrength": 800
+                }
+            ]
+        }
+    }
+}

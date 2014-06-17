@@ -39,25 +39,40 @@ define(function() {
         loadBasic(map.general, upgrades.general);
         loadBasic(map.perks, upgrades.perks);
         for (var weapon in map.weapons) {
+            // NOTE: Make sure to never change the weapon name in the JSON, these are used as ids. If you were to change it then the name could be different from the save file.
+            if (!_.has(upgrades.weapons, weapon)) {
+                console.error("Loading conflict: Saved data contains the key '" + weapon + "' but that does not match any upgrade available.", upgrades.weapons);
+            }
             loadBasic(map.weapons[weapon], upgrades.weapons[weapon]);
         }
     };
 
-    // Abilities
-    var addAbility = function(name, defaultVal, genDescription) {
-        upgrades.abilities[name] = {
-            name: name,
-            genDescription: genDescription,
-            values: _.isArray(defaultVal) ? defaultVal : undefined,
-            on: !_.isArray(defaultVal) ? defaultVal : undefined,
-        };
+    upgrades.addJsonUpgrades = function(json) {
+        var weapons = JSON.parse(json.weapons);
+        for (var weapon in weapons) {
+            for (var id in weapons[weapon]) {
+                addWeapon(_.extend({
+                    id: id,
+                    weapon: weapon,
+                }, weapons[weapon][id]));
+            }
+        }
+
+        var general = JSON.parse(json.general);
+        for (var id in general) {
+            addGeneral(_.extend({
+                id: id,
+            }, general[id]));
+        }
+
+        var perks = JSON.parse(json.perks);
+        for (var id in perks) {
+            addPerk(_.extend({
+                id: id,
+            }, perks[id]));
+        }
     };
 
-    addAbility('fireStrength', [0], function(val) {
-        return 'Increases draining strength of fire by ' + val + '%';
-    });
-
-    // Upgrades
 
     var addGeneral = function(options) {
         var newUpgrade = new BasicUpgrade(options);
@@ -271,135 +286,18 @@ define(function() {
         },
     });
 
-    // TODO: Replace 'add' functions with JSON once upgrade functionality is finished.
+    // Abilities
+    var addAbility = function(name, defaultVal, genDescription) {
+        upgrades.abilities[name] = {
+            name: name,
+            genDescription: genDescription,
+            values: _.isArray(defaultVal) ? defaultVal : undefined,
+            on: !_.isArray(defaultVal) ? defaultVal : undefined,
+        };
+    };
 
-    addGeneral({
-        name: 'Fire Power',
-        description: 'Something something',
-        id: 0,
-
-        initial: {
-            fireStrength: 25,
-            cost: 200,
-        },
-
-        sequence: {
-            length: 5, // Upgrade level count including initial.
-            cost: 100,
-            fireStrength: 10,
-        },
-
-        levels: {
-            5: {
-                fireStrength: 200,
-                cost: 100000,
-            },
-        },
-    });
-
-    addGeneral({
-        name: 'Fire Power II',
-        description: 'Something something',
-        id: 1,
-
-        levels: {
-               1: {
-                fireStrength: 25,
-                cost: 200,
-            }, 4: {
-                fireStrength: 50,
-                cost: 1000,
-            }, 3: {
-                fireStrength: 40,
-                cost: 400,
-            }, 2: {
-                fireStrength: 35,
-                cost: 300,
-            },
-        },
-    });
-
-    addGeneral({
-        name: 'Fire Power III',
-        description: 'Something something',
-        id: 2,
-
-        levels: [{
-                fireStrength: 25,
-                cost: 200,
-            }, {
-                fireStrength: 35,
-                cost: 300,
-            }, {
-                fireStrength: 50,
-                cost: 500,
-            },
-        ],
-    });
-
-    /*
-       JSON Format for weapons and elements:
-       weapon/element: {
-           id: {
-               name, levels, etc
-           }
-       }
-    */
-
-    addWeapon({
-        id: 0,
-        weapon: 'pinshooter',
-        name: 'Pin Shooter Fire Power',
-        description: "This isn't related to the pin shooter, I didn't want to make another ability.",
-        levels: [{
-                fireStrength: 25,
-            }, {
-                fireStrength: 50,
-            }, {
-                fireStrength: 200,
-            },
-        ],
-    });
-
-    addWeapon({
-        id: 0,
-        weapon: 'shotgun',
-        name: 'Shotgun Fire Power',
-        description: "This isn't related to the shotgun, I didn't want to make another ability.",
-        levels: [{
-                fireStrength: 25,
-            }, {
-                fireStrength: 50,
-            }, {
-                fireStrength: 200,
-            },
-        ],
-    });
-
-    addWeapon({
-        id: 1,
-        weapon: 'shotgun',
-        name: 'Shotgun Fire Power II',
-        description: "This isn't related to the shotgun, I didn't want to make another ability.",
-        requires: [2, '00'], // TODO: Specifying a number means that it requires that many points, specifying a string means it needs that upgrade with the id purchased.
-        levels: [{
-                fireStrength: 200,
-            }, {
-                fireStrength: 400,
-            }, {
-                fireStrength: 800,
-            },
-        ],
-    });
-
-    addPerk({
-        id: 0,
-        name: 'Fire Power Perk',
-        description: 'Something something',
-
-        initial: {
-            fireStrength: 100,
-        },
+    addAbility('fireStrength', [0], function(val) {
+        return 'Increases draining strength of fire by ' + val + '%';
     });
 
     return upgrades;

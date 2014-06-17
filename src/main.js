@@ -5,7 +5,7 @@ requirejs.config({
 });
 
 requirejs(['lib/pixi', 'lib/sfx', 'lib/lode', 'lib/underscore', 'debug', 'utils'], function() {
-requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm'], function(time, gfx, res, states, input, quests, bpm) {
+requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades'], function(time, gfx, res, states, input, quests, bpm, upgrades) {
     // Override default requestAnimationFrame for maximum compatibility.
     var requestAnimationFrame = window.requestAnimationFrame
                            || window.mozRequestAnimationFrame
@@ -24,6 +24,11 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm'], function(t
             dbg.addCheats(bpm, states);
 
             quests.addJsonQuests(res.json.quests.data);
+            upgrades.addJsonUpgrades({
+                general: res.json.general.data,
+                weapons: res.json.weapons.data,
+                perks: res.json.perks.data
+            });
 
             // Switches to the Field with the training quest as default
             //bpm.player.currentQuest = quests.all["s00"];

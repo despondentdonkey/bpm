@@ -1,0 +1,10 @@
+{
+    "0": {
+        "name": "Fire Power Perk",
+        "description": "Something something",
+
+        "initial": {
+            "fireStrength": 100
+        }
+    }
+}
