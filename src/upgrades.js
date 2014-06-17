@@ -70,6 +70,8 @@ define(function() {
         this.name = o.name;
         this.description = o.description;
 
+        this.id = this.genId(o.idPrefix || 0);
+
         if (o.initial) {
             this.levels[0] = o.initial;
             if (o.sequence) {
@@ -120,6 +122,11 @@ define(function() {
 
         this.addAbilities();
     }, {
+        idCounter: 0,
+        genId: function(prefix) {
+            return prefix + BasicUpgrade.prototype.idCounter++;
+        },
+
         setLevel: function(levelNum) {
             this.removeAbilities();
             this.levelNum = levelNum;
