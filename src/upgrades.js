@@ -127,6 +127,12 @@ define(function() {
             return prefix + BasicUpgrade.prototype.idCounter++;
         },
 
+        // Increases the level by 1 and enables this upgrade.
+        increaseLevel: function() {
+            this.enabled = true;
+            this.setLevel(this.levelNum + 1);
+        },
+
         setLevel: function(levelNum) {
             this.removeAbilities();
             this.levelNum = levelNum;
@@ -140,6 +146,23 @@ define(function() {
                     this.update();
                 }
             }
+        },
+
+        // Starts at 1. To get the level for 2/5 call getLevel(2)
+        getLevel: function(index) {
+            return this.levels[index-1];
+        },
+
+        getCurrentLevel: function() {
+            return this.getLevel(this.levelNum);
+        },
+
+        getNextLevel: function() {
+            return this.getLevel(this.levelNum+1);
+        },
+
+        isMaxed: function() {
+            return (this.levelNum >= this.length);
         },
 
         // Sends the current abilities for this upgrade to the global abilities.
@@ -190,7 +213,7 @@ define(function() {
                 console.error('Abilities have already been added. You must first remove them before adding again.');
             }
 
-            var level = this.levels[this.levelNum-1];
+            var level = this.getCurrentLevel();
             for (var key in level) {
                 var ability = level[key];
                 if (key !== 'cost') {

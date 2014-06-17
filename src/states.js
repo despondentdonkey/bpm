@@ -853,12 +853,18 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.tabObjects.push(upgradeDescription);
 
             var updateDescription = function(upgrade) {
+                var nextLevel = upgrade.getNextLevel();
                 upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
-                for (var key in upgrade.currentAbilities) {
-                    var ability = upgrades.abilities[key];
-                    if (ability) {
-                        upgradeDescription.text += '\n' + ability.genDescription(upgrade.currentAbilities[key]);
+                if (upgrade.isMaxed()) {
+                    upgradeDescription.text += '\nMaxed';
+                } else {
+                    for (var key in nextLevel) {
+                        var ability = upgrades.abilities[key];
+                        if (ability) {
+                            upgradeDescription.text += '\n' + ability.genDescription(nextLevel[key]);
+                        }
                     }
+                    upgradeDescription.text += '\n$' + (nextLevel ? nextLevel.cost : 0);
                 }
                 upgradeDescription.text += '\n' + upgrade.levelNum + ' / ' + upgrade.length;
             };
@@ -873,13 +879,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                         floater.y = gfx.height - floater.displayText.height/2 - 48;
                     }, this);
 
-                    if (this.selectedUpgrade.levelNum < this.selectedUpgrade.length) {
-                        this.selectedUpgrade.enabled = true;
-                        this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum+1);
+                    if (this.selectedUpgrade.isMaxed()) {
+                        addFloatText('Maxed');
+                    } else {
+                        this.selectedUpgrade.increaseLevel();
                         updateDescription(this.selectedUpgrade);
                         addFloatText('Purchased');
-                    } else {
-                        addFloatText('Maxed');
                     }
                 }, this),
                 downgrade: new ui.Button('downgrade', this.buttonStyle, function() {
@@ -932,9 +937,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             var purchaseButton = new ui.Button('upgrade', this.buttonStyle, function() {
                 if (!this.selectedUpgrade) return;
-                if (this.selectedUpgrade.levelNum < this.selectedUpgrade.length) {
-                    this.selectedUpgrade.enabled = true;
-                    this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum+1);
+                if (!this.selectedUpgrade.isMaxed()) {
+                    this.selectedUpgrade.increaseLevel();
                     updateDescription(this.selectedUpgrade);
                 }
             }, this);
@@ -1017,9 +1021,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.buttons = {
                 buy: new ui.Button('buy', this.buttonStyle, function() {
                     if (!this.selectedPerk) return;
-                    if (this.selectedPerk.levelNum < this.selectedPerk.length) {
-                        this.selectedPerk.enabled = true;
-                        this.selectedPerk.setLevel(this.selectedPerk.levelNum+1);
+                    if (!this.selectedPerk.isMaxed()) {
+                        this.selectedPerk.increaseLevel();
                         updateDescription(this.selectedPerk);
                     }
                 }, this),
