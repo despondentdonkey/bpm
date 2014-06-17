@@ -70,7 +70,7 @@ define(function() {
         this.name = o.name;
         this.description = o.description;
 
-        this.id = this.genId(o.idPrefix || 0);
+        this.id = o.id;
 
         if (o.initial) {
             this.levels[0] = o.initial;
@@ -122,11 +122,6 @@ define(function() {
 
         this.addAbilities();
     }, {
-        idCounter: 0,
-        genId: function(prefix) {
-            return prefix + BasicUpgrade.prototype.idCounter++;
-        },
-
         // Increases the level by 1 and enables this upgrade.
         increaseLevel: function() {
             this.enabled = true;
@@ -264,6 +259,7 @@ define(function() {
     addGeneral({
         name: 'Fire Power',
         description: 'Something something',
+        id: 0,
 
         initial: {
             fireStrength: 25,
@@ -287,6 +283,7 @@ define(function() {
     addGeneral({
         name: 'Fire Power II',
         description: 'Something something',
+        id: 1,
 
         levels: {
                1: {
@@ -308,6 +305,7 @@ define(function() {
     addGeneral({
         name: 'Fire Power III',
         description: 'Something something',
+        id: 2,
 
         levels: [{
                 fireStrength: 25,
@@ -332,6 +330,7 @@ define(function() {
     */
 
     addWeapon({
+        id: 0,
         weapon: 'pinshooter',
         name: 'Pin Shooter Fire Power',
         description: "This isn't related to the pin shooter, I didn't want to make another ability.",
@@ -346,7 +345,7 @@ define(function() {
     });
 
     addWeapon({
-        id: '00',
+        id: 0,
         weapon: 'shotgun',
         name: 'Shotgun Fire Power',
         description: "This isn't related to the shotgun, I didn't want to make another ability.",
@@ -361,7 +360,7 @@ define(function() {
     });
 
     addWeapon({
-        id: '01',
+        id: 1,
         weapon: 'shotgun',
         name: 'Shotgun Fire Power II',
         description: "This isn't related to the shotgun, I didn't want to make another ability.",
@@ -377,6 +376,7 @@ define(function() {
     });
 
     addPerk({
+        id: 0,
         name: 'Fire Power Perk',
         description: 'Something something',
 
