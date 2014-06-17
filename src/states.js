@@ -823,22 +823,27 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         init: function() {
             TabMenu.prototype.init.call(this);
 
+            var onTabSwitch = _.bind(function() {
+                this.remove(this.tabObjects);
+                this.tabObjects = [];
+                this.selectedUpgrade = null;
+            }, this);
+
             var generalTab = new ui.Button('General', this.buttonStyle, function() {
                 if (this.tab !== 'general') {
                     this.tab = 'general';
-                    this.remove(this.tabObjects);
-                    this.tabObjects = [];
+                    onTabSwitch();
                     this.addGeneralContent();
                 }
             }, this);
             var weaponTab = new ui.Button('Weapons', this.buttonStyle, function() {
                 if (this.tab !== 'weapons') {
                     this.tab = 'weapons';
-                    this.remove(this.tabObjects);
-                    this.tabObjects = [];
+                    onTabSwitch();
                     this.addWeaponContent();
                 }
             }, this);
+
             generalTab.x = 16;
             generalTab.y = 50;
             weaponTab.x = generalTab.x + weaponTab.width;
@@ -846,73 +851,73 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.add([generalTab, weaponTab]);
 
             this.addGeneralContent();
+
+            var purchaseButton = new ui.Button('upgrade', this.buttonStyle, function() {
+                if (!this.selectedUpgrade) return;
+
+                addFloatText = _.bind(function(text) {
+                    var floater = this.add(new ui.FloatText(text));
+                    floater.x = purchaseButton.x + floater.displayText.width/2;
+                    floater.y = purchaseButton.y - floater.displayText.height/2;
+                }, this);
+
+                if (this.selectedUpgrade.isMaxed()) {
+                    addFloatText('Maxed');
+                } else {
+                    this.selectedUpgrade.increaseLevel();
+                    this.updateDescription(this.selectedUpgrade);
+                    addFloatText('Purchased');
+                }
+            }, this);
+
+            var refundButton = new ui.Button('downgrade', this.buttonStyle, function() {
+                if (!this.selectedUpgrade) return;
+                if (this.selectedUpgrade.levelNum > 0) {
+                    this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum-1);
+                    this.updateDescription(this.selectedUpgrade);
+                }
+            }, this);
+            this.add([purchaseButton, refundButton]);
+
+            purchaseButton.setPos(gfx.width - purchaseButton.width - 5, gfx.height - 50);
+            refundButton.setPos(purchaseButton.x - refundButton.width - 32, gfx.height - 50);
+        },
+
+        updateDescription: function(upgrade) {
+            var nextLevel = upgrade.getNextLevel();
+            this.upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
+            if (upgrade.isMaxed()) {
+                this.upgradeDescription.text += '\nMaxed';
+            } else {
+                for (var key in nextLevel) {
+                    var ability = upgrades.abilities[key];
+                    if (ability) {
+                        this.upgradeDescription.text += '\n' + ability.genDescription(nextLevel[key]);
+                    }
+                }
+                this.upgradeDescription.text += '\n$' + (nextLevel ? nextLevel.cost : 0);
+            }
+            this.upgradeDescription.text += '\n' + upgrade.levelNum + ' / ' + upgrade.length;
         },
 
         addGeneralContent: function() {
-            var upgradeDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
-            this.tabObjects.push(upgradeDescription);
-
-            var updateDescription = function(upgrade) {
-                var nextLevel = upgrade.getNextLevel();
-                upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
-                if (upgrade.isMaxed()) {
-                    upgradeDescription.text += '\nMaxed';
-                } else {
-                    for (var key in nextLevel) {
-                        var ability = upgrades.abilities[key];
-                        if (ability) {
-                            upgradeDescription.text += '\n' + ability.genDescription(nextLevel[key]);
-                        }
-                    }
-                    upgradeDescription.text += '\n$' + (nextLevel ? nextLevel.cost : 0);
-                }
-                upgradeDescription.text += '\n' + upgrade.levelNum + ' / ' + upgrade.length;
-            };
-
-            this.buttons = {
-                upgrade: new ui.Button('upgrade', this.buttonStyle, function() {
-                    if (!this.selectedUpgrade) return;
-
-                    addFloatText = _.bind(function(text) {
-                        var floater = this.add(new ui.FloatText(text));
-                        floater.x = gfx.width - floater.displayText.width/2;
-                        floater.y = gfx.height - floater.displayText.height/2 - 48;
-                    }, this);
-
-                    if (this.selectedUpgrade.isMaxed()) {
-                        addFloatText('Maxed');
-                    } else {
-                        this.selectedUpgrade.increaseLevel();
-                        updateDescription(this.selectedUpgrade);
-                        addFloatText('Purchased');
-                    }
-                }, this),
-                downgrade: new ui.Button('downgrade', this.buttonStyle, function() {
-                    if (!this.selectedUpgrade) return;
-                    if (this.selectedUpgrade.levelNum > 0) {
-                        this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum-1);
-                        updateDescription(this.selectedUpgrade);
-                    }
-                }, this),
-            };
+            this.upgradeDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
+            this.tabObjects.push(this.upgradeDescription);
 
             for (var i=0; i<upgrades.general.length; ++i) {
                 var upgrade = upgrades.general[i];
 
-                _.bind((function(upgrade) {
-                    this.buttons['upgrade'+i] = new ui.Button(upgrade.name, this.buttonStyle, function() {
+                var newButton;
+                (_.bind(function(upgrade) {
+                    newButton = new ui.Button(upgrade.name, this.buttonStyle, function() {
                         this.selectedUpgrade = upgrade;
-                        updateDescription(this.selectedUpgrade);
+                        this.updateDescription(this.selectedUpgrade);
                     }, this);
-                }), this)(upgrade);
+                }, this))(upgrade);
+
+                newButton.setPos(50, 100 + 50 * i);
+                this.tabObjects.push(newButton);
             }
-
-            var bvals = _.values(this.buttons);
-
-            this.buttons.upgrade.setPos(gfx.width - this.buttons.upgrade.width - 5, gfx.height - 50);
-            this.buttons.downgrade.setPos(this.buttons.upgrade.x - this.buttons.downgrade.width - 32, gfx.height - 50);
-            _.each(_.tail(bvals, 2), function(b, i) { b.setPos(50, 100 + 50 * i); });
-            _.each(bvals, function(b) { this.tabObjects.push(b); }, this);
 
             this.add(this.tabObjects);
         },
@@ -921,39 +926,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             var upgradeButtons = [];
             var weaponButtons = [];
 
-            var upgradeDescription = new ui.TextField('', 16, 200, gfx.width/2-32, gfx.height - 250);
-            this.tabObjects.push(upgradeDescription);
-
-            var updateDescription = function(upgrade) {
-                upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
-                for (var key in upgrade.currentAbilities) {
-                    var ability = upgrades.abilities[key];
-                    if (ability) {
-                        upgradeDescription.text += '\n' + ability.genDescription(upgrade.currentAbilities[key]);
-                    }
-                }
-                upgradeDescription.text += '\n' + upgrade.levelNum + ' / ' + upgrade.length;
-            };
-
-            var purchaseButton = new ui.Button('upgrade', this.buttonStyle, function() {
-                if (!this.selectedUpgrade) return;
-                if (!this.selectedUpgrade.isMaxed()) {
-                    this.selectedUpgrade.increaseLevel();
-                    updateDescription(this.selectedUpgrade);
-                }
-            }, this);
-
-            var refundButton = new ui.Button('downgrade', this.buttonStyle, function() {
-                if (!this.selectedUpgrade) return;
-                if (this.selectedUpgrade.levelNum > 0) {
-                    this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum-1);
-                    updateDescription(this.selectedUpgrade);
-                }
-            }, this);
-
-            purchaseButton.setPos(gfx.width - purchaseButton.width - 5, gfx.height - 50);
-            refundButton.setPos(purchaseButton.x - refundButton.width - 32, gfx.height - 50);
-            this.tabObjects.push(purchaseButton, refundButton);
+            this.upgradeDescription = new ui.TextField('', 16, 200, gfx.width/2-32, gfx.height - 250);
+            this.tabObjects.push(this.upgradeDescription);
 
             for (var key in upgrades.weapons) {
                 // Add a button for every weapon.
@@ -975,7 +949,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                             (_.bind(function(upgrade) {
                                 button = new ui.Button(upgrade.name, this.buttonStyle, function() {
                                     this.selectedUpgrade = upgrade; // Make sure to clear this every tab switch.
-                                    updateDescription(this.selectedUpgrade);
+                                    this.updateDescription(this.selectedUpgrade);
                                 }, this);
                             }, this))(upgrade);
 
@@ -985,6 +959,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                             this.add(button);
                         }
                     }, this);
+
                     weaponButtons.push(weaponButton);
                 }), this)(key);
             }
