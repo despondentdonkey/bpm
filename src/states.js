@@ -766,7 +766,14 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 continueButton.x = gfx.width - continueButton.width - 10;
                 continueButton.y = gfx.height - continueButton.height - 10;
 
-                this.add(continueButton);
+                var endDayButton = new ui.Button(bpm.player.currentQuest.completed ? 'End Day' : 'Abandon Quest', this.buttonStyle, function() {
+                    setState(new RoundCompleteMenu(null, this.cachedState));
+                }, this);
+
+                endDayButton.x = continueButton.x - endDayButton.width - 20;
+                endDayButton.y = gfx.height - endDayButton.height - 10;
+
+                this.add([continueButton, endDayButton]);
 
                 for (var i=0; i<this.tabs.length; ++i) {
                     this.tabs[i].status = 'disabled';
