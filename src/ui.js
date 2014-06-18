@@ -22,6 +22,8 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         update: function(delta) {
             GameObject.prototype.update.call(this, delta);
 
+            if (this.status === 'disabled') return;
+
             // Disable exclusion areas while ui uses input methods. Enable at the end of update.
             input.mouse.disableUi = false;
 
@@ -97,6 +99,13 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this.down.depth = -9;
         this.down.visible = false;
 
+        this.disabled = new gfx.NineSlice(res.slices.buttonDisabled);
+        this.disabled.width = this.width;
+        this.disabled.height = this.height;
+        this.disabled.update();
+        this.disabled.depth = -9;
+        this.disabled.visible = false;
+
     }, {
         init: function(state) {
             BasicButton.prototype.init.call(this, state);
@@ -104,10 +113,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             this.addDisplay(this.displayText);
             this.addDisplay(this.up);
             this.addDisplay(this.down);
+            this.addDisplay(this.disabled);
 
             this.current = this.up;
 
-            this.updateDisplayProperties([this.up, this.down]);
+            this.updateDisplayProperties([this.up, this.down, this.disabled]);
             this.syncDisplayProperties = false;
         },
 
@@ -126,6 +136,12 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 case 'down': {
                     if (this.current !== this.down) {
                         this.setCurrent(this.down);
+                    }
+                    break;
+                }
+                case 'disabled': {
+                    if (this.current !== this.disabled) {
+                        this.setCurrent(this.disabled);
                     }
                     break;
                 }

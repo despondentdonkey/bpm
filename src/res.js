@@ -85,6 +85,7 @@ define(['gfx'], function(gfx) {
             textBox: 'text-box.png',
             buttonUp: 'button-up.png',
             buttonDown: 'button-down.png',
+            buttonDisabled: 'button-disabled.png',
         });
 
         // Creates a list of textures to be used with PIXI.MovieClip. [cellWidth, cellHeight]
@@ -101,6 +102,7 @@ define(['gfx'], function(gfx) {
             textBox: new gfx.pixi.Rectangle(5, 5, 28, 28),
             buttonUp: new gfx.pixi.Rectangle(4, 4, 24, 24),
             buttonDown: new gfx.pixi.Rectangle(6, 9, 19, 18),
+            buttonDisabled: new gfx.pixi.Rectangle(4, 4, 24, 24),
         };
 
         result.json.quests = this.loader.loadFile('res/json/quests.json');
