@@ -79,7 +79,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             align: 'center',
             font: 'bold 16px arial',
         }));
-        this.displayText.depth = -10;
+        this.displayText.depth = gfx.layers.gui;
 
         // Dimensions
         this.width = this.displayText.width + this.padding;
@@ -90,20 +90,20 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this.up.width = this.width;
         this.up.height = this.height;
         this.up.update();
-        this.up.depth = -9;
+        this.up.depth = gfx.layers.gui + 1;
 
         this.down = new gfx.NineSlice(res.slices.buttonDown);
         this.down.width = this.width;
         this.down.height = this.height;
         this.down.update();
-        this.down.depth = -9;
+        this.down.depth = this.up.depth;
         this.down.visible = false;
 
         this.disabled = new gfx.NineSlice(res.slices.buttonDisabled);
         this.disabled.width = this.width;
         this.disabled.height = this.height;
         this.disabled.update();
-        this.disabled.depth = -9;
+        this.disabled.depth = this.up.depth;
         this.disabled.visible = false;
 
     }, {

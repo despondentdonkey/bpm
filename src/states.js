@@ -765,6 +765,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 continueButton.y = gfx.height - continueButton.height - 10;
 
                 this.add(continueButton);
+
+                for (var i=0; i<this.tabs.length; ++i) {
+                    this.tabs[i].status = 'disabled';
+                }
             } else { // This is not a pause menu for Field so we treat it as a round selector.
                 for (var i=0; i<bpm.player.quests.length; ++i) {
                     var quest = quests.all[bpm.player.quests[i]];
