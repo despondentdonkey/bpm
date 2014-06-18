@@ -742,6 +742,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 for (var i in bpm.player.currentQuest.objectives) {
                     var obj = bpm.player.currentQuest.objectives[i];
 
+                    if (_.isEmpty(obj.description)) continue;
+
                     description += '\n';
 
                     if (obj.completed) {
