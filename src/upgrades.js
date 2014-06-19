@@ -57,40 +57,31 @@ define(function() {
     };
 
     upgrades.addJsonUpgrades = function(json) {
-        var weapons = JSON.parse(json.weapons);
-        for (var weapon in weapons) {
-            for (var id in weapons[weapon]) {
-                addWeapon(_.extend({
-                    id: id,
-                    weapon: weapon,
-                }, weapons[weapon][id]));
+        function parseTreeUpgrades(treeKey, json, addUpgrade) {
+            var trees = JSON.parse(json);
+            for (var treeId in trees) {
+                for (var upgradeId in trees[treeId]) {
+                    var options = { id: upgradeId };
+                    options[treeKey] = treeId;
+                    addUpgrade(_.extend(options, trees[treeId][upgradeId]));
+                }
             }
         }
 
-        var elements = JSON.parse(json.elements);
-        console.log(elements);
-        for (var element in elements) {
-            for (var id in elements[element]) {
-                addElement(_.extend({
+        function parseUpgrades(json, addUpgrade) {
+            var upgrade = JSON.parse(json);
+            for (var id in upgrade) {
+                addUpgrade(_.extend({
                     id: id,
-                    element: element,
-                }, elements[element][id]));
+                }, upgrade[id]));
             }
         }
 
-        var general = JSON.parse(json.general);
-        for (var id in general) {
-            addGeneral(_.extend({
-                id: id,
-            }, general[id]));
-        }
+        parseTreeUpgrades('weapon', json.weapons, addWeapon);
+        parseTreeUpgrades('element', json.elements, addElement);
 
-        var perks = JSON.parse(json.perks);
-        for (var id in perks) {
-            addPerk(_.extend({
-                id: id,
-            }, perks[id]));
-        }
+        parseUpgrades(json.general, addGeneral);
+        parseUpgrades(json.perks, addPerk);
     };
 
 
