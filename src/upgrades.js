@@ -37,23 +37,23 @@ define(function() {
                 }
             }
         }
+
+        // Loads an upgrade tree e.g. {ice->0,1}, {fire->0,1} rather than a list of upgrades e.g. {0,1}.
+        function loadTree(map, trees) {
+            for (var treeId in map) {
+                // NOTE: Make sure to never change the weapon/element name in the JSON, these are used as ids. If you were to change it then the name could be different from the save file.
+                if (!_.has(trees, treeId)) {
+                    console.error("Loading conflict: Saved data contains the key '" + treeId + "' but that does not match any upgrade available.", trees);
+                }
+                loadBasic(map[treeId], trees[treeId]);
+            }
+        }
+
         loadBasic(map.general, upgrades.general);
         loadBasic(map.perks, upgrades.perks);
 
-        for (var weapon in map.weapons) {
-            // NOTE: Make sure to never change the weapon name in the JSON, these are used as ids. If you were to change it then the name could be different from the save file.
-            if (!_.has(upgrades.weapons, weapon)) {
-                console.error("Loading conflict: Saved data contains the key '" + weapon + "' but that does not match any upgrade available.", upgrades.weapons);
-            }
-            loadBasic(map.weapons[weapon], upgrades.weapons[weapon]);
-        }
-
-        for (var element in map.elements) {
-            if (!_.has(upgrades.elements, element)) {
-                console.error("Loading conflict: Saved data contains the key '" + element + "' but that does not match any upgrade available.", upgrades.elements);
-            }
-            loadBasic(map.elements[element], upgrades.elements[element]);
-        }
+        loadTree(map.weapons, upgrades.weapons);
+        loadTree(map.elements, upgrades.elements);
     };
 
     upgrades.addJsonUpgrades = function(json) {
