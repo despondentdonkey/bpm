@@ -4,6 +4,7 @@ define(function() {
     upgrades.general = [];
     upgrades.weapons = {};
     upgrades.perks = [];
+    upgrades.elements = {};
 
     // Returns the final value of the ability specified.
     upgrades.getVal = function(name) {
@@ -38,12 +39,20 @@ define(function() {
         }
         loadBasic(map.general, upgrades.general);
         loadBasic(map.perks, upgrades.perks);
+
         for (var weapon in map.weapons) {
             // NOTE: Make sure to never change the weapon name in the JSON, these are used as ids. If you were to change it then the name could be different from the save file.
             if (!_.has(upgrades.weapons, weapon)) {
                 console.error("Loading conflict: Saved data contains the key '" + weapon + "' but that does not match any upgrade available.", upgrades.weapons);
             }
             loadBasic(map.weapons[weapon], upgrades.weapons[weapon]);
+        }
+
+        for (var element in map.elements) {
+            if (!_.has(upgrades.elements, element)) {
+                console.error("Loading conflict: Saved data contains the key '" + element + "' but that does not match any upgrade available.", upgrades.elements);
+            }
+            loadBasic(map.elements[element], upgrades.elements[element]);
         }
     };
 
@@ -55,6 +64,17 @@ define(function() {
                     id: id,
                     weapon: weapon,
                 }, weapons[weapon][id]));
+            }
+        }
+
+        var elements = JSON.parse(json.elements);
+        console.log(elements);
+        for (var element in elements) {
+            for (var id in elements[element]) {
+                addElement(_.extend({
+                    id: id,
+                    element: element,
+                }, elements[element][id]));
             }
         }
 
@@ -90,6 +110,14 @@ define(function() {
     var addPerk = function(options) {
         var newUpgrade = new BasicUpgrade(options);
         upgrades.perks.push(newUpgrade);
+    };
+
+    var addElement = function(options) {
+        if (!_.has(upgrades.elements, options.element)) {
+            upgrades.elements[options.element] = [];
+        }
+        var newUpgrade = new BasicUpgrade(options);
+        upgrades.elements[options.element].push(newUpgrade);
     };
 
     // Base class for any upgrade.

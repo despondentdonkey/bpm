@@ -18,6 +18,7 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
                 general: {},
                 weapons: {},
                 perks: {},
+                elements: {},
             },
         },
 

@@ -27,7 +27,8 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades']
             upgrades.addJsonUpgrades({
                 general: res.json.general.data,
                 weapons: res.json.weapons.data,
-                perks: res.json.perks.data
+                perks: res.json.perks.data,
+                elements: res.json.elements.data,
             });
 
             // Switches to the Field with the training quest as default

@@ -109,6 +109,7 @@ define(['gfx'], function(gfx) {
         result.json.general = this.loader.loadFile('res/json/general.json');
         result.json.weapons = this.loader.loadFile('res/json/weapons.json');
         result.json.perks = this.loader.loadFile('res/json/perks.json');
+        result.json.elements = this.loader.loadFile('res/json/elements.json');
 
         this.loader.load(function() {
             createQueuedTextures();

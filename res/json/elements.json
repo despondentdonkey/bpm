@@ -1,0 +1,44 @@
+{
+    "fire": {
+        "0": {
+            "name": "Fire Fire Power",
+            "description": "Hey this actually is related to fire!",
+            "levels": [{
+                    "fireStrength": 25
+                }, {
+                    "fireStrength": 50
+                }, {
+                    "fireStrength": 200
+                }
+            ]
+        }
+    },
+
+    "ice": {
+        "0": {
+            "name": "Ice Fire Power",
+            "description": "This isn't related to the ice obviously, I didn't want to make another ability.",
+            "levels": [{
+                    "fireStrength": 25
+                }, {
+                    "fireStrength": 50
+                }, {
+                    "fireStrength": 200
+                }
+            ]
+        },
+
+        "1": {
+            "name": "Ice Fire Power II",
+            "description": "This isn't related to the shotgun, I didn't want to make another ability.",
+            "levels": [{
+                    "fireStrength": 200
+                }, {
+                    "fireStrength": 400
+                }, {
+                    "fireStrength": 800
+                }
+            ]
+        }
+    }
+}

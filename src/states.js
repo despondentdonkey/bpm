@@ -1008,64 +1008,185 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
     });
 
     var WizardMenu = createClass(TabMenu, function(prevState) {
-        this.selectedPerk;
+        this.selectedUpgrade;
+        this.selectedElement;
+        this.tab = 'perks';
+        this.tabObjects = [];
     }, {
         init: function() {
             TabMenu.prototype.init.call(this);
 
-            var perkDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
-            this.add(perkDescription);
+            var onTabSwitch = _.bind(function() {
+                this.remove(this.tabObjects);
+                this.tabObjects = [];
+                this.selectedUpgrade = null;
+                this.selectedElement = null;
+            }, this);
 
-            var updateDescription = function(perk) {
-                perkDescription.text = perk.name + '\n' + perk.description;
-                for (var key in perk.currentAbilities) {
+            var perksTab = new ui.Button('Perks', this.buttonStyle, function() {
+                if (this.tab !== 'perks') {
+                    this.tab = 'perks';
+                    onTabSwitch();
+                    this.addPerkContent();
+                }
+            }, this);
+            var elementTab = new ui.Button('Elements', this.buttonStyle, function() {
+                if (this.tab !== 'elements') {
+                    this.tab = 'elements';
+                    onTabSwitch();
+                    this.addElementContent();
+                }
+            }, this);
+
+            perksTab.x = 16;
+            perksTab.y = 50;
+            elementTab.x = perksTab.x + elementTab.width;
+            elementTab.y = 50;
+            this.add([perksTab, elementTab]);
+
+            this.addPerkContent();
+
+            var purchaseButton = new ui.Button('upgrade', this.buttonStyle, function() {
+                if (!this.selectedUpgrade) return;
+
+                addFloatText = _.bind(function(text) {
+                    var floater = this.add(new ui.FloatText(text));
+                    floater.x = purchaseButton.x + floater.displayText.width/2;
+                    floater.y = purchaseButton.y - floater.displayText.height/2;
+                }, this);
+
+                if (this.selectedUpgrade.isMaxed()) {
+                    addFloatText('Maxed');
+                } else {
+                    this.selectedUpgrade.increaseLevel();
+                    if (this.selectedElement) {
+                        if (_.isEmpty(bpm.player.upgrades.elements[this.selectedElement])) {
+                            bpm.player.upgrades.elements[this.selectedElement] = {};
+                        }
+
+                        // e.g. weapons.pinshooter['0'] = 2
+                        bpm.player.upgrades.elements[this.selectedElement][this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                    } else {
+                        bpm.player.upgrades.perks[this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                    }
+                    this.updateDescription(this.selectedUpgrade);
+                    addFloatText('Purchased');
+                }
+            }, this);
+
+            var refundButton = new ui.Button('downgrade', this.buttonStyle, function() {
+                if (!this.selectedUpgrade) return;
+                if (this.selectedUpgrade.levelNum > 0) {
+                    this.selectedUpgrade.setLevel(this.selectedUpgrade.levelNum-1);
+                    if (this.selectedElement) {
+                        if (_.isEmpty(bpm.player.upgrades.elements[this.selectedElement])) {
+                            bpm.player.upgrades.elements[this.selectedElement] = {};
+                        }
+
+                        // Reusing since this probably won't be here in the final version.
+                        bpm.player.upgrades.elements[this.selectedElement][this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                    } else {
+                        bpm.player.upgrades.perks[this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                    }
+                    this.updateDescription(this.selectedUpgrade);
+                }
+            }, this);
+            this.add([purchaseButton, refundButton]);
+
+            purchaseButton.setPos(gfx.width - purchaseButton.width - 5, gfx.height - 50);
+            refundButton.setPos(purchaseButton.x - refundButton.width - 32, gfx.height - 50);
+        },
+
+        updateDescription: function(upgrade) {
+            var nextLevel = upgrade.getNextLevel();
+            this.upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
+            if (upgrade.isMaxed()) {
+                this.upgradeDescription.text += '\nMaxed';
+            } else {
+                for (var key in nextLevel) {
                     var ability = upgrades.abilities[key];
                     if (ability) {
-                        perkDescription.text += '\n' + ability.genDescription(perk.currentAbilities[key]);
+                        this.upgradeDescription.text += '\n' + ability.genDescription(nextLevel[key]);
                     }
                 }
-                perkDescription.text += '\n' + (perk.levelNum >= perk.length ? 'Obtained' : '');
-            };
+                this.upgradeDescription.text += '\n$' + (nextLevel ? nextLevel.cost : 0);
+            }
+            this.upgradeDescription.text += '\n' + upgrade.levelNum + ' / ' + upgrade.length;
+        },
 
-            this.buttons = {
-                buy: new ui.Button('buy', this.buttonStyle, function() {
-                    if (!this.selectedPerk) return;
-                    if (!this.selectedPerk.isMaxed()) {
-                        this.selectedPerk.increaseLevel();
-                        bpm.player.upgrades.perks[this.selectedPerk.id] = this.selectedPerk.levelNum;
-                        updateDescription(this.selectedPerk);
-                    }
-                }, this),
-                refund: new ui.Button('refund', this.buttonStyle, function() {
-                    if (!this.selectedPerk) return;
-                    if (this.selectedPerk.levelNum > 0) {
-                        this.selectedPerk.setLevel(this.selectedPerk.levelNum-1);
-                        bpm.player.upgrades.perks[this.selectedPerk.id] = this.selectedPerk.levelNum;
-                        updateDescription(this.selectedPerk);
-                    }
-                }, this),
-            };
+        addPerkContent: function() {
+            this.upgradeDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
+            this.tabObjects.push(this.upgradeDescription);
 
             for (var i=0; i<upgrades.perks.length; ++i) {
-                var perk = upgrades.perks[i];
+                var upgrade = upgrades.perks[i];
 
-                _.bind((function(perk) {
-                    this.buttons['perk'+i] = new ui.Button(perk.name, this.buttonStyle, function() {
-                        this.selectedPerk = perk;
-                        updateDescription(this.selectedPerk);
+                var newButton;
+                (_.bind(function(upgrade) {
+                    newButton = new ui.Button(upgrade.name, this.buttonStyle, function() {
+                        this.selectedUpgrade = upgrade;
+                        this.updateDescription(this.selectedUpgrade);
                     }, this);
-                }), this)(perk);
+                }, this))(upgrade);
+
+                newButton.setPos(50, 100 + 50 * i);
+                this.tabObjects.push(newButton);
             }
 
-            var bvals = _.values(this.buttons);
+            this.add(this.tabObjects);
+        },
 
-            this.buttons.buy.setPos(gfx.width - this.buttons.buy.width - 5, gfx.height - 50);
-            this.buttons.refund.setPos(this.buttons.buy.x - this.buttons.refund.width - 32, gfx.height - 50);
-            _.each(_.tail(bvals, 2), function(b, i) { b.setPos(50, 100 + 50 * i); });
+        addElementContent: function() {
+            var upgradeButtons = [];
+            var elementButtons = [];
 
-            this.add(bvals);
+            this.upgradeDescription = new ui.TextField('', 16, 200, gfx.width/2-32, gfx.height - 250);
+            this.tabObjects.push(this.upgradeDescription);
+
+            for (var key in upgrades.elements) {
+                // Add a button for every element.
+                _.bind((function(element) {
+                    var elementButton = new ui.Button(element, this.buttonStyle, function() {
+                        this.selectedElement = element;
+
+                        // Remove previous upgrade buttons before adding more.
+                        for (var i=0; i<upgradeButtons.length; ++i) {
+                            this.remove(upgradeButtons[i]);
+                        }
+
+                        // Add the upgrades for each element.
+                        var upgradeList = upgrades.elements[element];
+                        for (var i=0; i<upgradeList.length; ++i) {
+                            var upgrade = upgradeList[i];
+
+                            var button;
+                            (_.bind(function(upgrade) {
+                                button = new ui.Button(upgrade.name, this.buttonStyle, function() {
+                                    this.selectedUpgrade = upgrade; // Make sure to clear this every tab switch.
+                                    this.updateDescription(this.selectedUpgrade);
+                                }, this);
+                            }, this))(upgrade);
+
+                            button.setPos(gfx.width/2, 100 + 50 * i);
+                            upgradeButtons.push(button);
+                            this.tabObjects.push(button);
+                            this.add(button);
+                        }
+                    }, this);
+
+                    elementButtons.push(elementButton);
+                }), this)(key);
+            }
+
+            _.each(elementButtons, function(b, i) {
+                b.setPos(50, 100 + 50 * i);
+                this.tabObjects.push(b);
+            }, this);
+
+            this.add(this.tabObjects);
         },
     });
+
 
     var RoundCompleteMenu = createClass(Menu, function(prevState, field) {
         this.field = field;
