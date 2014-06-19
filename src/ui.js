@@ -22,7 +22,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         update: function(delta) {
             GameObject.prototype.update.call(this, delta);
 
-            if (this.status === 'disabled') return;
+            if (this.disabled) return;
 
             // Disable exclusion areas while ui uses input methods. Enable at the end of update.
             input.mouse.disableUi = false;
@@ -59,6 +59,14 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             }
 
             input.mouse.disableUi = true;
+        },
+
+        enable: function() {
+            this.disabled = false;
+        },
+
+        disable: function() {
+            this.disabled = true;
         },
     });
 
@@ -99,12 +107,12 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this.down.depth = this.up.depth;
         this.down.visible = false;
 
-        this.disabled = new gfx.NineSlice(res.slices.buttonDisabled);
-        this.disabled.width = this.width;
-        this.disabled.height = this.height;
-        this.disabled.update();
-        this.disabled.depth = this.up.depth;
-        this.disabled.visible = false;
+        this.disabledSlice = new gfx.NineSlice(res.slices.buttonDisabled);
+        this.disabledSlice.width = this.width;
+        this.disabledSlice.height = this.height;
+        this.disabledSlice.update();
+        this.disabledSlice.depth = this.up.depth;
+        this.disabledSlice.visible = false;
 
     }, {
         init: function(state) {
@@ -113,16 +121,26 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             this.addDisplay(this.displayText);
             this.addDisplay(this.up);
             this.addDisplay(this.down);
-            this.addDisplay(this.disabled);
+            this.addDisplay(this.disabledSlice);
 
             this.current = this.up;
 
-            this.updateDisplayProperties([this.up, this.down, this.disabled]);
+            this.updateDisplayProperties([this.up, this.down, this.disabledSlice]);
             this.syncDisplayProperties = false;
         },
 
         update: function(delta) {
             BasicButton.prototype.update.call(this, delta);
+
+            this.displayText.x = this.x + this.padding/2;
+            this.displayText.y = this.y + this.padding/2;
+
+            if (this.disabled) {
+                if (this.current !== this.disabledSlice) {
+                    this.setCurrent(this.disabledSlice);
+                }
+                return;
+            }
 
             switch (this.status) {
                 case 'up':
@@ -139,16 +157,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                     }
                     break;
                 }
-                case 'disabled': {
-                    if (this.current !== this.disabled) {
-                        this.setCurrent(this.disabled);
-                    }
-                    break;
-                }
             }
-
-            this.displayText.x = this.x + this.padding/2;
-            this.displayText.y = this.y + this.padding/2;
         },
 
         setCurrent: function(obj) {
@@ -160,7 +169,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         setPos: function(x, y) {
             this.x = x;
             this.y = y;
-        }
+        },
     });
 
     // w, h optional. If w is specified then word wrap will be enabled to that length.

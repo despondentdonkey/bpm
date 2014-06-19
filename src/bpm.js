@@ -2,7 +2,7 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
     var input = requirejs('input');
     return {
         player: {
-            money: 0,
+            money: 105000,
             ammo: 10000,
             ammoMax: 10000,
             xp: 0,
