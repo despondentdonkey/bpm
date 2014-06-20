@@ -1,7 +1,7 @@
 define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
     var input = requirejs('input');
     return {
-        player: {
+        playerDefault: {
             money: 105000,
             ammo: 10000,
             ammoMax: 10000,
@@ -22,6 +22,11 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
             },
         },
 
+        // Returns a clone of bpm.playerDefault.
+        createNewPlayer: function() {
+            return JSON.parse(JSON.stringify(this.playerDefault));
+        },
+
         saveData: function() {
             if (!simpleStorage.canUse()) {
                 console.error('Game cannot be saved. localStorage saving not supported on this browser.');
@@ -40,6 +45,7 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
 
                 // We have to clone the stored object because underscore extend does not do a deep copy and just uses references for nested objects.
                 // This caused some problems where the stored object's nested objects (storedPlayer.upgrades) would be equal to this.player after the first extend call.
+                this.player = this.createNewPlayer();
                 _.extend(this.player, storedPlayerClone);
                 upgrades.load(this.player.upgrades);
             } else {

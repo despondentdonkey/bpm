@@ -23,6 +23,8 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades']
             dbg.addStateButtons(states);
             dbg.addCheats(bpm, states);
 
+            bpm.player = bpm.createNewPlayer();
+
             quests.addJsonQuests(res.json.quests.data);
             upgrades.addJsonUpgrades({
                 general: res.json.general.data,

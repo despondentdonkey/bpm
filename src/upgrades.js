@@ -1,6 +1,7 @@
 define(function() {
     upgrades = {};
     upgrades.abilities = {};
+    upgrades.all = [];
     upgrades.general = [];
     upgrades.weapons = {};
     upgrades.perks = [];
@@ -23,8 +24,16 @@ define(function() {
         return this.getVal(name) * 0.01;
     };
 
+    upgrades.reset = function() {
+        for (var i=0; i<upgrades.all.length; ++i) {
+            upgrades.all[i].setLevel(0);
+        }
+    };
+
     // Updates all upgrade levels to the key map provided.
     upgrades.load = function(map) {
+        upgrades.reset();
+
         function loadBasic(map, upgrades) {
             for (var id in map) {
                 for (var i=0; i<upgrades.length; ++i) {
@@ -63,7 +72,7 @@ define(function() {
                 for (var upgradeId in trees[treeId]) {
                     var options = { id: upgradeId };
                     options[treeKey] = treeId;
-                    addUpgrade(_.extend(options, trees[treeId][upgradeId]));
+                    upgrades.all.push(addUpgrade(_.extend(options, trees[treeId][upgradeId])));
                 }
             }
         }
@@ -71,9 +80,9 @@ define(function() {
         function parseUpgrades(json, addUpgrade) {
             var upgrade = JSON.parse(json);
             for (var id in upgrade) {
-                addUpgrade(_.extend({
+                upgrades.all.push(addUpgrade(_.extend({
                     id: id,
-                }, upgrade[id]));
+                }, upgrade[id])));
             }
         }
 
@@ -88,6 +97,7 @@ define(function() {
     var addGeneral = function(options) {
         var newUpgrade = new BasicUpgrade(options);
         upgrades.general.push(newUpgrade);
+        return newUpgrade;
     };
 
     var addWeapon = function(options) {
@@ -96,11 +106,13 @@ define(function() {
         }
         var newUpgrade = new BasicUpgrade(options);
         upgrades.weapons[options.weapon].push(newUpgrade);
+        return newUpgrade;
     };
 
     var addPerk = function(options) {
         var newUpgrade = new BasicUpgrade(options);
         upgrades.perks.push(newUpgrade);
+        return newUpgrade;
     };
 
     var addElement = function(options) {
@@ -109,6 +121,7 @@ define(function() {
         }
         var newUpgrade = new BasicUpgrade(options);
         upgrades.elements[options.element].push(newUpgrade);
+        return newUpgrade;
     };
 
     // Base class for any upgrade.
