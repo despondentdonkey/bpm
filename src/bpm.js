@@ -33,10 +33,19 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
         loadData: function() {
             var storedPlayer = simpleStorage.get('player');
             var exists = !_.isUndefined(storedPlayer);
+
             if (exists) {
-                _.extend(this.player, storedPlayer);
+                // Makes a clone of the returned object.
+                var storedPlayerClone = JSON.parse(JSON.stringify(storedPlayer));
+
+                // We have to clone the stored object because underscore extend does not do a deep copy and just uses references for nested objects.
+                // This caused some problems where the stored object's nested objects (storedPlayer.upgrades) would be equal to this.player after the first extend call.
+                _.extend(this.player, storedPlayerClone);
                 upgrades.load(this.player.upgrades);
+            } else {
+                console.error("Loading error: Data does not exist.", localStorage);
             }
+
             return exists;
         },
 
