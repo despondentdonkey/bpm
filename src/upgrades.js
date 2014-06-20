@@ -66,63 +66,40 @@ define(function() {
     };
 
     upgrades.addJsonUpgrades = function(json) {
-        function parseTreeUpgrades(treeKey, json, addUpgrade) {
+        function parseTreeUpgrades(treeKey, json, object) {
+            // Contains the objects that hold the ids. e.g. {pinshooter:{0,1}, shotgun:{0,1,2}, rifle:{0}}
             var trees = JSON.parse(json);
+
             for (var treeId in trees) {
+                object[treeId] = []; // e.g. upgrades.weapons.pinshooter = []; treeId = pinshooter
                 for (var upgradeId in trees[treeId]) {
-                    var options = { id: upgradeId };
-                    options[treeKey] = treeId;
-                    upgrades.all.push(addUpgrade(_.extend(options, trees[treeId][upgradeId])));
+                    // e.g. extend({}, jsonUpgrades.pinshooter["myWeapon0"])
+                    var options = _.extend({ id: upgradeId }, trees[treeId][upgradeId]);
+                    options[treeKey] = treeId; // e.g. upgrade.weapon = pinshooter; treeKey = weapon
+
+                    var newUpgrade = new BasicUpgrade(options);
+                    object[treeId].push(newUpgrade);
+                    upgrades.all.push(newUpgrade);
                 }
             }
         }
 
-        function parseUpgrades(json, addUpgrade) {
+        function parseUpgrades(json, array) {
             var upgrade = JSON.parse(json);
             for (var id in upgrade) {
-                upgrades.all.push(addUpgrade(_.extend({
-                    id: id,
-                }, upgrade[id])));
+                var newUpgrade = new BasicUpgrade( _.extend({ id: id }, upgrade[id]) );
+                array.push(newUpgrade);
+                upgrades.all.push(newUpgrade);
             }
         }
 
-        parseTreeUpgrades('weapon', json.weapons, addWeapon);
-        parseTreeUpgrades('element', json.elements, addElement);
+        parseTreeUpgrades('weapon', json.weapons, upgrades.weapons);
+        parseTreeUpgrades('element', json.elements, upgrades.elements);
 
-        parseUpgrades(json.general, addGeneral);
-        parseUpgrades(json.perks, addPerk);
+        parseUpgrades(json.general, upgrades.general);
+        parseUpgrades(json.perks, upgrades.perks);
     };
 
-
-    var addGeneral = function(options) {
-        var newUpgrade = new BasicUpgrade(options);
-        upgrades.general.push(newUpgrade);
-        return newUpgrade;
-    };
-
-    var addWeapon = function(options) {
-        if (!_.has(upgrades.weapons, options.weapon)) {
-            upgrades.weapons[options.weapon] = [];
-        }
-        var newUpgrade = new BasicUpgrade(options);
-        upgrades.weapons[options.weapon].push(newUpgrade);
-        return newUpgrade;
-    };
-
-    var addPerk = function(options) {
-        var newUpgrade = new BasicUpgrade(options);
-        upgrades.perks.push(newUpgrade);
-        return newUpgrade;
-    };
-
-    var addElement = function(options) {
-        if (!_.has(upgrades.elements, options.element)) {
-            upgrades.elements[options.element] = [];
-        }
-        var newUpgrade = new BasicUpgrade(options);
-        upgrades.elements[options.element].push(newUpgrade);
-        return newUpgrade;
-    };
 
     // Base class for any upgrade.
     var BasicUpgrade = createClass(null, function BasicUpgrade(o) {
