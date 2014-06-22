@@ -30,6 +30,16 @@ function capitalize(str) {
     return str[0].toUpperCase() + str.slice(1);
 }
 
+function applyDecimal(number, n, func) {
+    var inflate = Math.pow(10, n);
+    var deflate = Math.pow(10, -n);
+    return func(number * inflate) * deflate;
+}
+
+function roundN(number, n) {
+    return applyDecimal(number, n, Math.round);
+}
+
 // Error Handling
 
 function error(message, trace) {
