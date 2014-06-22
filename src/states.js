@@ -1222,6 +1222,27 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             bpm.player.day++;
             bpm.player.xp += this.xp;
 
+            var leveledUp = false;
+            var startLevel = bpm.player.level;
+            while (bpm.player.xp >= bpm.getXpGoal(bpm.player.level)) {
+                bpm.player.level++;
+                bpm.player.levelPoints++;
+                leveledUp = true;
+            }
+
+            if (leveledUp) {
+                var levelText = new gfx.pixi.Text('Level up!\n' + startLevel + ' -> ' + bpm.player.level, {
+                    stroke: 'black',
+                    strokeThickness: 4,
+                    fill: 'white',
+                    align: 'center',
+                });
+
+                levelText.x = 450;
+                levelText.y = 450;
+                this.addDisplay(levelText);
+            }
+
             var xpBonus = 0;
             if (this.quest.bonus) {
                 xpBonus = Math.round(this.quest.bonus * this.timeBonus);

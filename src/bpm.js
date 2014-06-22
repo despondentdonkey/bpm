@@ -2,11 +2,15 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
     var input = requirejs('input');
     return {
         playerDefault: {
-            money: 105000,
+            money: 105000, // Currency for blacksmith
+            levelPoints: 0, // Currency for wizard
+            level: 1,
+            xp: 0,
+
+            day: 1,
+
             ammo: 10000,
             ammoMax: 10000,
-            xp: 0,
-            day: 1,
 
             currentWeapon: 'Rifle',
             currentElement: 'fire',
@@ -20,6 +24,12 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
                 perks: {},
                 elements: {},
             },
+        },
+
+        // Generates and returns the xp needed to reach the next level.
+        // If you're level 8 and you want to know how much xp is needed to get to next level you call getXpGoal(8).
+        getXpGoal: function(level) {
+            return 40*Math.pow(level, 2) + 360*level;
         },
 
         // Returns a clone of bpm.playerDefault.
