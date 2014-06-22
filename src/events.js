@@ -41,12 +41,12 @@ define(function() {
         // Triggers event 'name'. Any additional arguments are passed to listener callback
         triggerEvent: function(name) {
             if (!this.events[name])
-                throw new Error('EventHandler: event ' + name + ' not defined.');
+                return null;
 
             var listeners = this.events[name].listeners;
             for (var i=0; i<listeners.length; ++i) {
                 var listener = listeners[i];
-                listener.func.call(this, _.tail(arguments));
+                listener.func.apply(this, _.tail(arguments));
                 if (listener.oneShot) {
                     this.removeListener(name, listener);
                     i--; // We removed something from listeners so adjust the iterator.
