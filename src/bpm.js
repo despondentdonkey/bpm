@@ -106,6 +106,10 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
             menus: {
                 'TownMenu': 'U',
                 'FieldPauseMenu': input.ESCAPE,
+            },
+            actions: {
+                'SpawnBubbles': 'B',
+                'Reset': 'R'
             }
         }
 
