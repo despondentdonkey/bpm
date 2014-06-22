@@ -296,8 +296,24 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         // use distance formula to get distance from an object
+        // also can pass 4 args to use custom values (x1,y1, x2,y2)
         getDistance: function(obj) {
-            return Math.abs(Math.sqrt(Math.pow(obj.x - this.x, 2) + Math.pow(obj.y - this.y, 2)));
+            var x1,x2,y1,y2;
+            if (arguments.length >= 4) {
+                x1 = arguments[0];
+                y1 = arguments[1];
+                x2 = arguments[2];
+                y2 = arguments[3];
+            } else if (obj instanceof GameObject) {
+                x1 = this.x;
+                y1 = this.y;
+                x2 = obj.x;
+                y2 = obj.y;
+            } else {
+                throw new TypeError('GameObject.getDistance: expecting GameObject or (x1,y1, x2,y2) args');
+            }
+
+            return Math.abs(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
         },
 
         /* returns closest object within radius; defaults to this.state.objects; opt argument obj list
@@ -317,7 +333,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 }
             }
 
-            return closest;
+            if (returnDist)
+                return [closest, distMin];
+            else
+                return closest;
         }
     });
 
@@ -383,7 +402,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         onBubbleCollision: function(bubble) {
-            bubble.applyElement(this.currentElement);
+            bubble.applyElement.call(bubble, this.currentElement);
         },
     });
 
@@ -671,9 +690,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this.state.bubbles.splice(this.state.bubbles.indexOf(this), 1);
 
             // remove current element if it exists (fixes element flickering on destroy)
-            if (this.currentElementObj) {
-                this.removeDisplay(this.currentElementObj);
-            }
+            this.removeElement();
             GameObject.prototype.destroy.call(this);
         },
 
@@ -729,7 +746,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         onBulletCollision: function(bullet) {
-            this.hp--;
+            this.hp -= 1;
 
             if (this.hp > -1) {
                 this.state.remove(bullet);
@@ -751,40 +768,53 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         applyElement: function(element) {
-            if (!this.currentElement)
-                this._getElementMethod('apply', element)(_(arguments).tail());
+            if (!this.currentElement) {
+                var method = this._getElementMethod('apply', element);
+                return method.apply(this, _(arguments).tail());
+            }
         },
 
         removeElement: function(element) {
             // Make sure reference to state exists; this is necessary unless you like crashes
             if (this.state) {
-                this.removeDisplay(element || this.currentElement);
+                element = element || this[this.currentElement];
+                if (element && element.parent)
+                    this.removeDisplay(element);
+                if (this[this.currentElement])
+                    this[this.currentElement] = null;
+
                 this.currentElement = null;
                 this.currentElementObj = null;
             }
         },
 
         // Used to get a type of private method from Bubble with a given element
+        // relies heavily on convention!
         _getElementMethod: function(type, element) {
             if (element) {
                 var eleMethod = this['_' + type + capitalize(element)];
                 if (_.isFunction(eleMethod)) {
-                    return _.bind(eleMethod, this);
+                    return eleMethod;
                 }
             }
             return _.identity;
         },
 
-        // Adds element to display, sets variables.
-        // called in each element after setting up the element Object
-        _setupApplyElement: function(elemStr, elemObj) {
+        // Configures the setup of all elements
+        _setupElement: function(elemStr, elemObj) {
             this.currentElement = elemStr;
             this.currentElementObj = elemObj;
+            return this;
+        },
 
-            // Update display properties for fire so it will have correct positions without having to wait another frame.
+        // Used by all elements to set up display-related stuff
+        _displayElement: function(elemObj) {
+            elemObj = elemObj || this.currentElementObj;
+            // Update display properties so it will have correct positions without having to wait another frame.
             this.updateDisplayProperties([elemObj]);
 
             this.addDisplay(elemObj);
+            return this;
         },
 
         _applyFire: function() {
