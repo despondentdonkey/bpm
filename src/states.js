@@ -1031,6 +1031,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         init: function() {
             TabMenu.prototype.init.call(this);
 
+            this.pointText = new gfx.pixi.Text(bpm.player.levelPoints + ' points', {fill: 'white'});
+            this.pointText.x = gfx.width - this.pointText.width - 10;
+            this.pointText.y = 10;
+            this.addDisplay(this.pointText);
+
             var onTabSwitch = _.bind(function() {
                 this.remove(this.tabObjects);
                 this.tabObjects = [];
@@ -1061,32 +1066,23 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             this.addPerkContent();
 
-            var purchaseButton = new ui.Button('upgrade', this.buttonStyle, function() {
+            this.purchaseButton = new ui.Button('upgrade', this.buttonStyle, function() {
                 if (!this.selectedUpgrade) return;
 
-                addFloatText = _.bind(function(text) {
-                    var floater = this.add(new ui.FloatText(text));
-                    floater.x = purchaseButton.x + floater.displayText.width/2;
-                    floater.y = purchaseButton.y - floater.displayText.height/2;
-                }, this);
+                this.selectedUpgrade.increaseLevel();
+                bpm.player.levelPoints -= this.selectedUpgrade.getCurrentLevel().cost;
 
-                if (this.selectedUpgrade.isMaxed()) {
-                    addFloatText('Maxed');
-                } else {
-                    this.selectedUpgrade.increaseLevel();
-                    if (this.selectedElement) {
-                        if (_.isEmpty(bpm.player.upgrades.elements[this.selectedElement])) {
-                            bpm.player.upgrades.elements[this.selectedElement] = {};
-                        }
-
-                        // e.g. weapons.pinshooter['0'] = 2
-                        bpm.player.upgrades.elements[this.selectedElement][this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
-                    } else {
-                        bpm.player.upgrades.perks[this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                if (this.selectedElement) {
+                    if (_.isEmpty(bpm.player.upgrades.elements[this.selectedElement])) {
+                        bpm.player.upgrades.elements[this.selectedElement] = {};
                     }
-                    this.updateDescription(this.selectedUpgrade);
-                    addFloatText('Purchased');
+
+                    // e.g. weapons.pinshooter['0'] = 2
+                    bpm.player.upgrades.elements[this.selectedElement][this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
+                } else {
+                    bpm.player.upgrades.perks[this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
                 }
+                this.updateDescription(this.selectedUpgrade);
             }, this);
 
             var refundButton = new ui.Button('downgrade', this.buttonStyle, function() {
@@ -1106,17 +1102,24 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     this.updateDescription(this.selectedUpgrade);
                 }
             }, this);
-            this.add([purchaseButton, refundButton]);
+            this.add([this.purchaseButton, refundButton]);
 
-            purchaseButton.setPos(gfx.width - purchaseButton.width - 5, gfx.height - 50);
-            refundButton.setPos(purchaseButton.x - refundButton.width - 32, gfx.height - 50);
+            this.purchaseButton.setPos(gfx.width - this.purchaseButton.width - 5, gfx.height - 50);
+            refundButton.setPos(this.purchaseButton.x - refundButton.width - 32, gfx.height - 50);
         },
 
         updateDescription: function(upgrade) {
             var nextLevel = upgrade.getNextLevel();
             this.upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
+
+            this.pointText.setText(bpm.player.levelPoints + ' points');
+            this.pointText.x = gfx.width - this.pointText.width - 10;
+
+            this.purchaseButton.enable();
+
             if (upgrade.isMaxed()) {
                 this.upgradeDescription.text += '\nMaxed';
+                this.purchaseButton.disable();
             } else {
                 for (var key in nextLevel) {
                     var ability = upgrades.abilities[key];
@@ -1126,7 +1129,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 }
                 this.upgradeDescription.text += '\n$' + (nextLevel ? nextLevel.cost : 0);
             }
+
             this.upgradeDescription.text += '\n' + upgrade.levelNum + ' / ' + upgrade.length;
+
+            if (nextLevel && bpm.player.levelPoints < nextLevel.cost) {
+                this.upgradeDescription.text += '\nInsufficient points';
+                this.purchaseButton.disable();
+            }
         },
 
         addPerkContent: function() {

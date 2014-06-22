@@ -165,6 +165,14 @@ define(function() {
             }
         }
 
+        // If cost was never specified in a level then give it a cost of 1 as default.
+        for (var i=0; i<this.levels.length; ++i) {
+            var level = this.levels[i];
+            if (!_(level).has('cost')) {
+                level.cost = 1;
+            }
+        }
+
         this.addAbilities();
     }, {
         // Increases the level by 1 and enables this upgrade.
