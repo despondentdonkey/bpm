@@ -29,6 +29,10 @@ define(function(require) {
             menus: {
                 'TownMenu': 'U',
                 'FieldPauseMenu': input.ESCAPE,
+            },
+            actions: {
+                'SpawnBubbles': 'B',
+                'Reset': 'R'
             }
         }
 

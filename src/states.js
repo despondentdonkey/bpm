@@ -201,7 +201,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
         this.hotkeys = {
             menus: this.menuHotkeys,
-            weapons: bpm.hotkeys.weapons
+            weapons: bpm.hotkeys.weapons,
+            actions: bpm.hotkeys.actions
         };
     },{
         init: function() {
@@ -438,6 +439,28 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
 
                 if (input.key.isReleased(keys) && className !== this.currentWeapon.className)
                     this.setWeapon(weapon);
+            }, this));
+
+            // Actions are a bit different, as we are not instantiating a class
+            // Define actions in an obj {'NameOfAction': function() {}}
+            var actions = {
+                // Spawns 10 bubbles (for testing)
+                'SpawnBubbles': _.bind(function() {
+                    _(10).times(_.bind(function() {
+                        this.add(new objects.Bubble(3, randomRange(32, gfx.width-32), randomRange(-128, gfx.height / 4), Math.random() * 360));
+                    }, this));
+                }, this),
+                'Reset': _.bind(function() {
+                    setState(new Field());
+                }, this)
+            };
+
+            _.each(hotkeys.actions, _.bind(function(key, action) {
+                if (input.key.isReleased(key)) {
+                    if (_(actions).has(action) && _(actions[action]).isFunction()) {
+                        actions[action]();
+                    }
+                }
             }, this));
         },
 
