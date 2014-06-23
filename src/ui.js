@@ -254,9 +254,75 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         },
     });
 
+    var StatusBar = createClass(GameObject, function StatusBar(back, front, width, height) {
+        this.backSliceTextures = back;
+        this.frontSliceTextures = front;
+        this.width = width;
+        this.height = height;
+
+        Object.defineProperty(this, 'depth', {
+            get: function() { return this._depth },
+            set: function(val) {
+                this._depth = val;
+                this.updateDepth = true;
+            },
+        });
+    }, {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
+            this.backSlice = new gfx.NineSlice(this.backSliceTextures);
+            this.frontSlice = new gfx.NineSlice(this.frontSliceTextures);
+
+            this.backSlice.depth = this.depth+1;
+            this.frontSlice.depth = this.depth;
+
+            this.backSlice.width = this.width;
+            this.backSlice.height = this.height;
+
+            this.frontSlice.width = this.width;
+            this.frontSlice.height = this.height;
+
+            this.addDisplay(this.backSlice);
+            this.addDisplay(this.frontSlice);
+
+            this.frontSlice.update();
+            this.backSlice.update();
+        },
+
+        setRatio: function(ratio) {
+            this.ratio = ratio;
+            this.updateRatio = true;
+        },
+
+        update: function(delta) {
+            GameObject.prototype.update.call(this, delta);
+
+            if (this.updateDepth) {
+                this.backSlice.depth = this.depth+1;
+                this.frontSlice.depth = this.depth;
+                this.updateDepth = false;
+            }
+
+            if (this.updateRatio) {
+                this.frontSlice.width = this.ratio * this.width;
+
+                this.frontSlice.update();
+                this.backSlice.update();
+
+                if (this.ratio <= 0.05) { // A slight offset, when the ratio is too small it gets ugly.
+                    this.frontSlice.visible = false;
+                } else if (!this.frontSlice.visible) {
+                    this.frontSlice.visible = true;
+                }
+                this.updateRatio = false;
+            }
+        },
+    });
+
     return {
         Button: Button,
         TextField: TextField,
         FloatText: FloatText,
+        StatusBar: StatusBar
     };
 });

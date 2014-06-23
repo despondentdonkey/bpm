@@ -276,7 +276,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
 
             // Combo time meter
-            this.comboTimeBar = new objects.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13);
+            this.comboTimeBar = new ui.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13);
             this.comboTimeBar.x = gfx.width/2 - this.comboTimeBar.width/2;
             this.comboTimeBar.depth = gfx.layers.gui;
             this.comboTimeBar.setRatio(0);
