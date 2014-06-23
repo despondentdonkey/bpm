@@ -1031,10 +1031,31 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         init: function() {
             TabMenu.prototype.init.call(this);
 
-            this.pointText = new gfx.pixi.Text(bpm.player.levelPoints + ' points', {fill: 'white'});
+            var commonText = {
+                stroke: 'black', fill: 'white',
+                strokeThickness: 4,
+                font: '24px arial',
+            };
+
+            this.pointText = this.addDisplay( new gfx.pixi.Text(bpm.player.levelPoints + ' points', commonText) );
             this.pointText.x = gfx.width - this.pointText.width - 10;
             this.pointText.y = 10;
-            this.addDisplay(this.pointText);
+
+            var xpMeter = this.add( new ui.StatusBar(res.slices.barBack, res.slices.barFront, 200, 13) );
+            xpMeter.x = gfx.width/2;
+            xpMeter.setRatio(bpm.player.xp / bpm.getXpGoal(bpm.player.level));
+
+            var currentLevelText = this.addDisplay( new gfx.pixi.Text(bpm.player.level, commonText) );
+            currentLevelText.x = gfx.width/2 - currentLevelText.width/2 - 5;
+
+            var newLevelText = this.addDisplay( new gfx.pixi.Text(bpm.player.level+1, commonText) );
+            newLevelText.x = xpMeter.x + xpMeter.width + newLevelText.width/2;
+
+            var xpText = this.addDisplay( new gfx.pixi.Text(bpm.player.xp + ' / ' + bpm.getXpGoal(bpm.player.level), _.defaults({
+                font: '18px arial',
+            }, commonText)) );
+            xpText.x = xpMeter.x + xpMeter.width/2 - xpText.width/2;
+            xpText.y = xpMeter.y + xpMeter.height;
 
             var onTabSwitch = _.bind(function() {
                 this.remove(this.tabObjects);
