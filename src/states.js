@@ -1235,7 +1235,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
     var RoundCompleteMenu = createClass(Menu, function(prevState, field) {
         this.field = field;
-        this.xp = this.field.xp;
         this.timeBonus = this.field.timeBonus;
         this.quest = this.field.currentQuest;
     }, {
@@ -1249,8 +1248,25 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 align: 'left',
             }));
 
+            var rawXp = this.field.xp;
+            var totalXp = rawXp;
+
+            var xpBonus = 0;
+            if (this.quest.bonus) {
+                xpBonus = Math.round(this.quest.bonus * this.timeBonus);
+                if (xpBonus > 0) {
+                    totalXp += xpBonus;
+                }
+            }
+
+            // Abandoning a quest will have the same affect as failing.
+            if (!this.quest.completed) {
+                var reducePercent = 0.5;
+                totalXp *= reducePercent;
+            }
+
             bpm.player.day++;
-            bpm.player.xp += this.xp;
+            bpm.player.xp += totalXp;
 
             var leveledUp = false;
             var startLevel = bpm.player.level;
@@ -1273,16 +1289,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 this.addDisplay(levelText);
             }
 
-            var xpBonus = 0;
-            if (this.quest.bonus) {
-                xpBonus = Math.round(this.quest.bonus * this.timeBonus);
-                if (xpBonus > 0) {
-                    bpm.player.xp += xpBonus;
-                }
-            }
-
-            var xpText = new gfx.pixi.Text('Experience earned: ' + this.xp +
+            var xpText = new gfx.pixi.Text('Experience earned: ' + rawXp +
+            (reducePercent ? '\nFailure penalty: -' + reducePercent*100 + '%': '') +
             (xpBonus > 0 ? '\nTime bonus: ' + xpBonus : '') +
+            "\nToday's experience: " + totalXp +
             '\nTotal experience: ' + bpm.player.xp, {
                 stroke: 'black',
                 strokeThickness: 4,
