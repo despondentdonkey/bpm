@@ -117,6 +117,9 @@ define(function() {
 
         this.id = o.id;
 
+        this.requiredPoints = o.requiredPoints
+        this.requiredUpgrades = o.requires;
+
         if (o.initial) {
             this.levels[0] = o.initial;
             if (o.sequence) {

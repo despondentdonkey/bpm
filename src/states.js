@@ -947,6 +947,43 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 this.upgradeDescription.text += '\nInsufficient funds';
                 this.purchaseButton.disable();
             }
+
+            if (this.selectedWeapon) {
+                var playerWeaponUpgrades = bpm.player.upgrades.weapons[this.selectedWeapon] || {};
+
+                if (upgrade.requiredUpgrades) {
+                    var txt = '\nRequires ';
+                    var requireFound = false;
+
+                    for (var i=0; i<upgrade.requiredUpgrades.length; ++i) {
+                        var requiredUpgrade = upgrade.requiredUpgrades[i];
+                        var last = i+1 >= upgrade.requiredUpgrades.length;
+
+                        if (!_(playerWeaponUpgrades).has(requiredUpgrade)) {
+                            txt += upgrades.weapons[this.selectedWeapon][requiredUpgrade].name +  (last ? '' : ', ');
+                            requireFound = true;
+                        }
+                    }
+
+                    if (requireFound) {
+                        this.purchaseButton.disable();
+                        this.upgradeDescription.text += txt;
+                    }
+                }
+
+                if (upgrade.requiredPoints) {
+                    var points = 0;
+
+                    for (var id in playerWeaponUpgrades) {
+                        points += playerWeaponUpgrades[id];
+                    }
+
+                    if (points < upgrade.requiredPoints) {
+                        this.upgradeDescription.text += '\nRequires ' + upgrade.requiredPoints + ' spent points.';
+                        this.purchaseButton.disable();
+                    }
+                }
+            }
         },
 
         addGeneralContent: function() {
