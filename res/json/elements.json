@@ -31,6 +31,8 @@
         "1": {
             "name": "Ice Fire Power II",
             "description": "This isn't related to the shotgun, I didn't want to make another ability.",
+            "requires": ["0"],
+            "requiredPoints": 2,
             "levels": [{
                     "fireStrength": 200
                 }, {

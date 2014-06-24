@@ -1194,6 +1194,43 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 this.upgradeDescription.text += '\nInsufficient points';
                 this.purchaseButton.disable();
             }
+
+            if (this.selectedElement) {
+                var playerElementUpgrades = bpm.player.upgrades.elements[this.selectedElement] || {};
+
+                if (upgrade.requiredUpgrades) {
+                    var txt = '\nRequires ';
+                    var requireFound = false;
+
+                    for (var i=0; i<upgrade.requiredUpgrades.length; ++i) {
+                        var requiredUpgrade = upgrade.requiredUpgrades[i];
+                        var last = i+1 >= upgrade.requiredUpgrades.length;
+
+                        if (!_(playerElementUpgrades).has(requiredUpgrade)) {
+                            txt += upgrades.elements[this.selectedElement][requiredUpgrade].name +  (last ? '' : ', ');
+                            requireFound = true;
+                        }
+                    }
+
+                    if (requireFound) {
+                        this.purchaseButton.disable();
+                        this.upgradeDescription.text += txt;
+                    }
+                }
+
+                if (upgrade.requiredPoints) {
+                    var points = 0;
+
+                    for (var id in playerElementUpgrades) {
+                        points += playerElementUpgrades[id];
+                    }
+
+                    if (points < upgrade.requiredPoints) {
+                        this.upgradeDescription.text += '\nRequires ' + upgrade.requiredPoints + ' spent points.';
+                        this.purchaseButton.disable();
+                    }
+                }
+            }
         },
 
         addPerkContent: function() {
