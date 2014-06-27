@@ -598,8 +598,12 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         };
 
         this.lightningStats = {
-            range: 100,
-            chainLength: 5
+            range: 400,
+            chainLength: 3,
+            damage: 1,
+            // ms between each bolt
+            speed: 25,
+            cooldown: 300,
         };
 
         // Armor settings
@@ -799,7 +803,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                     this.fire.depth = -4;
                 }
 
-                this._setupApplyElement('fire', this.fire);
+                this._setupElement('fire', this.fire)._displayElement(this.fire);
 
                 // Add fire timer - destroys timer when duration is up
                 var onFireComplete = _.bind(this.removeElement, this, this.fire);
@@ -836,7 +840,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 this.ice.depth = -4;
             }
 
-            this._setupApplyElement('ice', this.ice);
+            this._setupElement('ice', this.ice)._displayElement(this.ice);
 
             var onIceComplete = _.bind(this.removeElement, this, this.ice);
             var iceTimer = new Timer(this.iceStats.duration, 'oneshot', onIceComplete);
@@ -849,32 +853,94 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
 
         // chain is an array of all bubbles in current lightning chain
         // do not provide args on initial call (on pin collision)
-        _applyLightning: function(chain) {
-            if (!this.lightning) {
-                if (!_.isArray(chain)) {
-                    chain = [this];
-                    this.addListener('lightning', function() {
+        _applyLightning: function(_chain) {
+            var chain = _chain || [];
 
-                    });
-                }
-                // setup lightning to scale + angle towards closest
-                this.lightning = new gfx.pixi.Sprite(res.tex.ice);
-                // _setupApplyElement
-                // stop bubble
+            if (!this.lightning && this.state && !this.lightningOnCd) {
+                this.lightning = new gfx.pixi.Sprite(res.tex.lightning);
+                this._setupElement('lightning', this.lightning);
+
                 this._oldSpeed = this.speed;
                 this.speed = 0;
-                // keep lightning until chain is reached.
 
-                // get closest bubble, ignoring all in chain
-                if (chain.length < this.lightningSettings.chainLength) {
-                    var closest = this.getClosest(_(this.objects).without(chain), this.lightningStats.range);
-                    if (closest) {
-                        chain.push(closest);
-                        closest.applyElement.call(closest, 'lightning', chain);
+                chain.push(this);
+                var lastBubble;
+
+
+                this.cooldownTimer = new Timer(this.lightningStats.cooldown, 'oneshot', _.bind(function() {
+                    this.lightningOnCd = false;
+                }, this));
+
+                if (chain.length < this.lightningStats.chainLength) {
+                    // get closest bubble, ignoring all in existing chains
+                    var closest = this.getClosest(_(this.state.bubbles)
+                                                  .chain()
+                                                  .difference(chain)
+                                                  .reject(function(obj) {
+                                                      // Prevent lightning from striking bubbles in a different chain
+                                                      return obj.currentElement === 'lightning';
+                                                  })
+                                                  .value(), this.lightningStats.range);
+                    if (closest && closest) {
+                        var radiusX = this.width / 2;
+                        var radiusY = this.height / 2;
+                        var centerX = this.x + radiusX;
+                        var centerY = this.y + radiusY;
+
+                        // closest object's center values
+                        var centerX2 = closest.x + (closest.width / 2);
+                        var centerY2 = closest.y + (closest.height / 2);
+
+                        // get angle and distance from the center of the closest object
+                        var dist = this.getDistance(centerX, centerY, centerX2, centerY2);
+                        var angle = Math.atan2(centerY2 - centerY, centerX2 - centerX);
+
+                        var polarX = radiusX * Math.cos(angle);
+                        var polarY = radiusY * Math.sin(angle);
+                        var offsetX = centerX + polarX - radiusX;
+                        var offsetY = centerY + polarY - radiusY;
+
+                        // setup lightning to scale + angle towards closest bubble
+                        this.lightning.syncGameObjectProperties = { scale: false, position: false, rotation: false, anchor: false };
+
+                        this.lightning.anchor.x = 0;
+                        this.lightning.anchor.y = 0.5;
+
+                        this.lightning.scale = {x: (dist - this.width) / this.lightning.texture.width, y: 1};
+                        this.lightning.position = {x: offsetX, y: offsetY};
+                        this.lightning.rotation = angle;
+                        this.lightning.depth = -4;
+
+                        this._displayElement(this.lightning);
+                        this.lightningOnCd = true;
+
+                        var applyTimer = new Timer(this.lightningStats.speed, 'oneshot', _.bind(function() {
+                            if (closest)
+                                lastBubble = closest.applyElement.call(closest, 'lightning', chain);
+                            else return true;
+
+                            if (lastBubble) {
+                                // Apply lightning effects to all bubbles in chain
+                                console.log('chain ', _(chain).pluck('id'), ' this.id ', this.id);
+                                for (var i = 0; i < chain.length; i++) {
+                                    chain[i].hp -= chain[i].lightningStats.damage;
+                                    chain[i].speed = chain[i]._oldSpeed;
+                                    if (chain[i].currentElement && chain[i].currentElementObj) {
+                                        chain[i].removeElement();
+                                        this.state.add(chain[i].cooldownTimer);
+                                    }
+                                }
+                            }
+                        }, this));
+
+                        this.state.add(applyTimer);
+                    } else {
+                        return true;
                     }
                 } else {
-                    chain[0].triggerEvent('lightning');
+                    return true;
                 }
+
             }
         },
 
