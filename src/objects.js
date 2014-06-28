@@ -717,7 +717,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         },
 
         onBulletCollision: function(bullet) {
-            this.hp -= 1;
+            this.hp -= 0;
 
             if (this.hp > -1) {
                 this.state.remove(bullet);
@@ -851,7 +851,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             //_(this.getNearby(10, this.state.bubbles)).invoke('applyElement', 'ice');
         },
 
-        // chain is an array of all bubbles in current lightning chain
+        // chain is an array of [bubble, distance] pairs in current lightning chain
         // do not provide args on initial call (on pin collision)
         _applyLightning: function(_chain) {
             var chain = _chain || [];
