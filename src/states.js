@@ -449,8 +449,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests'], func
             var actions = {
                 // Spawns 10 bubbles (for testing)
                 'SpawnBubbles': _.bind(function() {
-                    _(10).times(_.bind(function() {
-                        this.add(new objects.Bubble(3, randomRange(32, gfx.width-32), randomRange(-128, gfx.height / 4), Math.random() * 360));
+                    _(1).times(_.bind(function() {
+                        this.add(new objects.Bubble(3, randomRange(32, gfx.width-32), randomRange(-32, gfx.height / 4), Math.random() * 360));
                     }, this));
                 }, this),
                 'Reset': _.bind(function() {

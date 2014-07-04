@@ -290,7 +290,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         */
         getClosest: function(objects, radius, returnDist) {
             objects = objects || this.state.objects;
-            objects = _.isNumber(radius) ? this.getNearby(radius, objects) : objects;
+            objects = _.isNumber(radius) ? this.getNearby(radius, objects) : _(objects).without(this);
+            if (objects.length < 1)
+                return null;
+
             var closest;
             var distMin;
             for (var i = 0; i < objects.length; i++) {
@@ -598,12 +601,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
         };
 
         this.lightningStats = {
-            range: 400,
-            chainLength: 3,
+            range: 300,
+            chainLength: 100,
             damage: 1,
             // ms between each bolt
-            speed: 50,
-            cooldown: 300,
+            speed:  50,
+            // ms before each bolt is removed
+            // final value will be multiplied by chain amount
+            cooldown: 100
         };
 
         // Armor settings
@@ -636,7 +641,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             // Stats affected by upgrades/etc
             this.hpMax = this.armor*2;
             this.hp = this.hpMax;
-            this.speed = 0.03;
+            this.setSpeed(0.03);
 
 
             // Armor
@@ -714,6 +719,30 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             }
 
             this.updateElement();
+        },
+
+        setSpeed: function(newSpeed) {
+            this._originalSpeed = newSpeed;
+            this.speed = newSpeed;
+        },
+
+        // Toggles speed to and from originalSpeed (last speed set by setSpeed)
+        // Pass a tempSpeed param to specify a temporary speed change
+        // toggle back by calling this.speedToggle without args.
+        // Useful for lightning and ice elements
+        speedToggle: function(tempSpeed) {
+            if (!_.isNumber(this._originalSpeed)) {
+                this._originalSpeed = this.speed;
+                warn('Bubble.speedToggle: this._original speed was not set before attempting to toggle speed.\r'+
+                     'Defaulting to current speed of '+this.speed);
+            }
+
+            if (!_.isNumber(tempSpeed)) {
+                if (this.speed !== this._originalSpeed)
+                    this.speed = this._originalSpeed
+            } else {
+                this.speed = tempSpeed;
+            }
         },
 
         onBulletCollision: function(bullet) {
@@ -851,20 +880,25 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
             //_(this.getNearby(10, this.state.bubbles)).invoke('applyElement', 'ice');
         },
 
+        // TODO: Read through comments, make sure they still make sense
         // chain is an array of [bubble, distance] pairs in current lightning chain
         // do not provide args on initial call (on pin collision)
         _applyLightning: function() {
             if (!this.lightning && this.state && !this.lightningOnCd) {
-                function getClosest(chain) {
-                    var closest = this.getClosest(_(this.state.bubbles)
-                                                        .chain()
-                                                        .difference(chain)
-                                                        .reject(function(obj) {
-                                                            // Prevent lightning from striking bubbles in a different chain
-                                                            return obj.currentElement === 'lightning';
-                                                        })
-                                                        .value(), this.lightningStats.range);
+                var chain = [this];
 
+                function getClosest(c) {
+                    return this.getClosest(_(this.state.bubbles)
+                                                       .chain()
+                                                       .difference(c)
+                                                       .reject(function(obj) {
+                                                           // Prevent lightning from striking bubbles in a different chain
+                                                           return obj.currentElement === 'lightning' || obj.lightningOnCd;
+                                                       })
+                                                       .value(), this.lightningStats.range);
+                }
+
+                function generateLightning(closest) {
                     // measurements n such
                     var radiusX = this.width / 2;
                     var radiusY = this.height / 2;
@@ -881,22 +915,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                     var polarX = radiusX * Math.cos(angle);
                     var polarY = radiusY * Math.sin(angle);
 
-                    var lightningOffset = {
+                    var offset = {
                         'x': centerX + polarX - radiusX,
                         'y': centerY + polarY - radiusY
                     };
 
-                    return {
-                        'obj': closest,
-                        'dist': distance,
-                        'angle': angle,
-                        'offset': lightningOffset,
-                    };
-                }
-
-                function generateLightning(c) {
                     this.lightning = new gfx.pixi.Sprite(res.tex.lightning);
                     this._setupElement('lightning', this.lightning);
+
 
                     // setup lightning to scale + angle towards closest bubble
                     this.lightning.syncGameObjectProperties = { scale: false, position: false, rotation: false, anchor: false };
@@ -904,9 +930,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                     this.lightning.anchor.x = 0;
                     this.lightning.anchor.y = 0.5;
 
-                    this.lightning.scale = {x: (c.dist - this.width) / this.lightning.texture.width, y: 1};
-                    this.lightning.position = c.offset;
-                    this.lightning.rotation = c.angle;
+                    this.lightning.scale = {x: (distance - this.width) / this.lightning.texture.width, y: 1};
+                    this.lightning.position = offset;
+                    this.lightning.rotation = angle;
                     this.lightning.depth = -4;
 
                     this._displayElement(this.lightning);
@@ -914,60 +940,66 @@ define(['bpm', 'res', 'gfx', 'input', 'events'], function(bpm, res, gfx, input, 
                 }
 
                 function applyAffects() {
-                    this.hp -= this.lightningStats.damage;
-                    this.speed = this._oldSpeed;
+                    //this.hp -= this.lightningStats.damage;
+                    this.speedToggle(); // restore speed
                     if (this.currentElement && this.currentElementObj) {
                         this.removeElement();
                     }
-                    this.lightningOnCd = false;
                 }
 
-                function cooldown() {
-                    this.state.add(new Timer(this.lightningStats.speed, 'oneshot', finish));
+                function cooldownChain(c, i) {
+                    var current = c[i], next = c[i + 1];
+                    if (current.state) {
+                        current.state.add(new Timer(current.lightningStats.cooldown, 'oneshot', _.bind(function() {
+                            applyAffects.call(current);
+                            if (next) {
+                                cooldownChain.call(next, c, ++i)
+                            }
+                            current.lightningOnCd = false;
+                        }, current)));
+                    }
                 }
 
-                var chain = [this];
-                var finishCount = 0;
-                function finish() {
-                    console.log('finish called', finishCount, '/', chain.length, _(chain).pluck('id'));
-                    if (finishCount >= chain.length - 1) {
-                        for (var i = 0; i < chain.length; i++) {
-                            applyAffects.call(chain[i]);
+                function lightningChain(c, i) {
+                    var current = c[i], closest = c[i + 1];
+                    var lightning = _.bind(function() {
+                        if (closest) {
+                            closest.speedToggle(0);
+                            generateLightning.call(current, closest);
+                            lightningChain.call(closest, c, ++i);
+                        } else {
+                            cooldownChain.call(this, c, 0);
                         }
-                    } else {
-                        finishCount++;
+                    }, this);
+
+                    current.lightningOnCd = true;
+                    if (i === 0) {
+                        current.speedToggle(0);
                     }
+                    if (current.state)
+                        current.state.add(new Timer(current.lightningStats.speed, 'oneshot', lightning));
                 }
 
-    // ----> TODO TODO TODO
-                // TODO:
-                // This works now - persistent lightning bug fixed
-                // however, lightning displays all at once; need to make it go one at a time
+                var current;
+                var closest;
+                var chainLength = this.state.bubbles.length < this.lightningStats.chainLength ? this.state.bubbles.length : this.lightningStats.chainLength;
+                // Gather chain of closest bubbles
+                for (var i = 0; i < chainLength; i++) {
+                    current = chain[i];
 
-                // find closest bubbles (determined by *.chainLength) and put them in an array
-                // Uses timer to slow down lightning
-                // Applies lightning element to each bubble
-                for (var i = 0; i < this.lightningStats.chainLength - 1; i++) {
-                    var current = chain[i];
-                    var closest = getClosest.call(current);
-
-                    generateLightning.call(current, closest);
-
-                    if (i < 1) {
-                        current._oldSpeed = current.speed;
-                        current.speed = 0;
+                    if (_.isObject(current) && !current.lightningOnCd) {
+                        closest = getClosest.call(current, chain);
+                        if (closest) {
+                            chain.push(closest);
+                        }
                     }
+                    closest = null;
+                    current = null;
+                }
 
-                    closest.obj._oldSpeed = closest.obj.speed;
-                    closest.obj.speed = 0;
-
-                    cooldown.call(current);
-                    chain.push(closest.obj);
-
-                    if (i >= this.lightningStats.chainLength - 2) {
-                        cooldown.call(closest.obj);
-                        console.log(i);
-                    }
+                // Start the lightning chain
+                if (chain.length > 1) {
+                    lightningChain.call(this, chain, 0);
                 }
             }
         },
