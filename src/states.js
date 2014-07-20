@@ -874,29 +874,16 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.purchaseButton = new ui.Button('upgrade', this.buttonStyle, function() {
                 if (!this.selectedUpgrade) return;
 
-                this.selectedUpgrade.increaseLevel();
-                bpm.player.money -= this.selectedUpgrade.getCurrentLevel().cost;
-
-                // Add the new level to the player storage.
-                if (this.selectedWeapon) {
-                    if (_.isEmpty(bpm.player.upgrades.weapons[this.selectedWeapon])) {
-                        bpm.player.upgrades.weapons[this.selectedWeapon] = {};
-                    }
-
-                    // e.g. weapons.pinshooter['0'] = 2
-                    bpm.player.upgrades.weapons[this.selectedWeapon][this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
-                } else {
-                    bpm.player.upgrades.general[this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
-                }
+                this.selectedUpgrade.purchase(bpm.player);
 
                 this.updateDescription(this.selectedUpgrade);
-
                 var purchasedText = this.add(new ui.FloatText('Purchased'));
                 purchasedText.x = this.purchaseButton.x + purchasedText.displayText.width/2;
                 purchasedText.y = this.purchaseButton.y - purchasedText.displayText.height/2;
 
             }, this);
 
+            // tmp
             var refundButton = new ui.Button('downgrade', this.buttonStyle, function() {
                 if (!this.selectedUpgrade) return;
                 if (this.selectedUpgrade.levelNum > 0) {
@@ -1127,22 +1114,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.purchaseButton = new ui.Button('upgrade', this.buttonStyle, function() {
                 if (!this.selectedUpgrade) return;
 
-                this.selectedUpgrade.increaseLevel();
-                bpm.player.levelPoints -= this.selectedUpgrade.getCurrentLevel().cost;
+                this.selectedUpgrade.purchase(bpm.player);
 
-                if (this.selectedElement) {
-                    if (_.isEmpty(bpm.player.upgrades.elements[this.selectedElement])) {
-                        bpm.player.upgrades.elements[this.selectedElement] = {};
-                    }
-
-                    // e.g. weapons.pinshooter['0'] = 2
-                    bpm.player.upgrades.elements[this.selectedElement][this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
-                } else {
-                    bpm.player.upgrades.perks[this.selectedUpgrade.id] = this.selectedUpgrade.levelNum;
-                }
                 this.updateDescription(this.selectedUpgrade);
             }, this);
 
+            // tmp
             var refundButton = new ui.Button('downgrade', this.buttonStyle, function() {
                 if (!this.selectedUpgrade) return;
                 if (this.selectedUpgrade.levelNum > 0) {

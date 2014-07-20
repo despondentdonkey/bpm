@@ -77,17 +77,17 @@ define(function() {
                     var options = _.extend({ id: upgradeId }, trees[treeId][upgradeId]);
                     options[treeKey] = treeId; // e.g. upgrade.weapon = pinshooter; treeKey = weapon
 
-                    var newUpgrade = new BasicUpgrade(options);
+                    var newUpgrade = new BasicUpgrade(options, treeKey, treeId); // treeKey used as type
                     object[treeId].push(newUpgrade);
                     upgrades.all.push(newUpgrade);
                 }
             }
         }
 
-        function parseUpgrades(json, array) {
+        function parseUpgrades(json, array, type) {
             var upgrade = JSON.parse(json);
             for (var id in upgrade) {
-                var newUpgrade = new BasicUpgrade( _.extend({ id: id }, upgrade[id]) );
+                var newUpgrade = new BasicUpgrade( _.extend({ id: id }, upgrade[id]), type );
                 array.push(newUpgrade);
                 upgrades.all.push(newUpgrade);
             }
@@ -96,13 +96,13 @@ define(function() {
         parseTreeUpgrades('weapon', json.weapons, upgrades.weapons);
         parseTreeUpgrades('element', json.elements, upgrades.elements);
 
-        parseUpgrades(json.general, upgrades.general);
-        parseUpgrades(json.perks, upgrades.perks);
+        parseUpgrades(json.general, upgrades.general, 'general');
+        parseUpgrades(json.perks, upgrades.perks, 'perk');
     };
 
 
     // Base class for any upgrade.
-    var BasicUpgrade = createClass(null, function BasicUpgrade(o) {
+    var BasicUpgrade = createClass(null, function BasicUpgrade(o, type, treeName) {
         this.options = o;
 
         this.levelNum = 0; // The current level of the upgrade 3/5 = level 3 / length 5
@@ -116,6 +116,8 @@ define(function() {
         this.description = o.description;
 
         this.id = o.id;
+        this.type = type;
+        this.treeName = treeName; // Used by weapons and elements to identify specifc name e.g. pinshooter, fire
 
         this.requiredPoints = o.requiredPoints
         this.requiredUpgrades = o.requires;
@@ -178,6 +180,35 @@ define(function() {
 
         this.addAbilities();
     }, {
+
+        // Increases level, removes due currency, and updates player upgrade data.
+        purchase: function(player) {
+            this.increaseLevel();
+
+            var levelCost = this.getCurrentLevel().cost;
+            if (this.type === "element" || this.type === "perk") {
+                player.levelPoints -= levelCost;
+            } else {
+                player.money -= levelCost;
+            }
+
+            // Add the new level to the player storage.
+            if (this.type === 'weapon') {
+                if (_.isEmpty(player.upgrades.weapons[this.treeName]))
+                    player.upgrades.weapons[this.treeName] = {};
+                // e.g. player.upgrades.weapons.pinshooter['0'] = 2
+                player.upgrades.weapons[this.treeName][this.id] = this.levelNum;
+            } else if (this.type === 'element') {
+                if (_.isEmpty(player.upgrades.elements[this.treeName]))
+                    player.upgrades.elements[this.treeName] = {};
+                player.upgrades.elements[this.treeName][this.id] = this.levelNum;
+            } else if (this.type === 'general') {
+                player.upgrades.general[this.id] = this.levelNum;
+            } else if (this.type === 'perk') {
+                player.upgrades.perks[this.id] = this.levelNum;
+            }
+        },
+
         // Increases the level by 1 and enables this upgrade.
         increaseLevel: function() {
             this.enable();
