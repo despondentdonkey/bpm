@@ -916,10 +916,16 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.moneyText.setText('$' + bpm.player.money);
             this.moneyText.x = gfx.width - this.moneyText.width - 10;
 
-            if (upgrade.isMaxed()) {
-                this.upgradeDescription.text += '\nMaxed';
+            var requires = upgrade.getRequirements(bpm.player);
+
+            if (requires) {
                 this.purchaseButton.disable();
-            } else {
+                if (requires.notMaxed) {
+                    this.upgradeDescription.text += '\nMaxed';
+                }
+            }
+
+            if (!upgrade.isMaxed()) {
                 for (var key in nextLevel) {
                     var ability = upgrades.abilities[key];
                     if (ability) {
@@ -928,49 +934,29 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 }
                 this.upgradeDescription.text += '\n$' + (nextLevel ? nextLevel.cost : 0);
             }
+
             this.upgradeDescription.text += '\n' + upgrade.levelNum + ' / ' + upgrade.length;
 
-            if (nextLevel && bpm.player.money < nextLevel.cost) {
-                this.upgradeDescription.text += '\nInsufficient funds';
-                this.purchaseButton.disable();
-            }
+            if (requires) {
+                if (requires.currency) {
+                    this.upgradeDescription.text += '\nInsufficient funds';
+                }
 
-            if (this.selectedWeapon) {
-                var playerWeaponUpgrades = bpm.player.upgrades.weapons[this.selectedWeapon] || {};
-
-                if (upgrade.requiredUpgrades) {
+                if (requires.upgrades) {
                     var txt = '\nRequires ';
-                    var requireFound = false;
-
-                    for (var i=0; i<upgrade.requiredUpgrades.length; ++i) {
-                        var requiredUpgrade = upgrade.requiredUpgrades[i];
-                        var last = i+1 >= upgrade.requiredUpgrades.length;
-
-                        if (!_(playerWeaponUpgrades).has(requiredUpgrade)) {
-                            txt += upgrades.weapons[this.selectedWeapon][requiredUpgrade].name +  (last ? '' : ', ');
-                            requireFound = true;
-                        }
+                    for (var i=0; i<requires.upgrades.length; ++i) {
+                        var requiredUpgrade = requires.upgrades[i];
+                        var last = i+1 >= requires.upgrades.length;
+                        txt += upgrades.weapons[this.selectedWeapon][requiredUpgrade].name +  (last ? '' : ', ');
                     }
-
-                    if (requireFound) {
-                        this.purchaseButton.disable();
-                        this.upgradeDescription.text += txt;
-                    }
+                    this.upgradeDescription.text += txt;
                 }
 
-                if (upgrade.requiredPoints) {
-                    var points = 0;
-
-                    for (var id in playerWeaponUpgrades) {
-                        points += playerWeaponUpgrades[id];
-                    }
-
-                    if (points < upgrade.requiredPoints) {
-                        this.upgradeDescription.text += '\nRequires ' + upgrade.requiredPoints + ' spent points.';
-                        this.purchaseButton.disable();
-                    }
+                if (requires.points) {
+                    this.upgradeDescription.text += '\nRequires ' + requires.points + ' spent points.';
                 }
             }
+
         },
 
         addGeneralContent: function() {

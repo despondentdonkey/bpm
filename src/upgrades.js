@@ -209,6 +209,66 @@ define(function() {
             }
         },
 
+        /* Returns a list of required items needed before a purchase.
+               Returns null if no requirements are needed, allowing a purchase.
+               notMaxed - true if upgrade should not be maxed
+               currency - true if player does not have enough money or level points
+               upgrades - an array of upgrades needed
+               points   - the number of invested points needed */
+        getRequirements: function(player) {
+            var requires = {};
+
+            var nextLevel = this.getNextLevel();
+            var currency = this.type === "element" || this.type === "perk" ? player.levelPoints : player.money;
+
+            if (this.isMaxed()) {
+                requires['notMaxed'] = true;
+            }
+
+            if (nextLevel && currency < nextLevel.cost) {
+                requires['currency'] = true;
+            }
+
+            if (this.type === "weapon" || this.type === "element") {
+                var playerUpgrades;
+
+                if (this.type === "weapon") {
+                    playerUpgrades = player.upgrades.weapons[this.treeName] || {};
+                } else if (this.type === "element") {
+                    playerUpgrades = player.upgrades.elements[this.treeName] || {};
+                }
+
+                if (this.requiredUpgrades) {
+                    var requiredUpgrades = [];
+                    for (var i=0; i<this.requiredUpgrades.length; ++i) {
+                        var requiredUpgrade = this.requiredUpgrades[i];
+
+                        if (!_(playerUpgrades).has(requiredUpgrade)) {
+                            requiredUpgrades.push(requiredUpgrade);
+                        }
+                    }
+
+                    if (!_.isEmpty(requiredUpgrades)) {
+                        requires['upgrades'] = requiredUpgrades;
+                    }
+                }
+
+                if (this.requiredPoints) {
+                    var points = 0;
+
+                    for (var id in playerUpgrades) {
+                        points += playerUpgrades[id];
+                    }
+
+                    if (points < this.requiredPoints) {
+                        requires['points'] = this.requiredPoints;
+                    }
+                }
+            }
+
+            return _.isEmpty(requires) ? null : requires;
+        },
+
         // Increases the level by 1 and enables this upgrade.
         increaseLevel: function() {
             this.enable();
