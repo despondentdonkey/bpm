@@ -88,7 +88,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         update:  function(delta) {
-            BasicObject.prototype.update.call(this);
+            BasicObject.prototype.update.call(this, delta);
             if (this.syncDisplayProperties) {
                 this.updateDisplayProperties(this.displayObjects);
             }
@@ -381,7 +381,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         update: function(delta) {
-            GameObject.prototype.update.call(this);
+            GameObject.prototype.update.call(this, delta);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
 
             this.ammoText.setText(this.ammo);
@@ -627,7 +627,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         update: function(delta) {
-            GameObject.prototype.update.call(this);
+            GameObject.prototype.update.call(this, delta);
 
             var speed = this.speed * delta;
             this.x += this.speedX * speed;
