@@ -6,6 +6,7 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
             levelPoints: 3, // Currency for wizard
             level: 1,
             xp: 0,
+            difficultyLevel: 'normal',
 
             day: 1,
 
@@ -24,6 +25,26 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
                 perks: {},
                 elements: {},
             },
+        },
+
+        // Returns difficulty statistics based on difficulty level passed.
+        genDifficultyStats: function(level) {
+            var stats = { // These default as normal difficulty stats.
+                upgradeCostMod: 1.0,
+                bubbleHpMod: 1.0,
+            };
+
+            if (level === 'easy') {
+                stats.upgradeCostMod = 0.8;
+                stats.bubbleHpMod = 0.5;
+            } else if (level === 'hard') {
+                stats.upgradeCostMod = 1.25;
+                stats.bubbleHpMod = 1.3;
+            } else if (level !== 'normal') {
+                console.error("Difficulty level '" + level + "' does not exist. Defaults will be returned.");
+            }
+
+            return stats;
         },
 
         // Generates and returns the xp needed to reach the next level.
@@ -57,6 +78,7 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
                 // This caused some problems where the stored object's nested objects (storedPlayer.upgrades) would be equal to this.player after the first extend call.
                 this.player = this.createNewPlayer();
                 _.extend(this.player, storedPlayerClone);
+                this.difficulty = this.genDifficultyStats(this.player.difficultyLevel);
                 upgrades.load(this.player.upgrades);
             } else {
                 console.error("Loading error: Data does not exist.", localStorage);
