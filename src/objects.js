@@ -11,17 +11,49 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     var BasicObject = createClass(events.EventHandler, function BasicObject() {
         this.state = null;
         this.id = getID();
+
+        this.initialized = false;
+        this.parent = null;
+        this.children = [];
     }, {
         init: function(state) {
             this.state = state;
+            for (var i=0; i<this.children.length; ++i) {
+                this.children[i].init(state);
+            }
+            this.initialized = true;
         },
 
         destroy: function() {
             this.state = null;
+
+            if (this.parent) {
+                this.parent.removeChild(this);
+            }
+
+            for (var i=0; i<this.children.length; ++i) {
+                var child = this.children[i];
+                child.parent = null;
+                child.destroy();
+            }
+
+            this.initialized = false;
         },
 
         update: function(delta) {
+            for (var i=0; i<this.children.length; ++i) {
+                this.children[i].update(delta);
+            }
+        },
 
+        addChild: function(object) {
+            object.parent = this;
+            this.children.push(object);
+        },
+
+        removeChild: function(object) {
+            object.parent = null;
+            this.children.splice(this.children.indexOf(object), 1);
         },
     });
 
