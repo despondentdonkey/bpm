@@ -622,10 +622,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         // Element Settings
         this.currentElement;
         this.fireConfig = {
-            damage: 0.01 * (1+upgrades.getValPercent('fireStrength')),
+            damage: 0.01 * (1+upgrades.getValPercent('fireDamage')),
             upgrades: [],
-            duration: 750,
-            applyChance: 10, // in percent (10 === 10%)
+            duration: 750 * (1+upgrades.getValPercent('fireDuration')),
+            applyChance: upgrades.getVal('fireChance'), // in percent (10 === 10%)
             range: 0
         };
 
@@ -635,8 +635,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         this.lightningConfig = {
             range: 300,
-            chainLength: 100,
-            damage: 1,
+            chainLength: upgrades.getVal('lightningChainLength'),
+            damage: 1 * (1+upgrades.getValPercent('lightningDamage')),
             // ms between each bolt
             speed:  50,
             // ms before each bolt is removed
@@ -779,7 +779,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         onBulletCollision: function(bullet) {
-            this.hp -= 0;
+            this.hp -= 1;
 
             if (this.hp > -1) {
                 this.state.remove(bullet);
@@ -881,7 +881,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 // Percentage chance to apply fire to collided bubbles
                 // This helps with perf too, as collisions are only gathered when chance is in range
                 var chance = randomInt(0, 100);
-                if (chance <= this.fireConfig.applyChance) {
+                if (chance <= this.fireConfig.applyChance && chance > 0) {
                     var collidedBubble =  this.getCollisions(this.state.bubbles);
                     if (collidedBubble) {
                         collidedBubble.applyElement('fire');

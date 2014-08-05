@@ -1,16 +1,82 @@
 {
     "fire": {
         "0": {
-            "name": "Fire Fire Power",
-            "description": "Hey this actually is related to fire!",
-            "levels": [{
-                    "fireStrength": 25
-                }, {
-                    "fireStrength": 50
-                }, {
-                    "fireStrength": 200
+            "name": "Stoking the Fire",
+            "description": "Improve the power of your fire.",
+
+            "initial": {
+                "fireDamage": 25,
+                "fireDuration": 25
+            },
+
+            "sequence": {
+                "length": 10,
+                "fireDamage": 25,
+                "fireDuration": 25
+            },
+
+            "levels": {
+                "10": {
+                    "fireDamage": 500,
+                    "fireDuration": 500
                 }
-            ]
+            }
+        },
+
+        "1": {
+            "name": "Viral Fire",
+            "description": "Allow the fire to spread.",
+
+            "initial": {
+                "fireChance": 1
+            },
+
+            "sequence": {
+                "length": 10,
+                "fireChance": 0.5
+            },
+
+            "levels": {
+                "10": {
+                    "fireChance": 10
+                }
+            }
+        }
+    },
+
+    "lightning": {
+        "0": {
+            "name": "Chain Lightning",
+            "description": "Chains lightning streams.",
+
+            "initial": {
+                "lightningChainLength": 1
+            },
+
+            "sequence": {
+                "length": 10,
+                "lightningChainLength": 1
+            }
+        },
+
+        "1": {
+            "name": "Charge",
+            "description": "Increase the strength of your lightning.",
+
+            "initial": {
+                "lightningDamage": 25
+            },
+
+            "sequence": {
+                "length": 10,
+                "lightningDamage": 25
+            },
+
+            "levels": {
+                "10": {
+                    "lightningDamage": 500
+                }
+            }
         }
     },
 

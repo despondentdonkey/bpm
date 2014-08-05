@@ -1246,7 +1246,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             var upgradeButtons = [];
             var elementButtons = [];
 
-            this.upgradeDescription = new ui.TextField('', 16, 200, gfx.width/2-32, gfx.height - 250);
+            this.upgradeDescription = new ui.TextField('', 16, 250, gfx.width/2-32, gfx.height - 250);
             this.tabObjects.push(this.upgradeDescription);
 
             for (var key in upgrades.elements) {
