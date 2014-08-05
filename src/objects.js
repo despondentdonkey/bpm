@@ -797,7 +797,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         // Applied by bullets, anything defined here should be either passed from the pin
         // or should be related to the graphics/dimensions of the bubble
         updateElement: function() {
-            this._getElementMethod('update', this.currentElement)();
+            this._getElementMethod('update', this.currentElement).apply(this);
         },
 
         applyElement: function(element) {
