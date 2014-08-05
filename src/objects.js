@@ -621,7 +621,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         // Element Settings
         this.currentElement;
-        this.fireStats = {
+        this.fireConfig = {
             damage: 0.01 * (1+upgrades.getValPercent('fireStrength')),
             upgrades: [],
             duration: 750,
@@ -629,11 +629,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             range: 0
         };
 
-        this.iceStats = {
+        this.iceConfig = {
             duration: 750
         };
 
-        this.lightningStats = {
+        this.lightningConfig = {
             range: 300,
             chainLength: 100,
             damage: 1,
@@ -869,19 +869,19 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
                 // Add fire timer - destroys timer when duration is up
                 var onFireComplete = _.bind(this.removeElement, this, this.fire);
-                var fireTimer = new Timer(this.fireStats.duration, 'oneshot', onFireComplete);
+                var fireTimer = new Timer(this.fireConfig.duration, 'oneshot', onFireComplete);
                 this.state.add(fireTimer);
             }
         },
 
         _updateFire: function() {
-            if (this.fireStats) {
-                this.hp -= this.fireStats.damage;
+            if (this.fireConfig) {
+                this.hp -= this.fireConfig.damage;
 
                 // Percentage chance to apply fire to collided bubbles
                 // This helps with perf too, as collisions are only gathered when chance is in range
                 var chance = randomInt(0, 100);
-                if (chance <= this.fireStats.applyChance) {
+                if (chance <= this.fireConfig.applyChance) {
                     var collidedBubble =  this.getCollisions(this.state.bubbles);
                     if (collidedBubble) {
                         collidedBubble.applyElement('fire');
@@ -905,7 +905,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this._setupElement('ice', this.ice)._displayElement(this.ice);
 
             var onIceComplete = _.bind(this.removeElement, this, this.ice);
-            var iceTimer = new Timer(this.iceStats.duration, 'oneshot', onIceComplete);
+            var iceTimer = new Timer(this.iceConfig.duration, 'oneshot', onIceComplete);
             this.state.add(iceTimer);
         },
 
@@ -924,9 +924,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                                            .difference(c)
                                            .reject(function(obj) {
                                                // Prevent lightning from striking bubbles in a different chain
-                                               return obj.currentElement === 'lightning' || obj.lightningOnCd;
+                                               return obj.currentElement === 'lightning';
                                            })
-                                           .value(), this.lightningStats.range);
+                                           .value(), this.lightningConfig.range);
                 }
 
                 function generateLightning(closest) {
@@ -966,40 +966,38 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     this.lightning.depth = -4;
 
                     this._displayElement(this.lightning);
-                    this.lightningOnCd = true;
                 }
 
-                if (!this.lightningStats.chain) {
+                if (!this.lightningConfig.chain) {
                     console.log('Starting new chain');
-                    this.lightningStats.chain = [this];
+                    this.lightningConfig.chain = [this];
                 }
 
-                var closest = getClosest.call(this, this.lightningStats.chain);
+                var closest = getClosest.call(this, this.lightningConfig.chain);
 
                 if (closest) {
-                    this.lightningStats.chain.push(closest);
+                    this.lightningConfig.chain.push(closest);
 
                     if (!this.lightning) {
                         generateLightning.call(this, closest);
                     }
 
                     // Remove lightning display timer
-                    this.state.add(new Timer(this.lightningStats.cooldown*2, 'oneshot', _.bind(function() {
+                    this.state.add(new Timer(this.lightningConfig.cooldown*2, 'oneshot', _.bind(function() {
                         if (this.lightning) {
                             this.removeDisplay(this.lightning);
                         }
                         this.lightning = null;
-                        this.lightningStats.chain = null;
-                        this.lightningOnCd = false;
+                        this.lightningConfig.chain = null;
                         this.currentElement = null;
                     }, this)));
 
                     // A small delay before applying lightning to the next bubble.
-                    this.state.add(new Timer(this.lightningStats.cooldown, 'oneshot', _.bind(function() {
+                    this.state.add(new Timer(this.lightningConfig.cooldown, 'oneshot', _.bind(function() {
                         if (!closest.state) {
                             return;
                         }
-                        closest.lightningStats.chain = this.lightningStats.chain;
+                        closest.lightningConfig.chain = this.lightningConfig.chain;
                         closest._applyLightning();
                     }, this)));
                 } else {
