@@ -1,5 +1,6 @@
 define(function(require) {
     var input = require('input');
+
     return {
         player: {
             money: 0,
@@ -9,7 +10,7 @@ define(function(require) {
             day: 1,
 
             currentWeapon: 'Rifle',
-            currentElement: 'lightning',
+            currentElement: 'fire',
 
             quests: ['ma00', 's00'], // Quests available
             currentQuest: null,
