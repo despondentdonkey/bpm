@@ -41,6 +41,48 @@
                     "fireChance": 10
                 }
             }
+        },
+
+        "2": {
+            "name": "WIP Embers",
+            "description": "Each bubble on fire has a chance to shoot a small fireball which ignites bubbles and deals small damage.",
+
+            "initial": {
+                "fireEmberDamage": 10,
+                "fireEmberRange": 10,
+                "fireEmberDurability": 1
+            },
+
+            "sequence": {
+                "length": 10,
+                "fireEmberDamage": 10,
+                "fireEmberRange": 10,
+                "fireEmberDurability": 1
+            }
+        },
+
+        "3": {
+            "name": "WIP Fire Dragon",
+            "description": "Chance to summon a powerful dragon of fire when a certain amount of bullets collide with a bubble in a certain amount of time.",
+
+            "requiredPoints": 20,
+            "requires": ["2"],
+
+            "initial": {
+                "fireDragon": true,
+                "fireDragonBubbleGoal": 0,
+                "fireDragonTimeFrame": 0,
+                "fireDragonChance": 10,
+                "fireDragonDamage": 10
+            },
+
+            "sequence": {
+                "length": 10,
+                "fireDragonBubbleGoal": 5,
+                "fireDragonTimeFrame": 10,
+                "fireDragonChance": 10,
+                "fireDragonDamage": 10
+            }
         }
     },
 
@@ -60,53 +102,138 @@
         },
 
         "1": {
-            "name": "Charge",
+            "name": "WIP Charge",
             "description": "Increase the strength of your lightning.",
 
             "initial": {
-                "lightningDamage": 25
+                "lightningDamage": 25,
+                "lightningBulletSpeed": 10
             },
 
             "sequence": {
                 "length": 10,
-                "lightningDamage": 25
+                "lightningDamage": 25,
+                "lightningBulletSpeed": 10
             },
 
             "levels": {
                 "10": {
-                    "lightningDamage": 500
+                    "lightningDamage": 500,
+                    "lightningBulletSpeed": 150
                 }
             }
+        },
+
+        "2": {
+            "name": "WIP Conduction",
+            "description": "Causes an shockwave dealing AoE damage if an electrified bubble comes into contact with an armorless bubble or if you shoot an armorless bubble.",
+
+            "initial": {
+                "lightningConductionRange": 10,
+                "lightningConductionDamage": 10
+            },
+
+            "sequence": {
+                "length": 10,
+                "lightningConductionRange": 10,
+                "lightningConductionDamage": 10
+            }
+        },
+
+        "3": {
+            "name": "WIP Overload",
+            "description": "After applying electricity onto a bubble, gain a speed and life boost affecting all future bullets for a limited time.",
+
+            "requiredPoints": 20,
+            "requires": ["2"],
+
+            "initial": {
+                "lightningOverloadStack": 2
+            },
+
+            "sequence": {
+                "length": 10,
+                "lightningOverloadStack": 1
+            }
         }
+
     },
 
     "ice": {
         "0": {
-            "name": "Ice Fire Power",
-            "description": "This isn't related to the ice obviously, I didn't want to make another ability.",
-            "levels": [{
-                    "fireStrength": 25
-                }, {
-                    "fireStrength": 50
-                }, {
-                    "fireStrength": 200
+            "name": "WIP Frostbite",
+            "description": "Increase the strength of your ice.",
+
+            "initial": {
+                "iceSpeedReduce": 25,
+                "iceFreezeLength": 10
+            },
+
+            "sequence": {
+                "length": 10,
+                "iceSpeedReduce": 7,
+                "iceFreezeLength": 10
+            },
+
+            "levels": {
+                "10": {
+                    "iceSpeedReduce": 100,
+                    "iceFreezeLength": 150
                 }
-            ]
+            }
         },
 
         "1": {
-            "name": "Ice Fire Power II",
-            "description": "This isn't related to the shotgun, I didn't want to make another ability.",
-            "requires": ["0"],
-            "requiredPoints": 2,
-            "levels": [{
-                    "fireStrength": 200
-                }, {
-                    "fireStrength": 400
-                }, {
-                    "fireStrength": 800
-                }
-            ]
+            "name": "WIP Black Ice",
+            "description": "Bullets leave an ice trail which freeze bubbles that come into contact with it.",
+
+            "initial": {
+                "iceTrailLength": 25,
+                "iceTrailChance": 10
+            },
+
+            "sequence": {
+                "length": 10,
+                "iceTrailLength": 25,
+                "iceTrailChance": 6
+            }
+        },
+
+        "2": {
+            "name": "WIP Brittle Bubbles",
+            "description": "Damage dealt is increased on bubbles which are frozen.",
+
+            "initial": {
+                "iceBrittleDamage": 25
+            },
+
+            "sequence": {
+                "length": 10,
+                "iceBrittleDamage": 25
+            }
+        },
+
+        "3": {
+            "name": "WIP Ice Bomb",
+            "description": "Hold down your shot to increase chance of a special attack.",
+
+            "requiredPoints": 20,
+            "requires": ["2"],
+
+            "initial": {
+                "iceBombDamage": 25,
+                "iceBombCloudChance": 5,
+                "iceBombIcicleChance": 10,
+                "iceBombDamageBuffChance": 20
+            },
+
+            "sequence": {
+                "length": 10,
+                "iceBombDamage": 25,
+                "iceBombCloudChance": 2,
+                "iceBombIcicleChance": 3,
+                "iceBombDamageBuffChance": 5
+            }
         }
     }
 }
