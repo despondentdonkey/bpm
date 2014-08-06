@@ -158,6 +158,13 @@ Perks - located where? Wizards tower
     9 | 9 - Multiplier will also affect bullet damage. (each multiplier will increase damage by 10%)
         -S: Upgradeable; each upgrade increases amount of damage. I say we start with 1 - 3%
 
+
+        X   3. Protected Pins - 0 | 0
+                Pins take an extra hit to be destroyed (pins bounce off bubbles)
+                each upgrade: +1 extra hit
+
+                -S: Perk ability
+
 // Blacksmith
 
 Weapons
@@ -167,35 +174,28 @@ Weapons
     We can turn these into a tree system by requiring prerequisite upgrades before being able to unlock other upgrades.
     This could help balance extra OP upgrades
 
-    Pin Shooter - Technique shots
-        1. Exploding Pins - 7 | 6
-            Exploding pins for extra big damage
+    Cannon - Slow and powerful
+        1. Technological Advancements
+            Breech Loading and barrel-related tech reduces time spent loading and increases bullet speed
+
+        1. Mortar Shells - 7 | 6
+            Cannon balls explode for big damage
             50% damage increase
             each upgrade increases damage by 10%
 
-        X    2. Pushback Pins - 0 | 0
-                Pins incur a small push back on bubble
-                each upgrade: 10% pushback distance
-
-                -P: Not sure if this would work well with ice.
-                -S: Nope; we'll need a new #2.
-
-        2.
-
-        X   3. Protected Pins - 0 | 0
-                Pins take an extra hit to be destroyed (pins bounce off bubbles)
-                each upgrade: +1 extra hit
-
-                -S: Perk ability
-
-        3.
-
-        4. Particle Pins - 8 | 9
-            On collision with a bubble, the pin will shatter into small pins, each damaging bubbles for 25% weapon damage.
-            each upgrade: +5% damage
+        2. Shrapnel
+            If a cannon ball is destroyed in any way, it will emit shrapnel as AoE damage
+            upgrades increase shrapnel range, damage and count.
 
 
-    Rifle - Single fast and strong shots
+        4. Gravity Bomb
+            Percent chance of exploding and emitting a gravity well that pulls surrounding bubbles into radius
+            Eventually implodes dealing damage to bubbles
+            Upgrades increase chance and range
+            Final upgrade leaves gravity wells around for a few seconds
+
+
+    Rifle - Fast and weak
         1. Automatic fire - 9 | 8
             Can hold mouse down to fire (base-level)
             Shoot speed increases by 10% with every upgrade
@@ -210,7 +210,7 @@ Weapons
                 -S: I like it! Good idea. Should also have a visual indication of strength; maybe color?
 
 
-    Shotgun - Spread shots
+    Shotgun - Spread shots - moderate, low ammo
         1. More Pellets - 8 | 7
             Shoots +1 pellets with every upgrade
 
