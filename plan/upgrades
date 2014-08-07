@@ -178,12 +178,12 @@ Weapons
         1. Technological Advancements
             Breech Loading and barrel-related tech reduces time spent loading and increases bullet speed
 
-        1. Mortar Shells - 7 | 6
+        2. Mortar Shells - 7 | 6
             Cannon balls explode for big damage
             50% damage increase
             each upgrade increases damage by 10%
 
-        2. Shrapnel
+        3. Shrapnel
             If a cannon ball is destroyed in any way, it will emit shrapnel as AoE damage
             upgrades increase shrapnel range, damage and count.
 
@@ -196,36 +196,30 @@ Weapons
 
 
     Rifle - Fast and weak
-        1. Automatic fire - 9 | 8
-            Can hold mouse down to fire (base-level)
-            Shoot speed increases by 10% with every upgrade
+        1. Ricochet - 9 | 8
+            When a bullet bounces, it will increase the bullet's damage by 1%, can stack up to 100
+                -P: This would be really good for rifles since they are fast they should be able to bounce more than other bullets.
+                -S: I like it! Good idea. Should also have a visual indication of strength; maybe color?
 
-        3. Armor piercing shots - 9 | 7
+        2. Armor piercing shots - 9 | 7
             Increases damage of bullet by 10% with each upgrade
             Final upgrade: additional 10% chance of removing armor
 
-        4. Recoil - 9 | 8
-            When a shot bounces of the edges it will increase the shots damage by 1%, can stack up to 100
-                -P: This would be really good for rifles since they are fast they should be able to bounce more than other bullets.
-                -S: I like it! Good idea. Should also have a visual indication of strength; maybe color?
+        3. Automatic fire - 9 | 8
+            Can hold mouse down to fire (base-level)
+            Shoot speed increases by 10% with every upgrade
+
+
 
 
     Shotgun - Spread shots - moderate, low ammo
         1. More Pellets - 8 | 7
-            Shoots +1 pellets with every upgrade
+            upgrades alternate increasing max pellet amt and max ammo.
 
         2. Stronger Pellets - 6 | 5
             Each shotgun pellet increases damage by 3% with every upgrade
 
-
-        4. Increase Range - 4 | 0
-            Increases the distance between each pellet with each shot. 45 degrees by default, 80 degrees max. Shots should be be placed like so if you're pointing at a 90 degree angle:
-                first - 90
-                second - 90 - 45
-                third - 90 + 45
-                    Any additional pellets should be between first-second and first-third
-            -P: This seems lame to me now. If you were to invest in this upgrade first it'd be really boring and almost useless. This is only good with more pellets, so maybe put this in 'More Pellets'.
-            -S: Yeah, we could implicitly add this to 'More Pellets' or it could be unlocked after upgrading 'More Pellets'.
+        3.
 
     ## 1 Additional Weapon after you beat the game
 
