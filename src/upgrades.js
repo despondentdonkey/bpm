@@ -1,3 +1,58 @@
+/*
+    Upgrades
+        Each upgrade has a series of levels which contain values for abilities. Each ability value will be overriden by
+        the next level, they will not stack. This will be changed later on to support different types of upgrade styles.
+
+            "upgradeId": {
+                "name": "MyUpgrade",
+                "levels": [{
+                        // Level 1 costs $200 and fireStrength is 25
+                        "fireStrength": 25,
+                        "cost": 200
+                    }, {
+                        // Level 2 costs $400 and fireStrength is 50 so not 50+25
+                        "fireStrength": 50,
+                        "cost": 400
+                    }, {
+                        "fireStrength": 200,
+                        "cost": 1000
+                    }
+                ]
+            },
+
+            "upgradeId2": {
+                "name": "MySecondUpgrade",
+                "levels": [{
+                        "fireStrength": 25,
+                        "cost": 200
+                    }
+                ]
+            }
+
+        Lets say you bought level 2 of MyUpgrade (fireStrength: 50) and level 1 of MySecondUpgrade (fireStrength: 25)
+        Since these are seperate upgrades those values will stack. So calling upgrades.getVal('fireStrength') would
+        return 75 (50+25)
+
+    Abilities
+            addAbility('fireStrength', [20], function(val) {
+                return 'Increases fire strength by' + val + '%.';
+            });
+        This creates an ability called fireStrength which has a default value of 20. The function is called genDescription as it
+        will generate the description for the current upgrade. So a description for level 3 of MyUpgrade would read as:
+            Increases fire strength by 200%.
+
+        To implement an ability into the game you just need to get the abilities value. Let's say we want to implement an ability
+        which does something every frame:
+            addAbility('myAbility', false, function(val) {
+                return 'Enables myAbility.';
+            });
+
+            // In update function of an object
+            if (upgrades.getVal('myAbility') === true) {
+                dealDamageToSomething(upgrades.getVal('fireStrength'));
+            }
+*/
+
 define(function() {
     upgrades = {};
     upgrades.abilities = {};
