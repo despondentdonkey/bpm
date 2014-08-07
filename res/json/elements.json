@@ -48,13 +48,15 @@
             "description": "Each bubble on fire has a chance to shoot a small fireball which ignites bubbles and deals small damage.",
 
             "initial": {
-                "fireEmberDamage": 10,
-                "fireEmberRange": 10,
+                "fireEmber": true,
+                "fireEmberDamage": 0,
+                "fireEmberRange": 0,
                 "fireEmberDurability": 1
             },
 
             "sequence": {
                 "length": 10,
+                "fireEmber": true,
                 "fireEmberDamage": 10,
                 "fireEmberRange": 10,
                 "fireEmberDurability": 1
@@ -72,12 +74,13 @@
                 "fireDragon": true,
                 "fireDragonBubbleGoal": 0,
                 "fireDragonTimeFrame": 0,
-                "fireDragonChance": 10,
-                "fireDragonDamage": 10
+                "fireDragonChance": 0,
+                "fireDragonDamage": 0
             },
 
             "sequence": {
                 "length": 10,
+                "fireDragon": true,
                 "fireDragonBubbleGoal": 5,
                 "fireDragonTimeFrame": 10,
                 "fireDragonChance": 10,
@@ -129,12 +132,14 @@
             "description": "Causes an shockwave dealing AoE damage if an electrified bubble comes into contact with an armorless bubble or if you shoot an armorless bubble.",
 
             "initial": {
-                "lightningConductionRange": 10,
-                "lightningConductionDamage": 10
+                "lightningConduction": true,
+                "lightningConductionRange": 0,
+                "lightningConductionDamage": 0
             },
 
             "sequence": {
                 "length": 10,
+                "lightningConduction": true,
                 "lightningConductionRange": 10,
                 "lightningConductionDamage": 10
             }
@@ -148,11 +153,13 @@
             "requires": ["2"],
 
             "initial": {
+                "lightningOverload": true,
                 "lightningOverloadStack": 2
             },
 
             "sequence": {
                 "length": 10,
+                "lightningOverload": true,
                 "lightningOverloadStack": 1
             }
         }
@@ -188,12 +195,14 @@
             "description": "Bullets leave an ice trail which freeze bubbles that come into contact with it.",
 
             "initial": {
+                "iceBlackIce": true,
                 "iceTrailLength": 25,
                 "iceTrailChance": 10
             },
 
             "sequence": {
                 "length": 10,
+                "iceBlackIce": true,
                 "iceTrailLength": 25,
                 "iceTrailChance": 6
             }
@@ -204,11 +213,13 @@
             "description": "Damage dealt is increased on bubbles which are frozen.",
 
             "initial": {
+                "iceBrittle": true,
                 "iceBrittleDamage": 25
             },
 
             "sequence": {
                 "length": 10,
+                "iceBrittle": true,
                 "iceBrittleDamage": 25
             }
         },
@@ -221,6 +232,7 @@
             "requires": ["2"],
 
             "initial": {
+                "iceBomb": true,
                 "iceBombDamage": 25,
                 "iceBombCloudChance": 5,
                 "iceBombIcicleChance": 10,
@@ -229,6 +241,7 @@
 
             "sequence": {
                 "length": 10,
+                "iceBomb": true,
                 "iceBombDamage": 25,
                 "iceBombCloudChance": 2,
                 "iceBombIcicleChance": 3,

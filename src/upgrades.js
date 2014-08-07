@@ -135,7 +135,10 @@ define(function() {
                         if (_.isUndefined(newLevel[key])) {
                             newLevel[key] = prevLevel[key];
                         }
-                        newLevel[key] += o.sequence[key];
+
+                        if (_.isNumber(newLevel[key])) {
+                            newLevel[key] += o.sequence[key];
+                        }
                     }
                     this.levels[i] = newLevel;
                 }
@@ -426,6 +429,10 @@ define(function() {
             return 'Increments the chance to spread fire by ' + val + '%';
         });
 
+        addAbility('fireEmber', false, function(val) {
+            return 'WIP Enables ember (this should be invisible)';
+        });
+
         addAbility('fireEmberDamage', [0], function(val) {
             return 'WIP Increase the damage of the embers by ' + val + '%';
         });
@@ -434,7 +441,7 @@ define(function() {
             return 'WIP Increase ember range by ' + val + '%';
         });
 
-        addAbility('fireEmberDurability', [0], function(val) {
+        addAbility('fireEmberDurability', [1], function(val) {
             return 'WIP Increase the amount of bubbles an ember can effect by ' + val + '.';
         });
 
@@ -472,6 +479,10 @@ define(function() {
             return 'WIP Increase the speed of bullets while lightning is on by ' + val + '%';
         });
 
+        addAbility('lightningConduction', false, function(val) {
+            return 'WIP Enables conduction (this should be invisible)';
+        });
+
         addAbility('lightningConductionRange', [0], function(val) {
             return 'WIP Increases the area of effect by ' + val + '%';
         });
@@ -480,7 +491,11 @@ define(function() {
             return 'WIP Increases the damage of the AoE by ' + val + '%';
         });
 
-        addAbility('lightningOverloadStack', [0], function(val) {
+        addAbility('lightningOverload', false, function(val) {
+            return 'WIP Enables overload (this should be invisible)';
+        });
+
+        addAbility('lightningOverloadStack', [2], function(val) {
             return 'WIP Overload can stack ' + val + ' times.';
         });
     })();
@@ -494,16 +509,28 @@ define(function() {
             return 'WIP Increases length of freeze by ' + val + '%';
         });
 
-        addAbility('iceTrailLength', [0], function(val) {
+        addAbility('iceBlackIce', false, function(val) {
+            return 'WIP enables Black Ice (this should be invisible)';
+        });
+
+        addAbility('iceTrailLength', [25], function(val) {
             return 'WIP Increase the amount of time the ice trail lasts by ' + val + '%';
         });
 
-        addAbility('iceTrailChance', [0], function(val) {
+        addAbility('iceTrailChance', [10], function(val) {
             return 'WIP Increases the chance that a bullet will start an ice trail by ' + val + '%';
+        });
+
+        addAbility('iceBrittle', false, function(val) {
+            return 'WIP enables Brittle Bubbles (this should be invisible)';
         });
 
         addAbility('iceBrittleDamage', [0], function(val) {
             return 'WIP Increases the damage dealt by ' + val + '%';
+        });
+
+        addAbility('iceBomb', false, function(val) {
+            return 'WIP enables Ice Bomb (this should be invisible)';
         });
 
         addAbility('iceBombDamage', [0], function(val) {

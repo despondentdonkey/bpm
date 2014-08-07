@@ -4,7 +4,7 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
     return {
         playerDefault: {
             money: 105000, // Currency for blacksmith
-            levelPoints: 3, // Currency for wizard
+            levelPoints: 300, // Currency for wizard
             level: 1,
             xp: 0,
             difficultyLevel: 'normal',
