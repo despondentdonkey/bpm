@@ -845,7 +845,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             elemObj = elemObj || this.currentElementObj;
             // Update display properties so it will have correct positions without having to wait another frame.
             this.updateDisplayProperties([elemObj]);
-
             this.addDisplay(elemObj);
             return this;
         },
@@ -930,46 +929,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 }
 
                 function generateLightning(closest) {
-                    // measurements n such
-                    var radiusX = this.width / 2;
-                    var radiusY = this.height / 2;
-                    var centerX = this.x + radiusX;
-                    var centerY = this.y + radiusY;
-                    // closest object's center values
-                    var centerX2 = closest.x + (closest.width / 2);
-                    var centerY2 = closest.y + (closest.height / 2);
-
-                    // get angle and distance from the center of the closest object
-                    var distance = this.getDistance(centerX, centerY, centerX2, centerY2);
-                    var angle = Math.atan2(centerY2 - centerY, centerX2 - centerX);
-
-                    var polarX = radiusX * Math.cos(angle);
-                    var polarY = radiusY * Math.sin(angle);
-
-                    var offset = {
-                        'x': centerX + polarX - radiusX,
-                        'y': centerY + polarY - radiusY
-                    };
-
                     this.lightning = new gfx.pixi.Sprite(res.tex.lightning);
-                    this._setupElement('lightning', this.lightning);
-
-                    // setup lightning to scale + angle towards closest bubble
                     this.lightning.syncGameObjectProperties = { scale: false, position: false, rotation: false, anchor: false };
-
-                    this.lightning.anchor.x = 0;
-                    this.lightning.anchor.y = 0.5;
-
-                    this.lightning.scale = {x: (distance - this.width) / this.lightning.texture.width, y: 1};
-                    this.lightning.position = offset;
-                    this.lightning.rotation = angle;
-                    this.lightning.depth = -4;
-
+                    this._setupElement('lightning', this.lightning);
+                    this._positionLightning(closest);
                     this._displayElement(this.lightning);
                 }
 
                 if (!this.lightningConfig.chain) {
-                    console.log('Starting new chain');
                     this.lightningConfig.chain = [this];
                 }
 
@@ -983,17 +950,19 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     }
 
                     // Remove lightning display timer
-                    this.state.add(new Timer(this.lightningConfig.cooldown*2, 'oneshot', _.bind(function() {
+                    this.state.add(new Timer(this.lightningConfig.cooldown, 'oneshot', _.bind(function() {
                         if (this.lightning) {
                             this.removeDisplay(this.lightning);
                         }
                         this.lightning = null;
                         this.lightningConfig.chain = null;
                         this.currentElement = null;
+
+                        this.hp -= this.lightningConfig.damage;
                     }, this)));
 
                     // A small delay before applying lightning to the next bubble.
-                    this.state.add(new Timer(this.lightningConfig.cooldown, 'oneshot', _.bind(function() {
+                    this.state.add(new Timer(this.lightningConfig.speed, 'oneshot', _.bind(function() {
                         if (!closest.state) {
                             return;
                         }
@@ -1009,7 +978,56 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         _updateLightning: function() {
+            var closest, chain = this.lightningConfig.chain;
+            if (chain)
+                closest = chain[chain.indexOf(this) + 1];
 
+            if (closest) {
+                this._positionLightning(closest);
+            }
+
+        },
+
+        // setup lightning to scale + angle towards closest bubble
+        // this.lightning must be defined beforehand
+        _positionLightning: function(closest) {
+            if (this.lightning) {
+                // measurements n such
+                var radiusX = this.width / 2;
+                var radiusY = this.height / 2;
+                var centerX = this.x + radiusX;
+                var centerY = this.y + radiusY;
+                // closest object's center values
+                var centerX2 = closest.x + (closest.width / 2);
+                var centerY2 = closest.y + (closest.height / 2);
+
+                // get angle and distance from the center of the closest object
+                var distance = this.getDistance(centerX, centerY, centerX2, centerY2);
+                var angle = Math.atan2(centerY2 - centerY, centerX2 - centerX);
+
+                var polarX = radiusX * Math.cos(angle);
+                var polarY = radiusY * Math.sin(angle);
+
+                var positionOffset = {
+                    'x': centerX + polarX - radiusX,
+                    'y': centerY + polarY - radiusY
+                };
+
+                this.lightning.anchor.x = 0;
+                this.lightning.anchor.y = 0.5;
+
+                this.lightning.scale = {x: (distance - this.width) / this.lightning.texture.width, y: 1};
+                this.lightning.position = positionOffset;
+                this.lightning.rotation = angle;
+                this.lightning.depth = -4;
+
+                // don't display lightning if it is colliding
+                if (this.isNearby(closest)) {
+                    this.lightning.visible = false;
+                } else {
+                    this.lightning.visible = true;
+                }
+            }
         }
     });
 
