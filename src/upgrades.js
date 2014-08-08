@@ -121,7 +121,6 @@ define(function() {
     };
 
     var addAbility = function(name, defaultVal, genDescription) {
-        console.log(defaultVal);
         upgrades.abilities[name] = {
             name: name,
             genDescription: genDescription,
