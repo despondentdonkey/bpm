@@ -27,6 +27,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades']
             bpm.difficulty = bpm.genDifficultyStats(bpm.player.difficultyLevel);
 
             quests.addJsonQuests(res.json.quests.data);
+            upgrades.addJsonAbilities(res.json.abilities.data);
             upgrades.addJsonUpgrades({
                 general: res.json.general.data,
                 weapons: res.json.weapons.data,
