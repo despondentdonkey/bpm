@@ -953,7 +953,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 for (var key in nextLevel) {
                     var ability = upgrades.abilities[key];
                     if (ability) {
-                        this.upgradeDescription.text += '\n' + ability.genDescription(nextLevel[key]);
+                        if (ability.hasDescription) {
+                            this.upgradeDescription.text += '\n' + ability.genDescription(nextLevel[key]);
+                        }
                     }
                 }
                 this.upgradeDescription.text += '\n$' + (nextLevel ? nextLevel.cost : 0);
@@ -1169,7 +1171,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 for (var key in nextLevel) {
                     var ability = upgrades.abilities[key];
                     if (ability) {
-                        this.upgradeDescription.text += '\n' + ability.genDescription(nextLevel[key]);
+                        if (ability.hasDescription) {
+                            this.upgradeDescription.text += '\n' + ability.genDescription(nextLevel[key]);
+                        }
                     }
                 }
                 this.upgradeDescription.text += '\n$' + (nextLevel ? nextLevel.cost : 0);
@@ -1273,7 +1277,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                                 }, this);
                             }, this))(upgrade);
 
-                            button.setPos(gfx.width/2, 100 + 50 * i);
+                            button.setPos(gfx.width/2, 60 + 50 * i);
                             upgradeButtons.push(button);
                             this.tabObjects.push(button);
                             this.add(button);

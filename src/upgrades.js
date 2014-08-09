@@ -123,6 +123,7 @@ define(function() {
     var addAbility = function(name, defaultVal, genDescription) {
         upgrades.abilities[name] = {
             name: name,
+            hasDescription: _.isNull(genDescription) ? false : true,
             genDescription: genDescription,
             values: _.isArray(defaultVal) ? defaultVal : undefined,
             on: !_.isArray(defaultVal) ? defaultVal : undefined,
@@ -150,10 +151,14 @@ define(function() {
                 }
 
                 (function(name, description) {
-                    addAbility(name, defaults, function(val) {
-                        return description.replace('#{value}', val);
-                    });
-                })(abilityName, ability.description);
+                    var genDescription = null;
+                    if (description) {
+                        genDescription = function(val) {
+                            return description.replace('#{value}', val);
+                        }
+                    }
+                    addAbility(name, defaults, genDescription);
+                })(abilityName, ability.description || null);
             }
         }
     };
@@ -492,8 +497,6 @@ define(function() {
 
         },
     });
-
-
 
     return upgrades;
 });
