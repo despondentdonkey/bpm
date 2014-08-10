@@ -641,7 +641,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         this.lightningConfig = {
             range: 300,
-            chainLength: 4,//upgrades.getVal('lightningChainLength'),
+            chainLength: upgrades.getVal('lightningChainLength'),
             damage: 1 * (1+upgrades.getValPercent('lightningDamage')),
             // ms between each bolt
             speed: 100,
@@ -701,7 +701,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         destroy: function() {
-            this.triggerEvent('onDestroy');
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
             this.state.bubbles.splice(this.state.bubbles.indexOf(this), 1);
 
