@@ -36,8 +36,8 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades']
             });
 
             // Switches to the Field with the training quest as default
-            //bpm.player.currentQuest = quests.all["s00"];
-            //states.setState(new states.Field());
+            bpm.player.currentQuest = quests.all["s00"];
+            states.setState(new states.Field());
 
             update();
         });

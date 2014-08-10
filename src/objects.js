@@ -638,13 +638,13 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         this.lightningConfig = {
             range: 300,
-            chainLength: upgrades.getVal('lightningChainLength'),
+            chainLength: 4,//upgrades.getVal('lightningChainLength'),
             damage: 1 * (1+upgrades.getValPercent('lightningDamage')),
             // ms between each bolt
-            speed:  50,
+            speed: 100,
             // ms before each bolt is removed
             // final value will be multiplied by chain amount
-            cooldown: 100
+            cooldown: 1000
         };
 
         // Armor settings
@@ -698,6 +698,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         destroy: function() {
+            this.triggerEvent('onDestroy');
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
             this.state.bubbles.splice(this.state.bubbles.indexOf(this), 1);
 
