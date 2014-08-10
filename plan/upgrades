@@ -75,38 +75,12 @@ Elemental -
         Initial ability: Slows bubble by percentage for limited time
         Strategy: Single target damage + AoE Slowing
 
-        Black Ice - 7 | 7
+        Frostbite - 7 | 7
             Increases the speed reduction for bubbles and length of freeze
             Final upgrade completely freezes bubbles
 
-        // ** Propose to ditch for idea below
-        Evasive Cold - 3 | 6
-            Pushes bubbles back with each hit and causes small AoE damage.
-            Each upgrade increases AoE and pushback
-
-            -S: revision: 2 | x
-                AoE only if you hit a bubble that is affected by ice
-        // ****** ****
-
-        Frostbite - 4 | 5
-            Bubbles are permantly slower after being affected by Black Ice
-            -P: This would kinda remove the length of freeze upgrade in Black Ice wouldn't it?
-            -S: How so? It relies on Black Ice to be stronger, since the strength of Black ice directly impacts the strength of Frostbite
-                also, added another constraint onto this ability below.
-
-                - x% of black ice slowness subtracted from speed
-                - after y seconds, the bubbles thaw and return to normal speed
-                - x and y are upgraded
-
-            #If a bubble who is frostbitten is again frozen and subsequently damaged,
-            #emit a medium AoE blast of ice crystals
-
-            -P: Somewhat similar to Brittle Bubbles but this doesn't seem to go well with the strategy defined for ice. AoE is just for the slowing of bubbles right?
-            #Maybe have the AoE just freeze the bubbles, maybe some small damage? Upgrade would increase range
-
-            -S: Yeah, I agree; what about the following to replace everything I put a "#" before
-                - If a frostbitten bubble is frozen again, the bubble leaves an ice trail, inflicting frostbite onto any bubble that comes in contact with it
-            -S: I'm not sure I'm liking this one anymore... It's just too similar to Black Ice. I think Black Ice should be renamed to Frostbite or Deep Freeze, though.
+        Black Ice - 4 | 5
+            Pins spawn a trail of ice that freezes bubbles on contact
 
         Brittle Bubbles - 9 | 8
             Damaging an already frozen bubbles gives a large percentage increase to damage.
