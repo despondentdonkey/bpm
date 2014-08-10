@@ -6,20 +6,55 @@
         <style>
             div {
                 display: block;
-                float: left;
             }
 
             #wrapper {
+                position: relative;
                 width: 100%;
+                padding: 50px;
+                left: 0px;
+                top: 0px;
             }
+
+            #buttonWrapper {
+                float: left;
+                position: absolute;
+                margin-right: 20px;
+            }
+
+            #canvas {
+                position: absolute;
+                left: 50%;
+                margin-left: -400px;
+            }
+
+            #canvas canvas {
+            }
+
+            @media (min-width: 1350) {
+
+                #buttonWrapper {
+                    position: relative;
+                    top: 700px;
+                    left: 20%;
+                    height: 200px;
+                    width: 600px;
+                }
+
+            }
+
+
+
         </style>
     </head>
 
     <body>
         <div id="wrapper">
+            <div id="buttonWrapper">
+                <div id="stateButtons"></div>
+                <div id="bpmCheats"></div>
+            </div>
             <div id="canvas"></div>
-            <div id="stateButtons"></div>
-            <div id="bpmCheats"></div>
         </div>
     </body>
 </html>

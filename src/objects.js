@@ -413,9 +413,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     // Also controls ammo reloading system + graphics
     var Weapon = createClass(GameObject, function Weapon() {
         this.availableElements = ['fire', 'ice', 'lightning'];
-        this.ammo = 100;
-        this.ammoMax = 100;
-        bpm.player.ammoMax = this.ammoMax;
     }, {
         init: function(state, element) {
             GameObject.prototype.init.call(this, state);
@@ -534,6 +531,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     var PinShooter = createClass(Weapon, function PinShooter() {}, {
         init: function(state) {
             Weapon.prototype.init.call(this, state);
+            this.ammo = bpm.player.pinShooter.ammo;
+            this.ammoMax = bpm.player.pinShooter.ammoMax;
             this.setAmmoTimer(3000);
         },
 
@@ -562,6 +561,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     var Shotgun = createClass(Weapon, function Shotgun() {}, {
         init: function(state) {
             Weapon.prototype.init.call(this, state);
+            this.ammo = bpm.player.shotgun.ammo;
+            this.ammoMax = bpm.player.shotgun.ammoMax;
             this.setAmmoTimer(3000);
         },
 
@@ -588,6 +589,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     var Rifle = createClass(Weapon, function Rifle() {}, {
         init: function(state) {
             Weapon.prototype.init.call(this, state);
+            this.ammo = bpm.player.rifle.ammo;
+            this.ammoMax = bpm.player.rifle.ammoMax;
             this.setAmmoTimer(3000);
         },
 
@@ -809,15 +812,16 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         removeElement: function(element) {
             // Make sure reference to state exists; this is necessary unless you like crashes
+            // might not actually be necessary after all. Leaving as-is just in case
+            // TODO: test if necessary, remove if not
             if (this.state) {
                 element = element || this[this.currentElement];
-                if (element && element.parent)
+                if (element && element.parent) {
                     this.removeDisplay(element);
-                if (this[this.currentElement])
                     this[this.currentElement] = null;
+                }
 
                 this.currentElement = null;
-                this.currentElementObj = null;
             }
         },
 
@@ -836,13 +840,12 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         // Configures the setup of all elements
         _setupElement: function(elemStr, elemObj) {
             this.currentElement = elemStr;
-            this.currentElementObj = elemObj;
             return this;
         },
 
         // Used by all elements to set up display-related stuff
         _displayElement: function(elemObj) {
-            elemObj = elemObj || this.currentElementObj;
+            elemObj = elemObj;
             // Update display properties so it will have correct positions without having to wait another frame.
             this.updateDisplayProperties([elemObj]);
             this.addDisplay(elemObj);
@@ -889,6 +892,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             }
         },
 
+        // TODO: add damage to ice
+        // TODO: add slowing effect
         _applyIce: function() {
             if (!this.ice) {
                 // TODO: Add to sprite batch
@@ -912,10 +917,13 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             //_(this.getNearby(10, this.state.bubbles)).invoke('applyElement', 'ice');
         },
 
-        // TODO: Read through comments, make sure they still make sense
-        // chain is an array of [bubble, distance] pairs in current lightning chain
-        // do not provide args on initial call (on pin collision)
+        // TODO: Base speed and cooldown on chain length
         _applyLightning: function() {
+            // Don't apply if chain has been reached
+            if (this.lightningConfig.chain && this.lightningConfig.chain.length >= this.lightningConfig.chainLength)
+                return;
+
+            // Don't apply lightning on this bubble if it already has lightning
             if (!this.lightning) {
                 function getClosest(c) {
                     return this.getClosest(_(this.state.bubbles)
@@ -945,35 +953,30 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 if (closest) {
                     this.lightningConfig.chain.push(closest);
 
-                    if (!this.lightning) {
-                        generateLightning.call(this, closest);
-                    }
+                    generateLightning.call(this, closest);
+                    this.hp -= this.lightningConfig.damage;
 
                     // Remove lightning display timer
                     this.state.add(new Timer(this.lightningConfig.cooldown, 'oneshot', _.bind(function() {
                         if (this.lightning) {
-                            this.removeDisplay(this.lightning);
+                            this.removeElement(this.lightning);
                         }
-                        this.lightning = null;
-                        this.lightningConfig.chain = null;
-                        this.currentElement = null;
 
-                        this.hp -= this.lightningConfig.damage;
+                        this.lightningConfig.chain = null;
                     }, this)));
 
                     // A small delay before applying lightning to the next bubble.
                     this.state.add(new Timer(this.lightningConfig.speed, 'oneshot', _.bind(function() {
-                        if (!closest.state) {
-                            return;
+                        // Remove lightning if closest is dead or if closest has lightning
+                        // Otherwise, apply lightning on closest
+                        if (!closest || !closest.state || !!closest.lightning) {
+                            this.removeElement(this.lightning);
+                        } else {
+                            closest.lightningConfig.chain = this.lightningConfig.chain;
+                            closest._applyLightning();
                         }
-                        closest.lightningConfig.chain = this.lightningConfig.chain;
-                        closest._applyLightning();
                     }, this)));
-                } else {
-                    console.warn('Chain fail: Cannot find the closest bubble.');
                 }
-            } else {
-                console.warn('Chain fail: This bubble is already apart of a chain.');
             }
         },
 
@@ -984,8 +987,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
             if (closest) {
                 this._positionLightning(closest);
+            } else if (this.lightning) {
+                this.removeElement(this.lightning);
             }
-
         },
 
         // setup lightning to scale + angle towards closest bubble
