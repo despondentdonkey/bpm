@@ -86,6 +86,8 @@ define(['gfx'], function(gfx) {
             buttonUp: 'button-up.png',
             buttonDown: 'button-down.png',
             buttonDisabled: 'button-disabled.png',
+
+            ember: 'ember.png'
         });
 
         // Creates a list of textures to be used with PIXI.MovieClip. [cellWidth, cellHeight]

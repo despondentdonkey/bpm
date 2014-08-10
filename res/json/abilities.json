@@ -18,16 +18,16 @@
         },
 
         "fireEmberDamage": {
-            "description": "WIP Increase the damage of the embers by #{value}%"
+            "description": "Increase the damage of the embers by #{value}%"
         },
 
-        "fireEmberRange": {
-            "description": "WIP Increase ember range by #{value}%"
+        "fireEmberSpeed": {
+            "description": "Increase ember speed by #{value}%"
         },
 
         "fireEmberDurability": {
             "default": 1,
-            "description": "WIP Increase the amount of bubbles an ember can effect by #{value}."
+            "description": "Increase the amount of bubbles an ember can effect by #{value}."
         },
 
         "fireDragon": {

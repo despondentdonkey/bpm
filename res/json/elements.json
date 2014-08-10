@@ -44,13 +44,15 @@
         },
 
         "2": {
-            "name": "WIP Embers",
+            "name": "Embers",
             "description": "Each bubble on fire has a chance to shoot a small fireball which ignites bubbles and deals small damage.",
+
+            "requires": ["1"],
 
             "initial": {
                 "fireEmber": true,
                 "fireEmberDamage": 0,
-                "fireEmberRange": 0,
+                "fireEmberSpeed": 0,
                 "fireEmberDurability": 1
             },
 
@@ -58,7 +60,7 @@
                 "length": 10,
                 "fireEmber": true,
                 "fireEmberDamage": 10,
-                "fireEmberRange": 10,
+                "fireEmberSpeed": 10,
                 "fireEmberDurability": 1
             }
         },

@@ -629,7 +629,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             upgrades: [],
             duration: 750 * (1+upgrades.getValPercent('fireDuration')),
             applyChance: upgrades.getVal('fireChance'), // in percent (10 === 10%)
-            range: 0
+            range: 0,
+
+            hasEmber: upgrades.getVal('fireEmber'),
+            emberChance: 1.5
         };
 
         this.iceConfig = {
@@ -883,11 +886,17 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
                 // Percentage chance to apply fire to collided bubbles
                 // This helps with perf too, as collisions are only gathered when chance is in range
-                var chance = randomInt(0, 100);
+                var chance = randomRange(0, 100);
                 if (chance <= this.fireConfig.applyChance && chance > 0) {
                     var collidedBubble =  this.getCollisions(this.state.bubbles);
                     if (collidedBubble) {
                         collidedBubble.applyElement('fire');
+                    }
+                }
+
+                if (this.fireConfig.hasEmber) {
+                    if (chance <= this.fireConfig.emberChance && chance > 0) {
+                        this.state.add(new FireEmber(this));
                     }
                 }
             }
@@ -1155,6 +1164,68 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
                 if (this.onComplete) {
                     this.onComplete();
+                }
+            }
+        },
+    });
+
+    var FireEmber = createClass(GameObject, function(bubble) {
+        this.bubble = bubble;
+        this.x = bubble.x;
+        this.y = bubble.y;
+
+        this.speed = 0.05 * (1+upgrades.getValPercent('fireEmberSpeed'));
+
+        var angle = Math.random() * 360;
+        this.speedX = Math.cos(angle * DEG2RAD);
+        this.speedY = -Math.sin(angle * DEG2RAD);
+
+        this.rotationRate = 0.4;
+
+        this.sprite = new gfx.pixi.Sprite(res.tex.ember);
+        this.sprite.anchor.x = 0.5;
+        this.sprite.anchor.y = 0.5;
+
+        this.hp = upgrades.getVal('fireEmberDurability');
+        this.lifeTime = 5000; //ms
+        this.lifeTimer = this.lifeTime;
+
+        this.affectedBubbles = [bubble];
+
+        this.damage = 1 * (1+upgrades.getValPercent('fireEmberDamage'));
+    }, {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
+            this.addDisplay(this.sprite);
+        },
+
+        update: function(delta) {
+            GameObject.prototype.update.call(this, delta);
+
+            this.lifeTimer -= delta;
+            this.sprite.alpha = this.lifeTimer / this.lifeTime;
+            if (this.lifeTimer <= 0) {
+                this.state.remove(this);
+            }
+
+            var speed = this.speed * delta;
+
+            this.x += this.speedX * speed;
+            this.y += this.speedY * speed;
+
+            this.angle += this.rotationRate;
+
+            var collidedBubble = this.getCollisions(this.state.bubbles);
+            if (collidedBubble) {
+                if (!_(this.affectedBubbles).contains(collidedBubble)) {
+                    collidedBubble.applyElement.call(collidedBubble, 'fire');
+                    collidedBubble.hp -= this.damage;
+                    this.affectedBubbles.push(collidedBubble);
+
+                    this.hp--;
+                    if (this.hp <= 0) {
+                        this.state.remove(this);
+                    }
                 }
             }
         },

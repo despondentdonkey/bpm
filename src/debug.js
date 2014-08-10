@@ -116,4 +116,21 @@ dbg.perfTest = function(context, name, func) {
     var t1 = window.performance.now();
     console.log('Performance Debug: ' + name + ' took ' + (t1 - t0) + 'ms to run');
     return ret;
-};
+}
+
+// Purchases the first upgrade level for all upgrades.
+dbg.buyFirstUpgrades = function(upgrades) {
+    for (var i=0; i<upgrades.all.length; ++i) {
+        var upgrade = upgrades.all[i];
+        upgrade.increaseLevel();
+    }
+}
+
+// Maxes out all upgrades.
+dbg.buyAllUpgrades = function(upgrades) {
+    for (var i=0; i<upgrades.all.length; ++i) {
+        var upgrade = upgrades.all[i];
+        upgrade.enable();
+        upgrade.setLevel(upgrade.length);
+    }
+}
