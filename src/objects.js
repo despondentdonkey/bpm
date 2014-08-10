@@ -413,9 +413,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     // Also controls ammo reloading system + graphics
     var Weapon = createClass(GameObject, function Weapon() {
         this.availableElements = ['fire', 'ice', 'lightning'];
-        this.ammo = 100;
-        this.ammoMax = 100;
-        bpm.player.ammoMax = this.ammoMax;
     }, {
         init: function(state, element) {
             GameObject.prototype.init.call(this, state);
@@ -534,6 +531,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     var PinShooter = createClass(Weapon, function PinShooter() {}, {
         init: function(state) {
             Weapon.prototype.init.call(this, state);
+            this.ammo = bpm.player.pinShooter.ammo;
+            this.ammoMax = bpm.player.pinShooter.ammoMax;
             this.setAmmoTimer(3000);
         },
 
@@ -562,6 +561,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     var Shotgun = createClass(Weapon, function Shotgun() {}, {
         init: function(state) {
             Weapon.prototype.init.call(this, state);
+            this.ammo = bpm.player.shotgun.ammo;
+            this.ammoMax = bpm.player.shotgun.ammoMax;
             this.setAmmoTimer(3000);
         },
 
@@ -588,6 +589,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     var Rifle = createClass(Weapon, function Rifle() {}, {
         init: function(state) {
             Weapon.prototype.init.call(this, state);
+            this.ammo = bpm.player.rifle.ammo;
+            this.ammoMax = bpm.player.rifle.ammoMax;
             this.setAmmoTimer(3000);
         },
 

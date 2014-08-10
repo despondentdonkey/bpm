@@ -1,6 +1,7 @@
 define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
     var input = requirejs('input');
 
+    var devAmmo = 100000;
     return {
         playerDefault: {
             money: 105000, // Currency for blacksmith
@@ -11,11 +12,23 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
 
             day: 1,
 
-            ammo: 10000,
-            ammoMax: 10000,
+            pinShooter: {
+                ammo: devAmmo,
+                ammoMax: devAmmo
+            },
+
+            shotgun: {
+                ammo: devAmmo,
+                ammoMax: devAmmo
+            },
+
+            rifle: {
+                ammo: devAmmo,
+                ammoMax: devAmmo
+            },
 
             currentWeapon: 'Rifle',
-            currentElement: 'fire',
+            currentElement: 'lightning',
 
             quests: ['ma00', 's00'], // Quests available
             currentQuest: null,
