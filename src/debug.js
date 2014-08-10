@@ -61,6 +61,9 @@ dbg.addCheats = function(bpm, states) {
     cheat("states.global.current.setWeapon('PinShooter')", 'PinShooter');
     cheat("states.global.current.setWeapon('Shotgun')", 'Shotgun');
     cheat("states.global.current.setWeapon('Rifle')", 'Rifle');
+    cheat("bpm.player.currentElement = 'fire'", 'Fire');
+    cheat("bpm.player.currentElement = 'lightning'", 'Lightning');
+    cheat("bpm.player.currentElement = 'ice'", 'Ice');
     cheat("bpm.player.money += 10000");
 
     document.getElementById('bpmCheats').appendChild(div);
