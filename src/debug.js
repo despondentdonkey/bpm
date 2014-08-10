@@ -54,16 +54,25 @@ dbg.addCheats = function(bpm, states) {
         div.appendChild(button);
     }
 
+    function section(displayString) {
+        var button = document.createElement('span');
+        button.innerHTML = displayString;
+        div.appendChild(button);
+    }
+
     cheat("bpm.saveData(); console.log('data', localStorage)", 'Save Game');
     cheat("bpm.loadData(); console.log('data', localStorage); console.log('player', bpm.player)", 'Load Game');
     cheat("bpm.clearData(); console.log('data', localStorage)", 'Clear Game Data');
-    cheat('dbg.fpsMonitorShow=!dbg.fpsMonitorShow', 'Toggle FPS Monitor');
+    section('Weapons');
     cheat("states.global.current.setWeapon('PinShooter')", 'PinShooter');
     cheat("states.global.current.setWeapon('Shotgun')", 'Shotgun');
     cheat("states.global.current.setWeapon('Rifle')", 'Rifle');
+    section('Elements');
     cheat("bpm.player.currentElement = 'fire'", 'Fire');
     cheat("bpm.player.currentElement = 'lightning'", 'Lightning');
     cheat("bpm.player.currentElement = 'ice'", 'Ice');
+    section('Other');
+    cheat('dbg.fpsMonitorShow=!dbg.fpsMonitorShow', 'Toggle FPS Monitor');
     cheat("bpm.player.money += 10000");
 
     document.getElementById('bpmCheats').appendChild(div);
