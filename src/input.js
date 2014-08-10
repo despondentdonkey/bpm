@@ -102,18 +102,14 @@ define(function() {
         released = [],
         releasedCount = 0,
 
-        pX = 0,
-        pY = 0,
-        oX = 0,
-        oY = 0;
+        layerX = 0,
+        layerY = 0;
 
         var mouseMoving = false;
 
         var onMouseMove = function(e) {
-            pX = e.pageX;
-            pY = e.pageY;
-            oX = e.target.offsetLeft;
-            oY = e.target.offsetTop;
+            layerX = e.layerX;
+            layerY = e.layerY;
             mouseMoving = true;
         };
 
@@ -161,8 +157,8 @@ define(function() {
                     released[releasedCount] = -1;
                 }
 
-                this.x = pX - oX;
-                this.y = pY - oY;
+                this.x = layerX;
+                this.y = layerY;
 
                 mouseMoving = false;
             },
