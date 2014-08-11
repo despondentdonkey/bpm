@@ -28,7 +28,7 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
             },
 
             currentWeapon: 'Rifle',
-            currentElement: 'lightning',
+            currentElement: 'ice',
 
             quests: ['ma00', 's00'], // Quests available
             currentQuest: null,

@@ -636,7 +636,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         };
 
         this.iceConfig = {
-            duration: 750
+            duration: 1000 * (1 + upgrades.getValPercent('iceFreezeLength')),
+            speedReduce: 0.01 * 65,//upgrades.getValPercent('iceSpeedReduce'),
+
+            fadeDuration: 500, //ms
         };
 
         this.lightningConfig = {
@@ -901,24 +904,55 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             }
         },
 
-        // TODO: add damage to ice
-        // TODO: add slowing effect
+        // TODO: Add to sprite batch
+        // TODO: Currently, you have to wait until the timers are finished before re-applying ice
+        //          I'd like to be able to re-apply ice on every hit
+        // TODO: Smoother fading (use a quadratic or logarithmic equation instead of a linear equation)
+        // TODO: Smoother speed transition on fading
         _applyIce: function() {
             if (!this.ice) {
-                // TODO: Add to sprite batch
                 this.ice = new gfx.pixi.Sprite(res.tex.ice);
                 this.ice.width = this.width;
                 this.ice.height = this.height;
 
                 this.ice.syncGameObjectProperties = { scale: false };
-                this.ice.alpha = 0.7;
+                this.ice.alpha = 0.85;
                 this.ice.depth = -4;
             }
 
             this._setupElement('ice', this.ice)._displayElement(this.ice);
 
-            var onIceComplete = _.bind(this.removeElement, this, this.ice);
-            var iceTimer = new Timer(this.iceConfig.duration, 'oneshot', onIceComplete);
+            // speedReduce of 100% == 1. when multiplying speed by 1, nothing happens :)
+            var speedReduce = this.iceConfig.speedReduce === 1 ? 0 : this.iceConfig.speedReduce;
+
+
+            this.iceConfig.oldSpeed = this.speed;
+            this.speed = this.speed * (1 - speedReduce);
+            var m = this.speed; // slope for fadeTick
+
+            var startFader = _.bind(function() {
+                if (this.state)
+                    this.state.add(fadeTimer);
+                else
+                    onIceComplete();
+            }, this);
+
+            var onFadeTick = _.bind(function(ratio, cur, dur) {
+                if (this.ice)
+                    this.ice.alpha = this.ice.alpha * (1 - ratio);
+                // TODO: insert speed change function here
+            }, this);
+
+            var onIceComplete = _.bind(function() {
+                this.speed = this.iceConfig.oldSpeed;
+                this.removeElement(this.ice);
+            }, this);
+
+            var fadeDuration = this.iceConfig.fadeDuration;
+            var duration = this.iceConfig.duration;
+
+            var iceTimer = new Timer(duration, 'oneshot', startFader);
+            var fadeTimer = new Timer(fadeDuration, 'oneshot', onIceComplete, onFadeTick);
             this.state.add(iceTimer);
         },
 
@@ -926,7 +960,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             //_(this.getNearby(10, this.state.bubbles)).invoke('applyElement', 'ice');
         },
 
-        // TODO: Base speed and cooldown on chain length
+        // TODO: speed and cooldown based on chain length
         _applyLightning: function() {
             // Don't apply if chain has been reached
             if (this.lightningConfig.chain && this.lightningConfig.chain.length >= this.lightningConfig.chainLength)
