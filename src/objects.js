@@ -1172,11 +1172,12 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     });
 
     // types = oneshot, loop
-    var Timer = createClass(BasicObject, function Timer(duration, type, onComplete) {
+    var Timer = createClass(BasicObject, function Timer(duration, type, onComplete, onTick) {
         this.duration = duration;
         this.currentTime = duration;
-        this.onComplete = onComplete;
         this.type = type;
+        this.onComplete = onComplete;
+        this.onTick = onTick;
     }, {
         update: function(delta) {
             if (this.paused) return;
