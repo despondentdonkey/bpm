@@ -97,7 +97,7 @@
             "description": "Chains lightning streams.",
 
             "initial": {
-                "lightningChainLength": 1
+                "lightningChainLength": 4
             },
 
             "sequence": {
@@ -107,7 +107,7 @@
         },
 
         "1": {
-            "name": "WIP Charge",
+            "name": "Charge",
             "description": "Increase the strength of your lightning.",
 
             "initial": {

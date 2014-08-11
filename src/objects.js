@@ -372,7 +372,12 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         update: function(delta) {
             GameObject.prototype.update.call(this, delta);
+
             var speed = this.speed * delta;
+            if (this.currentElement === 'lightning') {
+                speed *= (1+upgrades.getValPercent('lightningBulletSpeed'))
+            }
+
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;
 
@@ -643,14 +648,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         };
 
         this.lightningConfig = {
-            range: 300,
+            range: 400,
             chainLength: upgrades.getVal('lightningChainLength'),
             damage: 1 * (1+upgrades.getValPercent('lightningDamage')),
             // ms between each bolt
-            speed: 100,
+            speed: 50,
             // ms before each bolt is removed
             // final value will be multiplied by chain amount
-            cooldown: 1000
+            cooldown: 100
         };
 
         // Armor settings
