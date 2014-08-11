@@ -404,13 +404,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
             var collidedBubble = this.getCollisions(this.state.bubbles);
             if (collidedBubble) {
-                this.onBubbleCollision(collidedBubble);
                 collidedBubble.onBulletCollision(this);
             }
-        },
-
-        onBubbleCollision: function(bubble) {
-            bubble.applyElement.call(bubble, this.currentElement);
         },
     });
 
@@ -804,6 +799,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         onBulletCollision: function(bullet) {
             this.hp -= 1;
+
+            this.applyElement.call(this, bullet.currentElement);
 
             if (this.hp > -1) {
                 this.state.remove(bullet);
