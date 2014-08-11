@@ -798,7 +798,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         },
 
         onBulletCollision: function(bullet) {
-            this.hp -= 1;
+            var damage = 1;
+            if (this.currentElement === 'ice' && upgrades.getVal('iceBrittle')) {
+                damage *= 1+upgrades.getValPercent('iceBrittleDamage');
+            }
+            this.hp -= damage;
 
             this.applyElement.call(this, bullet.currentElement);
 

@@ -211,7 +211,7 @@
         },
 
         "2": {
-            "name": "WIP Brittle Bubbles",
+            "name": "Brittle Bubbles",
             "description": "Damage dealt is increased on bubbles which are frozen.",
 
             "initial": {

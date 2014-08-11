@@ -116,11 +116,11 @@
 
         "iceBrittle": {
             "default": false,
-            "description": "WIP enables Brittle Bubbles (this should be invisible)'"
+            "description": "enables Brittle Bubbles (this should be invisible)"
         },
 
         "iceBrittleDamage": {
-            "description": "WIP Increases the damage dealt by #{value}%'"
+            "description": "Increases the damage dealt by #{value}%"
         },
 
         "iceBomb": {
