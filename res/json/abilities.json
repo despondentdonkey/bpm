@@ -68,15 +68,15 @@
 
         "lightningConduction": {
             "default": false,
-            "description": "WIP Enables conduction (this should be invisible)'"
+            "description": "Enables conduction (this should be invisible)"
         },
 
         "lightningConductionRange": {
-            "description": "WIP Increases the area of effect by #{value}%'"
+            "description": "Increases the area of effect by #{value}%"
         },
 
         "lightningConductionDamage": {
-            "description": "WIP Increases the damage of the AoE by #{value}%'"
+            "description": "Increases the damage of the AoE by #{value}%"
         },
 
         "lightningOverload": {

@@ -72,7 +72,12 @@ define(['gfx'], function(gfx) {
             rifleBullet: 'rifle-bullet.png',
 
             fire: 'fire-16x25-strip6.png',
+            ember: 'ember.png',
+
             lightning: 'lightning.png',
+            lightningActive: 'lightning-active-32x32-strip5.png',
+            shockwave: 'shockwave.png',
+
             ice: 'ice.png',
 
             arrow: 'arrow.png',
@@ -86,8 +91,6 @@ define(['gfx'], function(gfx) {
             buttonUp: 'button-up.png',
             buttonDown: 'button-down.png',
             buttonDisabled: 'button-disabled.png',
-
-            ember: 'ember.png'
         });
 
         // Creates a list of textures to be used with PIXI.MovieClip. [cellWidth, cellHeight]
@@ -95,6 +98,7 @@ define(['gfx'], function(gfx) {
             cracks: [32, 32],
             armor: [32, 32],
             fire: [16, 25],
+            lightningActive: [32, 32],
         };
 
         slicesToCreate = {

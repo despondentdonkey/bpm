@@ -648,6 +648,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         };
 
         this.lightningConfig = {
+            duration: 1500, // The length of lightning being active. ms
             range: 400,
             chainLength: upgrades.getVal('lightningChainLength'),
             damage: 1 * (1+upgrades.getValPercent('lightningDamage')),
@@ -762,6 +763,15 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             } else {
                 if (this.crack) {
                     this.crack.currentFrame = Math.round((1 - (this.hp / this.hpMax)) * (this.crack.totalFrames-1));
+                }
+            }
+
+            if (upgrades.getVal('lightningConduction') && this.lightningActive) {
+                var collidedBubble = this.getCollisions(this.state.bubbles);
+                if (collidedBubble) {
+                    if (collidedBubble.armor <= 0) {
+                        this.state.add(new LightningShockwave(this));
+                    }
                 }
             }
 
@@ -967,6 +977,34 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         // TODO: speed and cooldown based on chain length
         _applyLightning: function() {
+            if (upgrades.getVal('lightningConduction') && this.armor <= 0) {
+                this.state.add(new LightningShockwave(this));
+            }
+
+            if (!this.lightningActive) {
+                this.lightningActive = true;
+                this.lightningActiveAnim = new gfx.pixi.MovieClip(res.sheets.lightningActive);
+                this.lightningActiveAnim.play();
+                this.lightningActiveAnim.animationSpeed = 0.3;
+
+                this.lightningActiveAnim.width = this.width;
+                this.lightningActiveAnim.height = this.height;
+
+                this.lightningActiveAnim.syncGameObjectProperties = { scale: false };
+                this.lightningActiveAnim.alpha = 0.7;
+                this.lightningActiveAnim.depth = -4;
+                this.addDisplay(this.lightningActiveAnim);
+
+                this.state.add(new Timer(this.lightningConfig.duration, 'oneshot', _.bind(function() {
+                    if (!this.state) { return; }
+                    if (this.lightningActiveAnim) {
+                        this.removeDisplay(this.lightningActiveAnim);
+                        this.lightningActiveAnim = null;
+                    }
+                    this.lightningActive = false;
+                }, this)));
+            }
+
             // Don't apply if chain has been reached
             if (this.lightningConfig.chain && this.lightningConfig.chain.length >= this.lightningConfig.chainLength)
                 return;
@@ -1265,6 +1303,49 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     if (this.hp <= 0) {
                         this.state.remove(this);
                     }
+                }
+            }
+        },
+    });
+
+    var LightningShockwave = createClass(GameObject, function(bubble) {
+        this.bubble = bubble;
+        this.x = bubble.x;
+        this.y = bubble.y;
+
+        this.damage = 0.5 * (1+upgrades.getValPercent('lightningConductionDamage'));
+        this.affectedBubbles = [bubble];
+        this.sprite = new gfx.pixi.Sprite(res.tex.shockwave);
+
+        var scaleMod = 1+upgrades.getValPercent('lightningConductionRange');
+        this.scale.x = 0.5 * scaleMod;
+        this.scale.y = 0.5 * scaleMod;
+        this.width = this.sprite.width * this.scale.x;
+        this.height = this.sprite.height * this.scale.y;
+
+        this.lifeTime = 1000;
+        this.lifeTimer = this.lifeTime;
+    }, {
+        init: function(state) {
+            GameObject.prototype.init.call(this, state);
+            this.addDisplay(this.sprite);
+        },
+
+        update: function(delta) {
+            GameObject.prototype.update.call(this, delta);
+
+            this.lifeTimer -= delta;
+            this.sprite.alpha = this.lifeTimer / this.lifeTime;
+            if (this.lifeTimer <= 0) {
+                this.state.remove(this);
+            }
+
+            var collidedBubble = this.getCollisions(this.state.bubbles);
+            if (collidedBubble) {
+                if (!_(this.affectedBubbles).contains(collidedBubble)) {
+                    collidedBubble.applyElement.call(collidedBubble, 'lightning');
+                    collidedBubble.hp -= this.damage;
+                    this.affectedBubbles.push(collidedBubble);
                 }
             }
         },

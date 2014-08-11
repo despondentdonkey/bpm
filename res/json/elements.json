@@ -130,7 +130,7 @@
         },
 
         "2": {
-            "name": "WIP Conduction",
+            "name": "Conduction",
             "description": "Causes an shockwave dealing AoE damage if an electrified bubble comes into contact with an armorless bubble or if you shoot an armorless bubble.",
 
             "initial": {
