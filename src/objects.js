@@ -642,7 +642,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         this.iceConfig = {
             duration: 1000 * (1 + upgrades.getValPercent('iceFreezeLength')),
-            speedReduce: 0.01 * 65,//upgrades.getValPercent('iceSpeedReduce'),
+            speedReduce: upgrades.getValPercent('iceSpeedReduce'),
 
             fadeDuration: 500, //ms
         };
@@ -938,8 +938,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this._setupElement('ice', this.ice)._displayElement(this.ice);
 
             // speedReduce of 100% == 1. when multiplying speed by 1, nothing happens :)
-            var speedReduce = this.iceConfig.speedReduce === 1 ? 0 : this.iceConfig.speedReduce;
-
+            var speedReduce = this.iceConfig.speedReduce;
 
             this.iceConfig.oldSpeed = this.speed;
             this.speed = this.speed * (1 - speedReduce);
