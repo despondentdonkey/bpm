@@ -46,6 +46,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
             this.initialized = true;
             gfx.stage.addChild(this.displayObjectContainer);
+
+            // Use the default cursor for all states.
+            var cursor = new gfx.pixi.Sprite(res.tex.cursorDefault);
+            this.setCursor(cursor);
         },
 
         // When this state has been switched
@@ -64,6 +68,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         },
 
         update: function(delta) {
+            if (this.cursor) {
+                this.cursor.x = input.mouse.x;
+                this.cursor.y = input.mouse.y;
+            }
+
             if (!this.paused) {
                 // Add queued objects
                 if (this.objectsToAdd.length > 0) {
@@ -133,6 +142,22 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
             display.parent.removeChild(display);
             return display;
+        },
+
+        setCursor: function(textureOrSprite) {
+            if (this.cursor) {
+                this.removeDisplay(this.cursor);
+            }
+
+            if (textureOrSprite instanceof gfx.pixi.Texture) {
+                this.cursor = new gfx.pixi.Sprite(textureOrSprite);
+                this.cursor.anchor.x = this.cursor.anchor.y = 0.5;
+            } else {
+                this.cursor = textureOrSprite;
+            }
+
+            this.cursor.depth = -1000;
+            this.addDisplay(this.cursor);
         },
 
         pause: function(pauseState) {
@@ -509,6 +534,20 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             bpm.player.currentWeapon = weaponName;
             this.currentWeapon = weapon;
+
+            var cursors = {
+                'Shotgun': res.tex.cursorShotgun,
+                'PinShooter': res.tex.cursorCannon,
+                'Rifle': res.tex.cursorRifle
+            };
+
+            for (var key in cursors) {
+                if (weaponName === key) {
+                    this.setCursor(cursors[key]);
+                    break;
+                }
+            }
+
             return this.add(weapon);
         },
 

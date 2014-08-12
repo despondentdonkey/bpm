@@ -91,6 +91,11 @@ define(['gfx'], function(gfx) {
             buttonUp: 'button-up.png',
             buttonDown: 'button-down.png',
             buttonDisabled: 'button-disabled.png',
+
+            cursorDefault: 'cursor-default.png',
+            cursorShotgun: 'cursor-shotgun.png',
+            cursorCannon: 'cursor-cannon.png',
+            cursorRifle: 'cursor-rifle.png',
         });
 
         // Creates a list of textures to be used with PIXI.MovieClip. [cellWidth, cellHeight]
