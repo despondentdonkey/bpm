@@ -803,13 +803,32 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     this.tabs[i].disable();
                 }
             } else { // This is not a pause menu for Field so we treat it as a round selector.
+                var selectedButton = null;
+                var selectedButtonText = '';
                 for (var i=0; i<bpm.player.quests.length; ++i) {
                     var quest = quests.all[bpm.player.quests[i]];
 
                     // Pretty ugly. Binds 'this' to an anonymous function.
                     (_.bind(function(quest) {
-                        var qButton = new ui.Button(quest.name, this.buttonStyle, function() {
-                            this.selectedQuest = quest;
+                        var qButton = new ui.Button(quest.name, this.buttonStyle);
+
+                        qButton.onRelease = _.bind(function() {
+                            if (this.selectedQuest === quest) {
+                                if (this.selectedQuest) {
+                                    bpm.player.currentQuest = this.selectedQuest;
+                                    setState(new Field());
+                                } else {
+                                    console.log('Please select a quest');
+                                }
+                            } else {
+                                if (selectedButton) {
+                                    selectedButton.displayText.setText(selectedButtonText);
+                                }
+                                selectedButton = qButton;
+                                selectedButtonText = qButton.displayText.text;
+                                qButton.displayText.setText('Start');
+                                this.selectedQuest = quest;
+                            }
 
                             var description = quest.description;
 
@@ -825,20 +844,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                         this.add(qButton);
                     }, this))(quest);
                 }
-
-                var startRound = new ui.Button("Start Round", this.buttonStyle, function() {
-                    if (this.selectedQuest) {
-                        bpm.player.currentQuest = this.selectedQuest;
-                        setState(new Field());
-                    } else {
-                        console.log('Please select a quest');
-                    }
-                }, this);
-
-                startRound.x = gfx.width - startRound.width - 10;
-                startRound.y = gfx.height - startRound.height - 10;
-
-                this.add(startRound);
             }
         },
 
