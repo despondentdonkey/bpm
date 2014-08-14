@@ -1,0 +1,119 @@
+Game Dev Kit
+
+    A collection of Node tools used for game development
+    kit includes:
+        http server
+        Game CLI
+        Test Runner (added later)
+
+Game CLI
+
+    Universal CLI tool for game dev. Uses RequireJS and Node
+    Accepts string command and argument pairs to perform a correlating action.
+
+    CLI.js is a client-side JS file and does not require Node to run,
+    so Commands can be used within your game
+
+    Input commands on the console to directly interact with your game
+    by running the Game Dev Kit server with Node
+        Commands are communicated from the command line to the server by
+
+    Expressions are assembled as follows
+
+    <Command> <Args>
+
+    Commands can take other commands as arguments
+
+    <Command> <Command> <Args>
+
+    Named Args can be passed as objects (recommend)
+
+    <Command> { foo: <Arg>, bar: <Arg2> }
+
+
+    Functionality:
+        Customizable actions
+
+BPM Command Line Interface
+
+    A globally available command line used to interface with game code.
+
+    Add CLI.update method to Field.update
+        Pass an object to method containing any objects required
+        Needed:
+            bpm
+            state (this)
+            objects
+            upgrades
+
+    Keep a list of commands to run, then run them on the update method
+    Populate list by calling the function CLI('command args'); (global within BPM code, not accessible on window)
+    Add window.CLI(); for in-dev access only
+
+    Define commands in file as functions
+    {
+        'spawn': function(type, count) {
+
+        },
+
+    Functionality:
+        Spawning Enemies
+        Manipulating Player Stats
+        Trigger Cutscenes
+
+Quest CLI Interpreter
+
+    Process CLI commands from the JSON based on specified time or event
+    Add event-based commands to an event obj; add time-based commands to a time-based obj
+
+    create an EventHandler for quests
+    listen for event obj's events
+        use event obj's key as the event and the value as the listener
+
+    Add EventHandler.triggerEvent function to quest export obj to trigger events
+        usage: quests.triggerEvent('youLose');
+
+    In the JSON, commands are specified like so:
+    {
+        events: {
+            'event': '<command> <argument list>',
+            // Events can be time based by specifying a number or range
+            // This time will be measured in seconds
+
+            // at start of level, spawn one instance of class KingBubba
+            '0': 'spawn boss KingBubba',
+            '0..100': 'spawn 200 Bubble { random: true }', // from the start of the level to 100 seconds
+
+            // Use special keywords 'pre', 'end', and 'post' to indicate
+            // pre: before the level starts (mostly used for cutscenes),
+            // end: at the very end of the level (right when the player ends the level),
+            // post: and after the level ends (cutscenes, like pre)
+
+            'pre': 'scene ma04', // starts scene 'ma04' before level starts
+
+    Ranges:
+        two numbers separated by '..' indicate a span of time
+        Requires custom wiring in each command, so may not always be supported
+        See specific commands for more info
+
+    Commands:
+        spawn <count> <class> <options>
+            Instantiates <class> <count> times and adds all new objects to the state
+            <options> = object specifying 0 or more of the following keys
+                x
+                y
+                random: bool; true to set random x position and a y position out-of-view (maybe random range?)
+
+            If range is provided, the count of entities will be divided by the length of time so each entity will be spawned in even intervals
+
+        scene <class>
+            Start a cutscene
+
+        tutorial <class>
+            Start a tutorial (may be combined into scene)
+
+        set <property> <value>
+            Manipulate a property on bpm.player
+
+        trigger <event>
+            Trigger an event on the quest.EventHandler object
