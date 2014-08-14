@@ -8,23 +8,26 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         };
     })();
 
-    var BasicObject = createClass(events.EventHandler, function BasicObject() {
+    function BasicObject() {
         this.state = null;
         this.id = getID();
 
         this.initialized = false;
         this.parent = null;
         this.children = [];
-    }, {
-        init: function(state) {
+    }
+    BasicObject.prototype = new events.EventHandler();
+    BasicObject.prototype.constructor = BasicObject;
+
+    BasicObject.prototype.init = function(state) {
             this.state = state;
             for (var i=0; i<this.children.length; ++i) {
                 this.children[i].init(state);
             }
             this.initialized = true;
-        },
+    };
 
-        destroy: function() {
+    BasicObject.prototype.destroy = function() {
             this.state = null;
 
             if (this.parent) {
@@ -38,26 +41,27 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             }
 
             this.initialized = false;
-        },
+    };
 
-        update: function(delta) {
+    BasicObject.prototype.update = function(delta) {
             for (var i=0; i<this.children.length; ++i) {
                 this.children[i].update(delta);
             }
-        },
+    };
 
-        addChild: function(object) {
+    BasicObject.prototype.addChild = function(object) {
             object.parent = this;
             this.children.push(object);
-        },
+    };
 
-        removeChild: function(object) {
+    BasicObject.prototype.removeChild = function(object) {
             object.parent = null;
             this.children.splice(this.children.indexOf(object), 1);
-        },
-    });
+    };
 
-    var GameObject = createClass(BasicObject, function GameObject() {
+
+    function GameObject() {
+        BasicObject.call();
         this.idList = [];
         this.displayObjects = [];
 
@@ -75,83 +79,86 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             y: 0.5
         };
         this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
-    }, {
-        init: function(state) {
-            BasicObject.prototype.init.call(this, state);
-        },
+    }
+    GameObject.prototype = new BasicObject();
+    GameObject.prototype.constructor = GameObject;
 
-        destroy: function() {
-            while (this.displayObjects.length > 0) {
-                this.removeDisplay(this.displayObjects[0]);
-            }
-            BasicObject.prototype.destroy.call(this);
-        },
+    GameObject.prototype.init = function(state) {
+        BasicObject.prototype.init.call(this, state);
+    };
 
-        update:  function(delta) {
-            BasicObject.prototype.update.call(this, delta);
-            if (this.syncDisplayProperties) {
-                this.updateDisplayProperties(this.displayObjects);
-            }
-        },
+    GameObject.prototype.destroy = function() {
+        while (this.displayObjects.length > 0) {
+            this.removeDisplay(this.displayObjects[0]);
+        }
+        BasicObject.prototype.destroy.call(this);
+    };
 
-        updateDisplayProperties: function(objects, props) {
-            var propsDefined = (props !== undefined);
-            var defaults = {
-                position: true,
-                rotation: true,
-                anchor: true,
-                scale: true,
-            };
+    GameObject.prototype.update =  function(delta) {
+        BasicObject.prototype.update.call(this, delta);
+        if (this.syncDisplayProperties) {
+            this.updateDisplayProperties(this.displayObjects);
+        }
+    };
 
-            // If properties are defined then merge the defaults with them. Otherwise just make them the defaults.
-            if (propsDefined) {
-                _.defaults(props, defaults);
+    GameObject.prototype.updateDisplayProperties = function(objects, props) {
+        var propsDefined = (props !== undefined);
+        var defaults = {
+            position: true,
+            rotation: true,
+            anchor: true,
+            scale: true,
+        };
+
+        // If properties are defined then merge the defaults with them. Otherwise just make them the defaults.
+        if (propsDefined) {
+            _.defaults(props, defaults);
+        } else {
+            props = defaults;
+        }
+
+        for (var i=0; i<objects.length; ++i) {
+            var obj = objects[i];
+
+            var sync; // A display object can specify to sync certain properties. If props were specified then it will override syncGameObjectProperties.
+            if (propsDefined || obj.syncGameObjectProperties === undefined) {
+                sync = props;
             } else {
-                props = defaults;
+                sync = _.defaults(obj.syncGameObjectProperties, defaults);
             }
 
-            for (var i=0; i<objects.length; ++i) {
-                var obj = objects[i];
-
-                var sync; // A display object can specify to sync certain properties. If props were specified then it will override syncGameObjectProperties.
-                if (propsDefined || obj.syncGameObjectProperties === undefined) {
-                    sync = props;
-                } else {
-                    sync = _.defaults(obj.syncGameObjectProperties, defaults);
-                }
-
-                if (sync.position) {
-                    obj.position.x = this.x;
-                    obj.position.y = this.y;
-                }
-
-                if (sync.rotation) {
-                    obj.rotation = -this.angle;
-                }
-
-                if (sync.anchor && obj.anchor) {
-                    obj.anchor.x = this.anchor.x;
-                    obj.anchor.y = this.anchor.y;
-                }
-
-                if (sync.scale) {
-                    obj.scale.x = this.scale.x;
-                    obj.scale.y = this.scale.y;
-                }
+            if (sync.position) {
+                obj.position.x = this.x;
+                obj.position.y = this.y;
             }
-        },
 
-        addDisplay: function(display, container) {
+            if (sync.rotation) {
+                obj.rotation = -this.angle;
+            }
+
+            if (sync.anchor && obj.anchor) {
+                obj.anchor.x = this.anchor.x;
+                obj.anchor.y = this.anchor.y;
+            }
+
+            if (sync.scale) {
+                obj.scale.x = this.scale.x;
+                obj.scale.y = this.scale.y;
+            }
+        }
+    };
+
+    GameObject.prototype.addDisplay = function(display, container) {
             this.displayObjects.push(display);
             return this.state.addDisplay(display, container);
-        },
+    };
 
-        removeDisplay: function(display) {
+    GameObject.prototype.removeDisplay = function(display) {
             this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
             return this.state.removeDisplay(display);
-        },
+    };
 
-        addId:  function(id) {
+    GameObject.prototype.addId =  function(id) {
             if (typeof id === 'string') {
                 if (!this.hasId(id)) {
                     this.idList.push(id);
@@ -161,9 +168,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     this.addId(id[i]);
                 }
             }
-        },
+    };
 
-        hasId:  function(id) {
+    GameObject.prototype.hasId =  function(id) {
             if (typeof id === 'string') {
                 for (var i=0; i<this.idList.length; ++i) {
                     if (this.idList[i] === id) {
@@ -182,9 +189,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 }
             }
             return false;
-        },
+    };
 
-        removeId:  function(id) {
+    GameObject.prototype.removeId =  function(id) {
             if (typeof id === 'string') {
                 if (this.hasId(id)) {
                     this.idList.splice(this.idList.indexOf(id), 1);
@@ -194,9 +201,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     this.removeId(id[i]);
                 }
             }
-        },
+    };
 
-        getBounds:  function() {
+    GameObject.prototype.getBounds =  function() {
             var width = this.width * this.anchor.x;
             var height = this.height * this.anchor.y;
             return {
@@ -205,14 +212,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 x2: this.x + width,
                 y2: this.y + height,
             };
-        },
+    };
 
-        /* Returns the first object which collides with this object.
-         * If 'opt' is an object array then it will loop through it rather than the state object list.
-         * If 'opt' is undefined or an id then it will loop through the state object list.
-         * If 'opt' is an object literal then you can specify id, objects, and grouped.
-         * If 'grouped' is true then it will return a list of objects which collide with this object. */
-        getCollisions:  function(opt) {
+    /* Returns the first object which collides with this object.
+     * If 'opt' is an object array then it will loop through it rather than the state object list.
+     * If 'opt' is undefined or an id then it will loop through the state object list.
+     * If 'opt' is an object literal then you can specify id, objects, and grouped.
+     * If 'grouped' is true then it will return a list of objects which collide with this object. */
+    GameObject.prototype.getCollisions =  function(opt) {
             var id;
             var objects = this.state.objects;
             var grouped = false;
@@ -259,11 +266,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 }
             }
             return result.length > 1 ? result : result[0];
-        },
+    };
 
-        /* Pass bounds obj (x1, x2, y1, y2) or GameObject and optional radius
-            returns bool; true if testBounds are within this' bounds + radius */
-        isNearby: function(testBounds, radius) {
+    /* Pass bounds obj (x1, x2, y1, y2) or GameObject and optional radius
+        returns bool; true if testBounds are within this' bounds + radius */
+    GameObject.prototype.isNearby = function(testBounds, radius) {
             var myBounds = this.getBounds();
             testBounds = testBounds instanceof GameObject
                          ? testBounds.getBounds()
@@ -280,11 +287,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 && myBounds.x2 > testBounds.x1
                 && myBounds.y1 < testBounds.y2
                 && myBounds.y2 > testBounds.y1);
-        },
+    };
 
-        /* Returns an array of objects in the provided radius.
-            optionally provide an array of objects to search through (uses this.state.objects by default) */
-        getNearby: function(radius, objects) {
+    /* Returns an array of objects in the provided radius.
+        optionally provide an array of objects to search through (uses this.state.objects by default) */
+    GameObject.prototype.getNearby = function(radius, objects) {
             var results = [];
             objects = objects || this.state.objects;
             for (var i = 0; i < objects.length; i++) {
@@ -293,11 +300,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             }
 
             return results;
-        },
+    };
 
-        // use distance formula to get distance from an object
-        // also can pass 4 args to use custom values (x1,y1, x2,y2)
-        getDistance: function(obj) {
+    // use distance formula to get distance from an object
+    // also can pass 4 args to use custom values (x1,y1, x2,y2)
+    GameObject.prototype.getDistance = function(obj) {
             var x1,x2,y1,y2;
             if (arguments.length >= 4) {
                 x1 = arguments[0];
@@ -314,13 +321,13 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             }
 
             return Math.abs(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
-        },
+    };
 
-        /* returns closest object within radius; defaults to this.state.objects; opt argument obj list
-            works like getNearby, but only returns the closest object
-            if returnDist == true, returns an array [GameObject object, Number distance]
-        */
-        getClosest: function(objects, radius, returnDist) {
+    /* returns closest object within radius; defaults to this.state.objects; opt argument obj list
+        works like getNearby, but only returns the closest object
+        if returnDist == true, returns an array [GameObject object, Number distance]
+    */
+    GameObject.prototype.getClosest = function(objects, radius, returnDist) {
             objects = objects || this.state.objects;
             objects = _.isNumber(radius) ? this.getNearby(radius, objects) : _(objects).without(this);
             if (objects.length < 1)
@@ -340,12 +347,12 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 return [closest, distMin];
             else
                 return closest;
-        }
-    });
+    };
 
 
     // Any performance problems with these are mostly likely due to the collisions rather than rendering.
-    var Bullet = createClass(GameObject, function Bullet(tex, x, y, angle) {
+    function Bullet(tex, x, y, angle) {
+        GameObject.call();
         this.x = x;
         this.y = y;
         this.speedX = Math.cos(angle);
@@ -353,8 +360,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         this.tex = tex;
 
         this.currentElement;
-    }, {
-        init: function(state) {
+    }
+    Bullet.prototype = new GameObject();
+    Bullet.prototype.constructor = Bullet;
+
+    Bullet.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
 
             this.graphic = this.addDisplay(new gfx.pixi.Sprite(this.tex), this.state.bulletBatch);
@@ -364,13 +374,13 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this.speed = 0;
             this.lifeTime = 0;
             this.lifeTimer = 0;
-        },
+    };
 
-        destroy: function(state) {
+    Bullet.prototype.destroy = function(state) {
             GameObject.prototype.destroy.call(this, state);
-        },
+    };
 
-        update: function(delta) {
+    Bullet.prototype.update = function(delta) {
             GameObject.prototype.update.call(this, delta);
 
             var speed = this.speed * delta;
@@ -406,15 +416,19 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             if (collidedBubble) {
                 collidedBubble.onBulletCollision(this);
             }
-        },
-    });
+    };
+
 
     // Weapon applies the element and upgrades onto the bullets it generates
     // Also controls ammo reloading system + graphics
-    var Weapon = createClass(GameObject, function Weapon() {
+    function Weapon() {
+        GameObject.call();
         this.availableElements = ['fire', 'ice', 'lightning'];
-    }, {
-        init: function(state, element) {
+    }
+    Weapon.prototype = new GameObject();
+    Weapon.prototype.constructor = Weapon;
+
+    Weapon.prototype.init = function(state, element) {
             GameObject.prototype.init.call(this, state);
             this.x = gfx.width/2;
             this.y = gfx.height/1.2;
@@ -438,16 +452,16 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this.ammoLoader = this.state.addDisplay(new gfx.pixi.Graphics());
             this.ammoLoader.depth = gfx.layers.gui;
             this.ammoLoaderColors = [0, 0x67575e];
-        },
+    };
 
-        destroy: function(state) {
+    Weapon.prototype.destroy = function(state) {
             // Remove things from the state's display
             _.each([this.ammoText, this.ammoLoader],
                    _.bind(this.state.removeDisplay, this.state));
             GameObject.prototype.destroy.call(this, state);
-        },
+    };
 
-        update: function(delta) {
+    Weapon.prototype.update = function(delta) {
             GameObject.prototype.update.call(this, delta);
             this.angle = -Math.atan2(input.mouse.getY() - this.y, input.mouse.getX() - this.x);
 
@@ -464,20 +478,20 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this.drawAmmoTimer(this.ammoLoaderColors[0], this.ammoLoaderColors[1]);
 
             bpm.player.ammo = this.ammo;
-        },
+    };
 
-        drawAmmoLoaderCircle: function(color, ratio) {
+    Weapon.prototype.drawAmmoLoaderCircle = function(color, ratio) {
             this.ammoLoader.lineStyle(8, color, 1);
             var y = this.ammoText.y + this.ammoText.height/2;
             for (var i=0; i<ratio*180; ++i) {
                 var rad = i * DEG2RAD;
                 this.ammoLoader.lineTo(this.x + (-Math.cos(rad) * 48),  y + (Math.sin(rad) * 32));
             }
-        },
+    };
 
-        // sets ammo timer
-        // pass time in ms; loops by default
-        setAmmoTimer: function(time) {
+    // sets ammo timer
+    // pass time in ms; loops by default
+    Weapon.prototype.setAmmoTimer = function(time) {
             if (this.ammoTimer)
                 return this.ammoTimer;
 
@@ -487,9 +501,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             }, this));
 
             return this.state.add(this.ammoTimer);
-        },
+    };
 
-        drawAmmoTimer: function(backColor, frontColor, ammoTimer) {
+    Weapon.prototype.drawAmmoTimer = function(backColor, frontColor, ammoTimer) {
             ammoTimer = ammoTimer || this.ammoTimer;
             if (ammoTimer instanceof Timer) {
                 if (this.ammo < this.ammoMax) {
@@ -504,69 +518,79 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     this.ammoLoader.visible = false;
                 }
             }
-        },
+    };
 
-        // Called immediately after shoot
-        setElement: function(element) {
+    // Called immediately after shoot
+    Weapon.prototype.setElement = function(element) {
             element = element.toLowerCase();
             if (!_.contains(this.availableElements, element))
                 throw new Error('Weapon.setElement: Invalid element passed: ' + element);
 
             this.currentElement = element;
             bpm.player.currentElement = element;
-        },
+    };
 
-        // calls spawnBullet with additional functionality
-        shoot: function() {},
-        // creates and returns a customized instance of Bullet
-        // make sure the returned bullet of this function is used in children's invocations
-        spawnBullet: function(tex, x, y, angle) {
-            var b = new Bullet(tex, x, y, angle);
-            if (this.currentElement)
-                b.currentElement = this.currentElement;
-            return b;
-        }
-    });
+    // calls spawnBullet with additional functionality
+    Weapon.prototype.shoot = function() {};
+    // creates and returns a customized instance of Bullet
+    // make sure the returned bullet of this function is used in children's invocations
+    Weapon.prototype.spawnBullet = function(tex, x, y, angle) {
+        var b = new Bullet(tex, x, y, angle);
+        console.log(b, b.id);
+        if (this.currentElement)
+            b.currentElement = this.currentElement;
+        return b;
+    };
 
-    var PinShooter = createClass(Weapon, function PinShooter() {}, {
-        init: function(state) {
+
+    function PinShooter() {
+        Weapon.call();
+    }
+    PinShooter.prototype = new Weapon();
+    PinShooter.prototype.constructor = PinShooter;
+
+    PinShooter.prototype.init = function(state) {
             Weapon.prototype.init.call(this, state);
             this.ammo = bpm.player.pinShooter.ammo;
             this.ammoMax = bpm.player.pinShooter.ammoMax;
             this.setAmmoTimer(3000);
-        },
+    };
 
-        spawnBullet: function(x, y, angle) {
-            var b = Weapon.prototype.spawnBullet.call(this, res.tex.pin, x, y, angle);
-            b.init = function(state) {
-                Bullet.prototype.init.call(b, state);
-                b.speed = 0.2;
-                b.lifeTime = 6000;
-                b.lifeTimer = b.lifeTime;
-            };
+    PinShooter.prototype.spawnBullet = function(x, y, angle) {
+        var b = Weapon.prototype.spawnBullet.call(this, res.tex.pin, x, y, angle);
+        b.init = function(state) {
+            Bullet.prototype.init.call(b, state);
+            b.speed = 0.2;
+            b.lifeTime = 6000;
+            b.lifeTimer = b.lifeTime;
+        };
 
-            b.destroy = function(state) {
-                state.pinEmitter.emit(b.x, b.y, 3);
-                Bullet.prototype.destroy.call(b, state);
-            };
+        b.destroy = function(state) {
+            state.pinEmitter.emit(b.x, b.y, 3);
+            Bullet.prototype.destroy.call(b, state);
+        };
 
-            return b;
-        },
+        return b;
+    };
 
-        shoot: function() {
-            return this.state.add(this.spawnBullet(this.x, this.y, this.angle));
-        },
-    });
+    PinShooter.prototype.shoot = function() {
+        return this.state.add(this.spawnBullet(this.x, this.y, this.angle));
+    };
 
-    var Shotgun = createClass(Weapon, function Shotgun() {}, {
-        init: function(state) {
+    function Shotgun() {
+        Weapon.call();
+    }
+    Shotgun.prototype = new Weapon();
+    Shotgun.prototype.constructor = Shotgun;
+
+    Shotgun.prototype.init = function(state) {
             Weapon.prototype.init.call(this, state);
             this.ammo = bpm.player.shotgun.ammo;
             this.ammoMax = bpm.player.shotgun.ammoMax;
             this.setAmmoTimer(3000);
-        },
+    };
 
-        spawnBullet: function(x, y, angle) {
+    Shotgun.prototype.spawnBullet = function(x, y, angle) {
             var b = Weapon.prototype.spawnBullet.call(this, res.tex.shotgunBullet, x, y, angle);
             b.init = function(state) {
                 Bullet.prototype.init.call(b, state);
@@ -577,43 +601,51 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             };
 
             return b;
-        },
-        shoot: function() {
+    };
+
+    Shotgun.prototype.shoot = function() {
             var bulletOffset = 15 * DEG2RAD;
             return this.state.add([this.spawnBullet(this.x, this.y, this.angle),
                                    this.spawnBullet(this.x, this.y, this.angle+bulletOffset),
                                    this.spawnBullet(this.x, this.y, this.angle-bulletOffset)]);
-        }
-    });
+    };
 
-    var Rifle = createClass(Weapon, function Rifle() {}, {
-        init: function(state) {
-            Weapon.prototype.init.call(this, state);
-            this.ammo = bpm.player.rifle.ammo;
-            this.ammoMax = bpm.player.rifle.ammoMax;
-            this.setAmmoTimer(3000);
-        },
+    function Rifle() {
+        Weapon.call();
+    }
+    Rifle.prototype = new Weapon();
+    Rifle.prototype.constructor = Rifle;
 
-        spawnBullet: function(x, y, angle) {
-            var b = Weapon.prototype.spawnBullet.call(this, res.tex.rifleBullet, x, y, angle);
-            b.init = function(state) {
-                Bullet.prototype.init.call(b, state);
-                b.speed = 0.6;
+    Rifle.prototype.init = function(state) {
+        Weapon.prototype.init.call(this, state);
+        this.ammo = bpm.player.rifle.ammo;
+        this.ammoMax = bpm.player.rifle.ammoMax;
+        this.setAmmoTimer(3000);
+        console.log(this);
+    };
 
-                b.lifeTime = 6000;
-                b.lifeTimer = b.lifeTime;
-            };
+    Rifle.prototype.spawnBullet = function(x, y, angle) {
+        var b = Weapon.prototype.spawnBullet.call(this, res.tex.rifleBullet, x, y, angle);
+        b.init = function(state) {
+            Bullet.prototype.init.call(b, state);
+            b.speed = 0.6;
 
-            return b;
-        },
+            b.lifeTime = 6000;
+            b.lifeTimer = b.lifeTime;
+        };
 
-        shoot: function() {
-            return this.state.add(this.spawnBullet(this.x, this.y, this.angle));
-        }
-    });
+        console.log(this, b);
+
+        return b;
+    };
+
+    Rifle.prototype.shoot = function() {
+        return this.state.add(this.spawnBullet(this.x, this.y, this.angle));
+    };
 
 
-    var Bubble = createClass(GameObject, function Bubble(armor, x, y, angle) {
+    function Bubble(armor, x, y, angle) {
+        GameObject.call();
         this.x = x;
         this.y = y;
 
@@ -667,8 +699,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             warn('Bubble armor is not a number');
         }
         this._prevArmor = this.armor;
-    }, {
-        init: function(state) {
+    }
+    Bubble.prototype = new GameObject();
+    Bubble.prototype.constructor = Bubble;
+
+    Bubble.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
 
             this.state.bubbles.push(this);
@@ -702,18 +737,18 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 this.armorStatus = null;
                 this.addBubbleDisplays();
             }
-        },
+    };
 
-        destroy: function() {
+    Bubble.prototype.destroy = function() {
             this.state.bubbleEmitter.emit(this.x, this.y, 10);
             this.state.bubbles.splice(this.state.bubbles.indexOf(this), 1);
 
             // remove current element if it exists (fixes element flickering on destroy)
             this.removeElement();
             GameObject.prototype.destroy.call(this);
-        },
+    };
 
-        update: function(delta) {
+    Bubble.prototype.update = function(delta) {
             GameObject.prototype.update.call(this, delta);
 
             var speed = this.speed * delta;
@@ -771,18 +806,18 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             }
 
             this.updateElement();
-        },
+    };
 
-        setSpeed: function(newSpeed) {
+    Bubble.prototype.setSpeed = function(newSpeed) {
             this._originalSpeed = newSpeed;
             this.speed = newSpeed;
-        },
+    };
 
-        // Toggles speed to and from originalSpeed (last speed set by setSpeed)
-        // Pass a tempSpeed param to specify a temporary speed change
-        // toggle back by calling this.speedToggle without args.
-        // Useful for lightning and ice elements
-        speedToggle: function(tempSpeed) {
+    // Toggles speed to and from originalSpeed (last speed set by setSpeed)
+    // Pass a tempSpeed param to specify a temporary speed change
+    // toggle back by calling this.speedToggle without args.
+    // Useful for lightning and ice elements
+    Bubble.prototype.speedToggle = function(tempSpeed) {
             if (!_.isNumber(this._originalSpeed)) {
                 this._originalSpeed = this.speed;
                 warn('Bubble.speedToggle: this._original speed was not set before attempting to toggle speed.\r'+
@@ -795,9 +830,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             } else {
                 this.speed = tempSpeed;
             }
-        },
+    };
 
-        onBulletCollision: function(bullet) {
+    Bubble.prototype.onBulletCollision = function(bullet) {
             var damage = 1;
             if (this.currentElement === 'ice' && upgrades.getVal('iceBrittle')) {
                 damage *= 1+upgrades.getValPercent('iceBrittleDamage');
@@ -809,30 +844,30 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             if (this.hp > -1) {
                 this.state.remove(bullet);
             }
-        },
+    };
 
-        // Adds the displays for the raw bubble.
-        addBubbleDisplays: function() {
+    // Adds the displays for the raw bubble.
+    Bubble.prototype.addBubbleDisplays = function() {
             this.addDisplay(this.bubble, this.state.bubbleBatch);
             this.addDisplay(this.glare, this.state.glareBatch);
             this.updateDisplayProperties([this.bubble, this.glare]);
-        },
+    };
 
-        // Elements
-        // Applied by bullets, anything defined here should be either passed from the pin
-        // or should be related to the graphics/dimensions of the bubble
-        updateElement: function() {
+    // Elements
+    // Applied by bullets, anything defined here should be either passed from the pin
+    // or should be related to the graphics/dimensions of the bubble
+    Bubble.prototype.updateElement = function() {
             this._getElementMethod('update', this.currentElement).apply(this);
-        },
+    };
 
-        applyElement: function(element) {
+    Bubble.prototype.applyElement = function(element) {
             if (!this.currentElement) {
                 var method = this._getElementMethod('apply', element);
                 return method.apply(this, _(arguments).tail());
             }
-        },
+    };
 
-        removeElement: function(element) {
+    Bubble.prototype.removeElement = function(element) {
             // Make sure reference to state exists; this is necessary unless you like crashes
             // might not actually be necessary after all. Leaving as-is just in case
             // TODO: test if necessary, remove if not
@@ -845,11 +880,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
                 this.currentElement = null;
             }
-        },
+    };
 
-        // Used to get a type of private method from Bubble with a given element
-        // relies heavily on convention!
-        _getElementMethod: function(type, element) {
+    // Used to get a type of private method from Bubble with a given element
+    // relies heavily on convention!
+    Bubble.prototype._getElementMethod = function(type, element) {
             if (element) {
                 var eleMethod = this['_' + type + capitalize(element)];
                 if (_.isFunction(eleMethod)) {
@@ -857,24 +892,24 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 }
             }
             return _.identity;
-        },
+    };
 
-        // Configures the setup of all elements
-        _setupElement: function(elemStr, elemObj) {
+    // Configures the setup of all elements
+    Bubble.prototype._setupElement = function(elemStr, elemObj) {
             this.currentElement = elemStr;
             return this;
-        },
+    };
 
-        // Used by all elements to set up display-related stuff
-        _displayElement: function(elemObj) {
+    // Used by all elements to set up display-related stuff
+    Bubble.prototype._displayElement = function(elemObj) {
             elemObj = elemObj;
             // Update display properties so it will have correct positions without having to wait another frame.
             this.updateDisplayProperties([elemObj]);
             this.addDisplay(elemObj);
             return this;
-        },
+    };
 
-        _applyFire: function() {
+    Bubble.prototype._applyFire = function() {
             if (this.hp > 0) {
                 if (!this.fire) {
                     this.fire = new gfx.pixi.MovieClip(res.sheets.fire);
@@ -896,9 +931,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 var fireTimer = new Timer(this.fireConfig.duration, 'oneshot', onFireComplete);
                 this.state.add(fireTimer);
             }
-        },
+    };
 
-        _updateFire: function() {
+    Bubble.prototype._updateFire = function() {
             if (this.fireConfig) {
                 this.hp -= this.fireConfig.damage;
 
@@ -918,14 +953,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     }
                 }
             }
-        },
+    };
 
-        // TODO: Add to sprite batch
-        // TODO: Currently, you have to wait until the timers are finished before re-applying ice
-        //          I'd like to be able to re-apply ice on every hit
-        // TODO: Smoother fading (use a quadratic or logarithmic equation instead of a linear equation)
-        // TODO: Smoother speed transition on fading
-        _applyIce: function() {
+    // TODO: Add to sprite batch
+    // TODO: Currently, you have to wait until the timers are finished before re-applying ice
+    //          I'd like to be able to re-apply ice on every hit
+    // TODO: Smoother fading (use a quadratic or logarithmic equation instead of a linear equation)
+    // TODO: Smoother speed transition on fading
+    Bubble.prototype._applyIce = function() {
             if (!this.ice) {
                 this.ice = new gfx.pixi.Sprite(res.tex.ice);
                 this.ice.width = this.width;
@@ -969,14 +1004,14 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             var iceTimer = new Timer(duration, 'oneshot', startFader);
             var fadeTimer = new Timer(fadeDuration, 'oneshot', onIceComplete, onFadeTick);
             this.state.add(iceTimer);
-        },
+    };
 
-        _updateIce: function() {
+    Bubble.prototype._updateIce = function() {
             //_(this.getNearby(10, this.state.bubbles)).invoke('applyElement', 'ice');
-        },
+    };
 
-        // TODO: speed and cooldown based on chain length
-        _applyLightning: function() {
+    // TODO: speed and cooldown based on chain length
+    Bubble.prototype._applyLightning = function() {
             if (upgrades.getVal('lightningConduction') && this.armor <= 0) {
                 this.state.add(new LightningShockwave(this));
             }
@@ -1064,9 +1099,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     }, this)));
                 }
             }
-        },
+    };
 
-        _updateLightning: function() {
+    Bubble.prototype._updateLightning = function() {
             var closest, chain = this.lightningConfig.chain;
             if (chain)
                 closest = chain[chain.indexOf(this) + 1];
@@ -1076,11 +1111,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             } else if (this.lightning) {
                 this.removeElement(this.lightning);
             }
-        },
+    };
 
-        // setup lightning to scale + angle towards closest bubble
-        // this.lightning must be defined beforehand
-        _positionLightning: function(closest) {
+    // setup lightning to scale + angle towards closest bubble
+    // this.lightning must be defined beforehand
+    Bubble.prototype._positionLightning = function(closest) {
             if (this.lightning) {
                 // measurements n such
                 var radiusX = this.width / 2;
@@ -1118,11 +1153,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     this.lightning.visible = true;
                 }
             }
-        }
-    });
+    };
 
 
-    var Particle = createClass(GameObject, function Particle(emitter, tex, opt) {
+    function Particle(emitter, tex, opt) {
         this.x = opt.x;
         this.y = opt.y;
 
@@ -1140,18 +1174,22 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         this.sprite = new gfx.pixi.Sprite(tex);
         this.sprite.anchor.x = 0.5;
         this.sprite.anchor.y = 0.5;
-    }, {
-        init: function(state) {
+    }
+
+    Particle.prototype = new GameObject();
+    Particle.prototype.constructor = Particle;
+
+    Particle.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
             this.emitter.batch.addChild(this.sprite);
-        },
+    };
 
-        destroy: function() {
+    Particle.prototype.destroy = function() {
             GameObject.prototype.destroy.call(this);
             this.emitter.batch.removeChild(this.sprite);
-        },
+    };
 
-        update: function(delta) {
+    Particle.prototype.update = function(delta) {
             GameObject.prototype.update.call(this, delta);
 
             var speed = this.speed * delta;
@@ -1168,21 +1206,24 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this.sprite.rotation += this.rotationRate;
             this.sprite.position.x = this.x;
             this.sprite.position.y = this.y;
-        },
-    });
+    };
 
-    var Emitter = createClass(GameObject, function Emitter(tex, opt) {
+    function Emitter(tex, opt) {
         this.setOptions(opt);
         this.texture = tex;
         this.batch = new gfx.pixi.SpriteBatch();
         this.syncDisplayProperties = false;
-    }, {
-        init: function(state) {
+    }
+
+    Emitter.prototype = new GameObject();
+    Emitter.prototype.constructor = Emitter;
+
+    Emitter.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
             this.addDisplay(this.batch);
-        },
+    };
 
-        setOptions: function(opt) {
+    Emitter.prototype.setOptions = function(opt) {
             this.angleMin = opt.angleMin;
             this.angleMax = opt.angleMax;
 
@@ -1195,9 +1236,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this.range = opt.range;
             this.minRotationRate = opt.minRotationRate;
             this.maxRotationRate = opt.maxRotationRate;
-        },
+    };
 
-        emit: function(x, y, amount) {
+    Emitter.prototype.emit = function(x, y, amount) {
             if (this.state) {
                 for (var i=0; i<amount; ++i) {
                     var particle = new Particle(this, this.texture, {
@@ -1211,18 +1252,20 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     this.state.add(particle);
                 }
             }
-        },
-    });
+    };
 
     // types = oneshot, loop
-    var Timer = createClass(BasicObject, function Timer(duration, type, onComplete, onTick) {
+    function Timer(duration, type, onComplete, onTick) {
         this.duration = duration;
         this.currentTime = duration;
         this.type = type;
         this.onComplete = onComplete;
         this.onTick = onTick;
-    }, {
-        update: function(delta) {
+    }
+    Timer.prototype = new BasicObject();
+    Timer.prototype.constructor = Timer;
+
+    Timer.prototype.update = function(delta) {
             if (this.paused) return;
 
             BasicObject.prototype.update.call(this, delta);
@@ -1243,10 +1286,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     this.onComplete();
                 }
             }
-        },
-    });
+    };
 
-    var FireEmber = createClass(GameObject, function(bubble) {
+
+    function FireEmber(bubble) {
         this.bubble = bubble;
         this.x = bubble.x;
         this.y = bubble.y;
@@ -1270,45 +1313,42 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         this.affectedBubbles = [bubble];
 
         this.damage = 1 * (1+upgrades.getValPercent('fireEmberDamage'));
-    }, {
-        init: function(state) {
+    }
+    FireEmber.prototype = new GameObject();
+    FireEmber.prototype.constructor = FireEmber;
+
+    FireEmber.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
             this.addDisplay(this.sprite);
-        },
+    };
 
-        update: function(delta) {
+    FireEmber.prototype.update = function(delta) {
             GameObject.prototype.update.call(this, delta);
-
             this.lifeTimer -= delta;
             this.sprite.alpha = this.lifeTimer / this.lifeTime;
             if (this.lifeTimer <= 0) {
                 this.state.remove(this);
             }
-
             var speed = this.speed * delta;
-
             this.x += this.speedX * speed;
             this.y += this.speedY * speed;
-
             this.angle += this.rotationRate;
-
             var collidedBubble = this.getCollisions(this.state.bubbles);
             if (collidedBubble) {
                 if (!_(this.affectedBubbles).contains(collidedBubble)) {
                     collidedBubble.applyElement.call(collidedBubble, 'fire');
                     collidedBubble.hp -= this.damage;
                     this.affectedBubbles.push(collidedBubble);
-
                     this.hp--;
                     if (this.hp <= 0) {
                         this.state.remove(this);
                     }
                 }
             }
-        },
-    });
+    };
 
-    var LightningShockwave = createClass(GameObject, function(bubble) {
+
+    function LightningShockwave(bubble) {
         this.bubble = bubble;
         this.x = bubble.x;
         this.y = bubble.y;
@@ -1325,13 +1365,16 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
         this.lifeTime = 1000;
         this.lifeTimer = this.lifeTime;
-    }, {
-        init: function(state) {
+    }
+    LightningShockwave.prototype = new GameObject();
+    LightningShockwave.prototype.constructor = LightningShockwave;
+
+    LightningShockwave.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
             this.addDisplay(this.sprite);
-        },
+    };
 
-        update: function(delta) {
+    LightningShockwave.prototype.update = function(delta) {
             GameObject.prototype.update.call(this, delta);
 
             this.lifeTimer -= delta;
@@ -1348,8 +1391,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     this.affectedBubbles.push(collidedBubble);
                 }
             }
-        },
-    });
+    };
+
 
     return {
         GameObject: GameObject,
