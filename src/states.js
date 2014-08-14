@@ -31,7 +31,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
     }
 
     // Classes
-    var State = createClass(events.EventHandler, function State(_super) {
+    var State = function() {
+        events.EventHandler.call(this);
         this.displayObjectContainer = new gfx.pixi.DisplayObjectContainer();
         this.objects = [];
         this.objectsToAdd = [];
@@ -39,8 +40,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         this.paused = false;
 
         this.initialized = false;
-    }, {
-        init: function() {
+    };
+        State.prototype = Object.create(events.EventHandler.prototype);
+        State.prototype.constructor = State;
+
+        State.prototype.init = function() {
             if (this.initialized) {
                 console.error("State has been reinitialized. Only call 'init' if object has been destroyed.");
             }
@@ -50,10 +54,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             // Use the default cursor for all states.
             var cursor = new gfx.pixi.Sprite(res.tex.cursorDefault);
             this.setCursor(cursor);
-        },
+        };
 
         // When this state has been switched
-        destroy: function() {
+        State.prototype.destroy = function() {
             // Remove all objects
             for (var i=0; i<this.objects.length; ++i) {
                 this.objects[i].destroy(this);
@@ -65,9 +69,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
 
             this.initialized = false;
-        },
+        };
 
-        update: function(delta) {
+        State.prototype.update = function(delta) {
             if (this.cursor) {
                 this.cursor.x = input.mouse.x;
                 this.cursor.y = input.mouse.y;
@@ -102,9 +106,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     this.objects[i].update(delta);
                 }
             }
-        },
+        };
 
-        add: function(obj) {
+        State.prototype.add = function(obj) {
             var ret = obj;
             if (!_.isArray(obj))
                 obj = [obj];
@@ -113,9 +117,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 this.objectsToAdd.push(obj[i]);
 
             return ret;
-        },
+        };
 
-        remove: function(obj) {
+        State.prototype.remove = function(obj) {
             var ret = obj;
             if (!_.isArray(obj))
                 obj = [obj];
@@ -125,26 +129,26 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
 
             return ret;
-        },
+        };
 
-        addDisplay: function(display, container) {
+        State.prototype.addDisplay = function(display, container) {
             if (container) {
                 container.addChild(display);
             } else {
                 this.displayObjectContainer.addChild(display);
             }
             return display;
-        },
+        };
 
-        removeDisplay: function(display) {
+        State.prototype.removeDisplay = function(display) {
             if (display.parent === undefined) {
                 console.error('DisplayObject parent is undefined. Adding the display multiple times may have caused this.');
             }
             display.parent.removeChild(display);
             return display;
-        },
+        };
 
-        setCursor: function(textureOrSprite) {
+        State.prototype.setCursor = function(textureOrSprite) {
             if (this.cursor) {
                 this.removeDisplay(this.cursor);
             }
@@ -158,9 +162,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             this.cursor.depth = -1000;
             this.addDisplay(this.cursor);
-        },
+        };
 
-        pause: function(pauseState) {
+        State.prototype.pause = function(pauseState) {
             if (pauseState) {
                 if (typeof pauseState === 'function') {
                     setState(new pauseState(this), { destroyOld: false });
@@ -172,9 +176,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             this.paused = true;
             this.onPause();
-        },
+        };
 
-        restore: function() {
+        State.prototype.restore = function() {
             if (this.paused) {
                 if (this.pauseState) {
                     setState(this, { initNew: false });
@@ -184,14 +188,14 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 this.paused = false;
                 this.onRestore();
             }
-        },
+        };
 
-        onPause: function() {},
-        onRestore: function() {}
-    });
+        State.prototype.onPause = function() {},
+        State.prototype.onRestore = function() {}
 
 
-    var Field = createClass(State, function Field() {
+    var Field = function() {
+        State.call(this);
         this.comboTime = 1000;
         this.comboTimer = this.comboTime;
         this.multiplier = 1;
@@ -229,8 +233,11 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             weapons: bpm.hotkeys.weapons,
             actions: bpm.hotkeys.actions
         };
-    },{
-        init: function() {
+    };
+        Field.prototype = Object.create(State.prototype);
+        Field.prototype.constructor = Field;
+
+        Field.prototype.init = function() {
             State.prototype.init.call(this);
 
             var commonTextStyle = {
@@ -383,9 +390,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             // Need to bind event callbacks, otherwise `this === window` on call
             _.bindAll(this, 'onBlur', 'onFocus');
             this._addEventListeners();
-        },
+        };
 
-        update: function(delta) {
+        Field.prototype.update = function(delta) {
             State.prototype.update.call(this, delta);
 
             this.statusText.setText('XP: ' + this.xp);
@@ -414,9 +421,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
 
             this.monitorHotkeys(this.hotkeys);
-        },
+        };
 
-        updateCombo: function(delta) {
+        Field.prototype.updateCombo = function(delta) {
             this.comboText.setText(this.combo + ' / ' + this.comboGoal
             + '\nx' + this.multiplier);
 
@@ -438,9 +445,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     this.multiplier = 1;
                 }
             }
-        },
+        };
 
-        monitorHotkeys: function(hotkeys) {
+        Field.prototype.monitorHotkeys = function(hotkeys) {
             if (!(hotkeys.menus && hotkeys.weapons))
                 throw new TypeError('Field.monitorHotkeys: Invalid hotkey format passed');
             // Listen for menu hotkeys and set closeKeys on instantiated menu
@@ -490,19 +497,19 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     }
                 }
             }, this));
-        },
+        };
 
-        destroy: function() {
+        Field.prototype.destroy = function() {
             State.prototype.destroy.call(this);
             this._removeEventListeners();
-        },
+        };
 
         /*
            Sets weapon; updates all global and instance references and adds to state (self)
             input: weapon - instanceof Weapon OR Case Sensitive String of weapon class name
             output: instanceof Weapon
         */
-        setWeapon: function(weapon) {
+        Field.prototype.setWeapon = function(weapon) {
             // Accepts a string or instanceof Weapon
             var weaponName;
             if (_.isString(weapon))
@@ -549,37 +556,37 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
 
             return this.add(weapon);
-        },
+        };
 
-        onPause: function() {
+        Field.prototype.onPause = function() {
             this._removeEventListeners();
-        },
+        };
 
-        onRestore: function() {
+        Field.prototype.onRestore = function() {
             this._addEventListeners();
-        },
+        };
 
-        onBlur: function() {
+        Field.prototype.onBlur = function() {
             // Pause game when window loses focus
             this.pause(FieldPauseMenu);
-        },
+        };
 
-        onFocus: function() {
-        },
+        Field.prototype.onFocus = function() {
+        };
 
-        _addEventListeners: function() {
+        Field.prototype._addEventListeners = function() {
             window.addEventListener('blur', this.onBlur);
             window.addEventListener('focus', this.onFocus);
-        },
+        };
 
-        _removeEventListeners: function() {
+        Field.prototype._removeEventListeners = function() {
             window.removeEventListener('blur', this.onBlur);
             window.removeEventListener('focus', this.onFocus);
-        }
-    });
+        };
 
 
-    var Menu = createClass(State, function(prevState) {
+    var Menu = function(prevState) {
+        State.call(this);
         this.prevState = prevState;
         if (this.prevState instanceof Menu) {
             this.prevMenu = this.prevState;
@@ -589,20 +596,23 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         this.buttonStyle = {
             font: 'bold 24px arial'
         };
-    }, {
-        init: function() {
-            State.prototype.init.call(this);
-        },
+    };
+        Menu.prototype = Object.create(State.prototype);
+        Menu.prototype.constructor = State;
 
-        update: function(delta) {
+        Menu.prototype.init = function() {
+            State.prototype.init.call(this);
+        };
+
+        Menu.prototype.update = function(delta) {
             State.prototype.update.call(this, delta);
             if (this.closeKeys) {
                 if (input.key.isReleased(this.closeKeys))
                     this.close();
             }
-        },
+        };
 
-        close: function() {
+        Menu.prototype.close = function() {
             if (this.prevMenu) {
                 setState(this.prevMenu);
             } else if (this.cachedState) {
@@ -610,14 +620,17 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 this.cachedState.paused = false;
                 this.cachedState.onRestore();
             }
-        },
-    });
+        };
 
 
     // TODO: Put options in here vv
-    var FieldPauseMenu = createClass(Menu, function(prevState) {
-    }, {
-        init: function() {
+    var FieldPauseMenu = function(prevState) {
+        Menu.call(this, prevState);
+    };
+        FieldPauseMenu.prototype = Object.create(Menu.prototype);
+        FieldPauseMenu.prototype.constructor = FieldPauseMenu;
+
+        FieldPauseMenu.prototype.init = function() {
             Menu.prototype.init.call(this);
 
             var back = new gfx.pixi.Graphics();
@@ -639,9 +652,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             this.addDisplay(back);
             this.addDisplay(text);
-        },
+        };
 
-        update: function(delta) {
+        FieldPauseMenu.prototype.update = function(delta) {
             Menu.prototype.update.call(this, delta);
 
             if (input.mouse.isReleased(input.MOUSE_MIDDLE)) {
@@ -651,12 +664,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             if (input.mouse.isPressed(input.MOUSE_LEFT)) {
                 this.close();
             }
-        },
-    });
+        };
 
-    var AnotherPauseMenu = createClass(Menu, function(prevState) {
-    }, {
-        init: function() {
+    var AnotherPauseMenu = function(prevState) {
+        Menu.call(this, prevState);
+    };
+        AnotherPauseMenu.prototype = Object.create(Menu.prototype);
+        AnotherPauseMenu.prototype.constructor = AnotherPauseMenu;
+
+        AnotherPauseMenu.prototype.init = function() {
             Menu.prototype.init.call(this);
 
             var back = new gfx.pixi.Graphics();
@@ -678,20 +694,22 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             this.addDisplay(back);
             this.addDisplay(text);
-        },
+        };
 
-        update: function(delta) {
+        AnotherPauseMenu.prototype.update = function(delta) {
             Menu.prototype.update.call(this, delta);
             if (input.mouse.isReleased(input.MOUSE_MIDDLE)) {
                 this.close();
             }
-        },
-    });
+        };
 
+    var RoundEndPauseMenu = function(prevState) {
+        Menu.call(this, prevState);
+    };
+        RoundEndPauseMenu.prototype = Object.create(Menu.prototype);
+        RoundEndPauseMenu.prototype.constructor = RoundEndPauseMenu;
 
-    var RoundEndPauseMenu = createClass(Menu, function(prevState) {
-    }, {
-        init: function() {
+        RoundEndPauseMenu.prototype.init = function() {
             Menu.prototype.init.call(this);
 
             var back = new gfx.pixi.Graphics();
@@ -724,14 +742,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             button.down.depth = button.up.depth;
             button.displayText.depth = button.up.depth-1;
             this.add(button);
-        },
-    });
+        };
 
+    var MainMenu = function(prevState) {
+        Menu.call(this, prevState);
+    };
+        MainMenu.prototype = Object.create(Menu.prototype);
+        MainMenu.prototype.constructor = MainMenu;
 
-    var MainMenu = createClass(Menu, function MainMenu(prevState) {
-
-    }, {
-        init: function() {
+        MainMenu.prototype.init = function() {
             Menu.prototype.init.call(this);
 
             this.buttons = {
@@ -741,14 +760,17 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.buttons.start.setPos(gfx.width / 2 - 5, gfx.height / 2);
 
             this.add(_.values(this.buttons));
-        }
-    });
+        };
 
-    var TabMenu = createClass(Menu, function(prevState) {
-    }, {
-        currentTab: null,
+    var TabMenu = function(prevState) {
+        Menu.call(this, prevState);
+    };
+        TabMenu.prototype = Object.create(Menu.prototype);
+        TabMenu.prototype.constructor = TabMenu;
 
-        init: function() {
+        TabMenu.prototype.currentTab = null;
+
+        TabMenu.prototype.init = function() {
             Menu.prototype.init.call(this);
 
             this.tabs = [];
@@ -756,13 +778,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.addTab('Town', TownMenu);
             this.addTab('Blacksmith', SmithMenu);
             this.addTab('Wizard', WizardMenu);
-        },
+        };
 
-        close: function() {
+        TabMenu.prototype.close = function() {
             Menu.prototype.close.call(this);
-        },
+        };
 
-        addTab: function(name, State) {
+        TabMenu.prototype.addTab = function(name, State) {
             var newTab = new ui.Button(name, this.buttonStyle, function() {
                 if (name !== TabMenu.prototype.currentTab) {
                     TabMenu.prototype.currentTab = name;
@@ -780,12 +802,15 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
 
             this.add(newTab);
-        },
-    });
+        };
 
-    var TownMenu = createClass(TabMenu, function(prevState) {
-    }, {
-        init: function() {
+    var TownMenu = function(prevState) {
+        TabMenu.call(this, prevState);
+    };
+        TownMenu.prototype = Object.create(TabMenu.prototype);
+        TownMenu.prototype.constructor = TownMenu;
+
+        TownMenu.prototype.init = function() {
             TabMenu.prototype.init.call(this);
 
             var questDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
@@ -884,24 +909,26 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     }, this))(quest);
                 }
             }
-        },
+        };
 
-        close: function() {
+        TownMenu.prototype.close = function() {
             TabMenu.prototype.close.call(this);
             if (this.cachedState) {
                 this.cachedState.displayObjectContainer.visible = true;
             }
-        },
-    });
+        };
 
-
-    var SmithMenu = createClass(TabMenu, function(prevState) {
+    var SmithMenu = function(prevState) {
+        TabMenu.call(this, prevState);
         this.selectedUpgrade;
         this.selectedWeapon;
         this.tab = 'general';
         this.tabObjects = [];
-    }, {
-        init: function() {
+    };
+        SmithMenu.prototype = Object.create(TabMenu.prototype);
+        SmithMenu.prototype.constructor = SmithMenu;
+
+        SmithMenu.prototype.init = function() {
             TabMenu.prototype.init.call(this);
 
             this.moneyText = new gfx.pixi.Text('$' + bpm.player.money, {fill: 'white'});
@@ -973,9 +1000,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             this.purchaseButton.setPos(gfx.width - this.purchaseButton.width - 5, gfx.height - 50);
             refundButton.setPos(this.purchaseButton.x - refundButton.width - 32, gfx.height - 50);
-        },
+        };
 
-        updateDescription: function(upgrade) {
+        SmithMenu.prototype.updateDescription = function(upgrade) {
             var nextLevel = upgrade.getNextLevel();
             this.upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
 
@@ -1027,9 +1054,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 }
             }
 
-        },
+        };
 
-        addGeneralContent: function() {
+        SmithMenu.prototype.addGeneralContent = function() {
             this.upgradeDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
             this.tabObjects.push(this.upgradeDescription);
 
@@ -1049,9 +1076,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
 
             this.add(this.tabObjects);
-        },
+        };
 
-        addWeaponContent: function() {
+        SmithMenu.prototype.addWeaponContent = function() {
             var upgradeButtons = [];
             var weaponButtons = [];
 
@@ -1099,16 +1126,19 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }, this);
 
             this.add(this.tabObjects);
-        },
-    });
+        };
 
-    var WizardMenu = createClass(TabMenu, function(prevState) {
+    var WizardMenu = function(prevState) {
+        TabMenu.call(this, prevState);
         this.selectedUpgrade;
         this.selectedElement;
         this.tab = 'perks';
         this.tabObjects = [];
-    }, {
-        init: function() {
+    };
+        WizardMenu.prototype = Object.create(TabMenu.prototype);
+        WizardMenu.prototype.constructor = WizardMenu;
+
+        WizardMenu.prototype.init = function() {
             TabMenu.prototype.init.call(this);
 
             var commonText = {
@@ -1197,9 +1227,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             this.purchaseButton.setPos(gfx.width - this.purchaseButton.width - 5, gfx.height - 50);
             refundButton.setPos(this.purchaseButton.x - refundButton.width - 32, gfx.height - 50);
-        },
+        };
 
-        updateDescription: function(upgrade) {
+        WizardMenu.prototype.updateDescription = function(upgrade) {
             var nextLevel = upgrade.getNextLevel();
             this.upgradeDescription.text = upgrade.name + '\n' + upgrade.description;
 
@@ -1266,9 +1296,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     }
                 }
             }
-        },
+        };
 
-        addPerkContent: function() {
+        WizardMenu.prototype.addPerkContent = function() {
             this.upgradeDescription = new ui.TextField('', gfx.width/2, 64, gfx.width/2-32, gfx.height - 160);
             this.tabObjects.push(this.upgradeDescription);
 
@@ -1288,9 +1318,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
 
             this.add(this.tabObjects);
-        },
+        };
 
-        addElementContent: function() {
+        WizardMenu.prototype.addElementContent = function() {
             var upgradeButtons = [];
             var elementButtons = [];
 
@@ -1338,16 +1368,18 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }, this);
 
             this.add(this.tabObjects);
-        },
-    });
+        };
 
-
-    var RoundCompleteMenu = createClass(Menu, function(prevState, field) {
+    var RoundCompleteMenu = function(prevState, field) {
+        Menu.call(this, prevState);
         this.field = field;
         this.timeBonus = this.field.timeBonus;
         this.quest = this.field.currentQuest;
-    }, {
-        init: function() {
+    };
+        RoundCompleteMenu.prototype = Object.create(Menu.prototype);
+        RoundCompleteMenu.prototype.constructor = RoundCompleteMenu;
+
+        RoundCompleteMenu.prototype.init = function() {
             Menu.prototype.init.call(this);
 
             this.addDisplay(new gfx.pixi.Text('Day complete!', {
@@ -1477,8 +1509,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             this.addDisplay(questText);
             this.addDisplay(completeText);
-        },
-    });
+        };
 
     return {
         global: global,
