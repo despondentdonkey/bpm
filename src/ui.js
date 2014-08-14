@@ -2,24 +2,28 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
     var GameObject = objects.GameObject;
 
-    var BasicButton = createClass(GameObject, function(x, y, w, h) {
+    var BasicButton = function(x, y, w, h) {
+        GameObject.call(this);
         this.x = x;
         this.y = y;
         this.width = w;
         this.height = h;
         this.status = 'up';
-    }, {
-        init: function(state) {
+    };
+        BasicButton.prototype = Object.create(GameObject.prototype);
+        BasicButton.prototype.constructor = BasicButton;
+
+        BasicButton.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
             this.excludeRect = input.mouse.addUiExclusionArea(this.x, this.y, this.width, this.height);
-        },
+        };
 
-        destroy: function(state) {
+        BasicButton.prototype.destroy = function(state) {
             GameObject.prototype.destroy.call(this, state);
             input.mouse.removeUiExclusionArea(this.excludeRect);
-        },
+        };
 
-        update: function(delta) {
+        BasicButton.prototype.update = function(delta) {
             GameObject.prototype.update.call(this, delta);
 
             if (this.disabled) return;
@@ -59,18 +63,17 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             }
 
             input.mouse.disableUi = true;
-        },
+        };
 
-        enable: function() {
+        BasicButton.prototype.enable = function() {
             this.disabled = false;
-        },
+        };
 
-        disable: function() {
+        BasicButton.prototype.disable = function() {
             this.disabled = true;
-        },
-    });
+        };
 
-    var Button = createClass(BasicButton, function(text, style, onRelease, context) {
+    var Button = function(text, style, onRelease, context) {
         BasicButton.call(this, 0, 0, 0, 0);
 
         this.onRelease = context ? _.bind(onRelease, context) : onRelease;
@@ -113,9 +116,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this.disabledSlice.update();
         this.disabledSlice.depth = this.up.depth;
         this.disabledSlice.visible = false;
+    };
+        Button.prototype = Object.create(BasicButton.prototype);
+        Button.prototype.constructor = Button;
 
-    }, {
-        init: function(state) {
+        Button.prototype.init = function(state) {
             BasicButton.prototype.init.call(this, state);
 
             this.addDisplay(this.displayText);
@@ -127,9 +132,9 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
             this.updateDisplayProperties([this.up, this.down, this.disabledSlice]);
             this.syncDisplayProperties = false;
-        },
+        };
 
-        update: function(delta) {
+        Button.prototype.update = function(delta) {
             BasicButton.prototype.update.call(this, delta);
 
             this.displayText.x = this.x + this.padding/2;
@@ -158,22 +163,22 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                     break;
                 }
             }
-        },
+        };
 
-        setCurrent: function(obj) {
+        Button.prototype.setCurrent = function(obj) {
             this.current.visible = false;
             obj.visible = true;
             this.current = obj;
-        },
+        };
 
-        setPos: function(x, y) {
+        Button.prototype.setPos = function(x, y) {
             this.x = x;
             this.y = y;
-        },
-    });
+        };
 
     // w, h optional. If w is specified then word wrap will be enabled to that length.
-    var TextField = createClass(GameObject, function(text, x, y, w, h) {
+    var TextField = function(text, x, y, w, h) {
+        GameObject.call(this);
         this._text = text;
         this.x = x;
         this.y = y;
@@ -203,8 +208,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 this.displayText.setText(val);
             },
         });
-    }, {
-        init: function(state) {
+    };
+        TextField.prototype = Object.create(GameObject.prototype);
+        TextField.prototype.constructor = TextField;
+
+        TextField.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
 
             this.displayText.depth = -10;
@@ -225,10 +233,10 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
             this.updateDisplayProperties([this.back]);
             this.syncDisplayProperties = false;
-        },
-    });
+        };
 
-    var FloatText = createClass(GameObject, function(text, textOptions) {
+    var FloatText = function(text, textOptions) {
+        GameObject.call(this);
         this.displayText = new gfx.pixi.Text(text, _.defaults(textOptions || {}, {
             stroke: 'black',
             strokeThickness: 3,
@@ -237,8 +245,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             font: 'bold 18px arial',
         }));
         this.displayText.depth = gfx.layers.gui;
-    }, {
-        init: function(state) {
+    };
+        FloatText.prototype = Object.create(GameObject.prototype);
+        FloatText.prototype.constructor = FloatText;
+
+        FloatText.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
 
             this.addDisplay(this.displayText);
@@ -251,10 +262,10 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 this.displayText.alpha = Math.sqrt(1-ratio) * 1.5;
             }, this);
             this.state.add(timer);
-        },
-    });
+        };
 
-    var StatusBar = createClass(GameObject, function StatusBar(back, front, width, height) {
+    var StatusBar = function StatusBar(back, front, width, height) {
+        GameObject.call(this);
         this.backSliceTextures = back;
         this.frontSliceTextures = front;
         this.width = width;
@@ -267,8 +278,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 this.updateDepth = true;
             },
         });
-    }, {
-        init: function(state) {
+    };
+        StatusBar.prototype = Object.create(GameObject.prototype);
+        StatusBar.prototype.constructor = StatusBar;
+
+        StatusBar.prototype.init = function(state) {
             GameObject.prototype.init.call(this, state);
             this.backSlice = new gfx.NineSlice(this.backSliceTextures);
             this.frontSlice = new gfx.NineSlice(this.frontSliceTextures);
@@ -287,14 +301,14 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
             this.frontSlice.update();
             this.backSlice.update();
-        },
+        };
 
-        setRatio: function(ratio) {
+        StatusBar.prototype.setRatio = function(ratio) {
             this.ratio = ratio;
             this.updateRatio = true;
-        },
+        };
 
-        update: function(delta) {
+        StatusBar.prototype.update = function(delta) {
             GameObject.prototype.update.call(this, delta);
 
             if (this.updateDepth) {
@@ -316,8 +330,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 }
                 this.updateRatio = false;
             }
-        },
-    });
+        };
 
     return {
         Button: Button,
