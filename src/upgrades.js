@@ -200,7 +200,7 @@ define(function() {
 
 
     // Base class for any upgrade.
-    var BasicUpgrade = createClass(null, function BasicUpgrade(o, type, treeName) {
+    function BasicUpgrade(o, type, treeName) {
         this.options = o;
 
         this.levelNum = 0; // The current level of the upgrade 3/5 = level 3 / length 5
@@ -280,10 +280,10 @@ define(function() {
         }
 
         this.addAbilities();
-    }, {
+    }
 
         // Increases level, removes due currency, and updates player upgrade data.
-        purchase: function(player) {
+        BasicUpgrade.prototype.purchase = function(player) {
             this.increaseLevel();
 
             var levelCost = this.getCurrentLevel().cost;
@@ -308,7 +308,7 @@ define(function() {
             } else if (this.type === 'perk') {
                 player.upgrades.perks[this.id] = this.levelNum;
             }
-        },
+        };
 
         /* Returns a list of required items needed before a purchase.
                Returns null if no requirements are needed, allowing a purchase.
@@ -316,7 +316,7 @@ define(function() {
                currency - true if player does not have enough money or level points
                upgrades - an array of upgrades needed
                points   - the number of invested points needed */
-        getRequirements: function(player) {
+        BasicUpgrade.prototype.getRequirements = function(player) {
             var requires = {};
 
             var nextLevel = this.getNextLevel();
@@ -368,19 +368,18 @@ define(function() {
             }
 
             return _.isEmpty(requires) ? null : requires;
-        },
+        };
 
         // Increases the level by 1 and enables this upgrade.
-        increaseLevel: function() {
+        BasicUpgrade.prototype.increaseLevel = function() {
             this.enable();
             this.setLevel(this.levelNum + 1);
-        },
+        };
 
-        setLevel: function(levelNum) {
+        BasicUpgrade.prototype.setLevel = function(levelNum) {
             this.removeAbilities();
             this.levelNum = levelNum;
             this.addAbilities();
-
             // If this upgrade is enabled then we should update the global abilities to the new level.
             if (this.enabled) {
                 if (levelNum <= 0) {
@@ -389,27 +388,27 @@ define(function() {
                     this.update();
                 }
             }
-        },
+        };
 
         // Starts at 1. To get the level for 2/5 call getLevel(2)
-        getLevel: function(index) {
+        BasicUpgrade.prototype.getLevel = function(index) {
             return this.levels[index-1];
-        },
+        };
 
-        getCurrentLevel: function() {
+        BasicUpgrade.prototype.getCurrentLevel = function() {
             return this.getLevel(this.levelNum);
-        },
+        };
 
-        getNextLevel: function() {
+        BasicUpgrade.prototype.getNextLevel = function() {
             return this.getLevel(this.levelNum+1);
-        },
+        };
 
-        isMaxed: function() {
+        BasicUpgrade.prototype.isMaxed = function() {
             return (this.levelNum >= this.length);
-        },
+        };
 
         // Sends the current abilities for this upgrade to the global abilities.
-        enable: function() {
+        BasicUpgrade.prototype.enable = function() {
             if (this.enabled) return;
             this.enabled = true;
 
@@ -428,24 +427,24 @@ define(function() {
                 console.log('ENABLE: global ability updated', globalAbility);
                 console.log('total', key, upgrades.getVal(key));
             }
-        },
+        };
 
         // Disables and then enables the upgrade effectively updating the global abilities.
-        update: function() {
+        BasicUpgrade.prototype.update = function() {
             this.disable();
             this.enable();
-        },
+        };
 
         // Removes the previous abilities for this upgrade from the global abilities.
-        disable: function() {
+        BasicUpgrade.prototype.disable = function() {
             if (!this.enabled) return;
             this.enabled = false;
 
             this.removeGlobalAbilities(this.previousAbilities);
-        },
+        };
 
         // Adds the abilities for the current level (levelNum) to this.currentAbilities.
-        addAbilities: function() {
+        BasicUpgrade.prototype.addAbilities = function() {
             if (this.levelNum <= 0) return;
 
             if (!_.isEmpty(this.currentAbilities)) {
@@ -459,10 +458,10 @@ define(function() {
                     this.currentAbilities[key] = ability;
                 }
             }
-        },
+        };
 
         // Removes the abilities from this.currentAbilities and puts them in this.previousAbilities.
-        removeAbilities: function() {
+        BasicUpgrade.prototype.removeAbilities = function() {
             if (this.levelNum <= 0) {
                 this.previousAbilities = {};
                 return;
@@ -474,10 +473,10 @@ define(function() {
 
             this.previousAbilities = this.currentAbilities;
             this.currentAbilities = {};
-        },
+        };
 
         // Removes an object literal of abilities from the global abilities.
-        removeGlobalAbilities: function(toRemove) {
+        BasicUpgrade.prototype.removeGlobalAbilities = function(toRemove) {
             for (var key in toRemove) {
                 var ability = toRemove[key];
                 var globalAbility = upgrades.abilities[key];
@@ -494,9 +493,7 @@ define(function() {
                 }
                 console.log('removed', globalAbility);
             }
-
-        },
-    });
+        };
 
     return upgrades;
 });
