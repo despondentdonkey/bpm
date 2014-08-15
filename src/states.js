@@ -2,7 +2,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
     var global = {
         current: null,
         previous: null,
-        switchState: null,
+        switchState: null, // Flag; =function when state is prepped to be switched
     };
 
     // Static Methods
@@ -13,6 +13,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             destroyOld: true,
         });
 
+        // Set to null in main on successful switch.
         global.switchState = _.bind(function() {
             // If there's currently a state, set it to the previous state and destroy it.
             if (global.current) {
