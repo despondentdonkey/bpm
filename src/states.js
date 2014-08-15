@@ -468,7 +468,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 if (_.isString(weapon))
                     className = weapon;
                 else if (weapon instanceof objects.Weapon)
-                    className = weapon.className;
+                    className = weapon.constructor.name;
                 else
                     throw new TypeError('Field.monitorHotkeys: Invalid weapon passed anonymous function');
 
