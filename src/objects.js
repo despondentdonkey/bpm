@@ -16,52 +16,52 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         this.parent = null;
         this.children = [];
     }
-    BasicObject.prototype = new events.EventHandler();
+    BasicObject.prototype = Object.create(events.EventHandler.prototype);
     BasicObject.prototype.constructor = BasicObject;
 
     BasicObject.prototype.init = function(state) {
-            this.state = state;
-            for (var i=0; i<this.children.length; ++i) {
-                this.children[i].init(state);
-            }
-            this.initialized = true;
+        this.state = state;
+        for (var i=0; i<this.children.length; ++i) {
+            this.children[i].init(state);
+        }
+        this.initialized = true;
     };
 
     BasicObject.prototype.destroy = function() {
-            this.state = null;
+        this.state = null;
 
-            if (this.parent) {
-                this.parent.removeChild(this);
-            }
+        if (this.parent) {
+            this.parent.removeChild(this);
+        }
 
-            for (var i=0; i<this.children.length; ++i) {
-                var child = this.children[i];
-                child.parent = null;
-                child.destroy();
-            }
+        for (var i=0; i<this.children.length; ++i) {
+            var child = this.children[i];
+            child.parent = null;
+            child.destroy();
+        }
 
-            this.initialized = false;
+        this.initialized = false;
     };
 
     BasicObject.prototype.update = function(delta) {
-            for (var i=0; i<this.children.length; ++i) {
-                this.children[i].update(delta);
-            }
+        for (var i=0; i<this.children.length; ++i) {
+            this.children[i].update(delta);
+        }
     };
 
     BasicObject.prototype.addChild = function(object) {
-            object.parent = this;
-            this.children.push(object);
+        object.parent = this;
+        this.children.push(object);
     };
 
     BasicObject.prototype.removeChild = function(object) {
-            object.parent = null;
-            this.children.splice(this.children.indexOf(object), 1);
+        object.parent = null;
+        this.children.splice(this.children.indexOf(object), 1);
     };
 
 
     function GameObject() {
-        BasicObject.call();
+        BasicObject.call(this);
         this.idList = [];
         this.displayObjects = [];
 
@@ -80,7 +80,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         };
         this.syncDisplayProperties = true; // If true this will update all display object's position properties (x,y,scale,rotation) to this object's properties.
     }
-    GameObject.prototype = new BasicObject();
+    GameObject.prototype = Object.create(BasicObject.prototype);
     GameObject.prototype.constructor = GameObject;
 
     GameObject.prototype.init = function(state) {
@@ -149,69 +149,69 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     };
 
     GameObject.prototype.addDisplay = function(display, container) {
-            this.displayObjects.push(display);
-            return this.state.addDisplay(display, container);
+        this.displayObjects.push(display);
+        return this.state.addDisplay(display, container);
     };
 
     GameObject.prototype.removeDisplay = function(display) {
-            this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
-            return this.state.removeDisplay(display);
+        this.displayObjects.splice(this.displayObjects.indexOf(display), 1);
+        return this.state.removeDisplay(display);
     };
 
     GameObject.prototype.addId =  function(id) {
-            if (typeof id === 'string') {
-                if (!this.hasId(id)) {
-                    this.idList.push(id);
-                }
-            } else if (id instanceof Array) {
-                for (var i=0; i<id.length; ++i) {
-                    this.addId(id[i]);
-                }
+        if (typeof id === 'string') {
+            if (!this.hasId(id)) {
+                this.idList.push(id);
             }
+        } else if (id instanceof Array) {
+            for (var i=0; i<id.length; ++i) {
+                this.addId(id[i]);
+            }
+        }
     };
 
     GameObject.prototype.hasId =  function(id) {
-            if (typeof id === 'string') {
-                for (var i=0; i<this.idList.length; ++i) {
-                    if (this.idList[i] === id) {
-                        return true;
-                    }
-                }
-            } else if (id instanceof Array) {
-                for (var i=0; i<id.length; ++i) {
-                    if (!this.hasId(id[i])) {
-                        return false;
-                    }
-                }
-
-                if (id.length >= 1) {
+        if (typeof id === 'string') {
+            for (var i=0; i<this.idList.length; ++i) {
+                if (this.idList[i] === id) {
                     return true;
                 }
             }
-            return false;
+        } else if (id instanceof Array) {
+            for (var i=0; i<id.length; ++i) {
+                if (!this.hasId(id[i])) {
+                    return false;
+                }
+            }
+
+            if (id.length >= 1) {
+                return true;
+            }
+        }
+        return false;
     };
 
     GameObject.prototype.removeId =  function(id) {
-            if (typeof id === 'string') {
-                if (this.hasId(id)) {
-                    this.idList.splice(this.idList.indexOf(id), 1);
-                }
-            } else if (id instanceof Array) {
-                for (var i=0; i<id.length; ++i) {
-                    this.removeId(id[i]);
-                }
+        if (typeof id === 'string') {
+            if (this.hasId(id)) {
+                this.idList.splice(this.idList.indexOf(id), 1);
             }
+        } else if (id instanceof Array) {
+            for (var i=0; i<id.length; ++i) {
+                this.removeId(id[i]);
+            }
+        }
     };
 
     GameObject.prototype.getBounds =  function() {
-            var width = this.width * this.anchor.x;
-            var height = this.height * this.anchor.y;
-            return {
-                x1: this.x - width,
-                y1: this.y - height,
-                x2: this.x + width,
-                y2: this.y + height,
-            };
+        var width = this.width * this.anchor.x;
+        var height = this.height * this.anchor.y;
+        return {
+            x1: this.x - width,
+            y1: this.y - height,
+            x2: this.x + width,
+            y2: this.y + height,
+        };
     };
 
     /* Returns the first object which collides with this object.
@@ -220,52 +220,52 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
      * If 'opt' is an object literal then you can specify id, objects, and grouped.
      * If 'grouped' is true then it will return a list of objects which collide with this object. */
     GameObject.prototype.getCollisions =  function(opt) {
-            var id;
-            var objects = this.state.objects;
-            var grouped = false;
+        var id;
+        var objects = this.state.objects;
+        var grouped = false;
 
-            // Decide what id, objects, and grouped should be based on parameter.
-            if (_.isArray(opt)) {
-                objects = opt;
+        // Decide what id, objects, and grouped should be based on parameter.
+        if (_.isArray(opt)) {
+            objects = opt;
+        } else {
+            if (_.isString(opt)) {
+                id = opt;
             } else {
-                if (_.isString(opt)) {
-                    id = opt;
-                } else {
-                    _.defaults(opt, {
-                        id: null,
-                        objects: objects,
-                        grouped: grouped,
-                    });
+                _.defaults(opt, {
+                    id: null,
+                    objects: objects,
+                    grouped: grouped,
+                });
 
-                    id = opt.id;
-                    objects = opt.objects;
-                    grouped = opt.grouped;
-                }
+                id = opt.id;
+                objects = opt.objects;
+                grouped = opt.grouped;
             }
+        }
 
-            var result = [];
-            for (var i=0; i<objects.length; ++i) {
-                var obj = objects[i];
-                if (obj instanceof GameObject && obj !== this) {
-                    var checkingObj;
+        var result = [];
+        for (var i=0; i<objects.length; ++i) {
+            var obj = objects[i];
+            if (obj instanceof GameObject && obj !== this) {
+                var checkingObj;
 
-                    if (id) {
-                        if (obj.hasId(id)) {
-                            checkingObj = obj;
-                        } else {
-                            continue;
-                        }
-                    } else {
+                if (id) {
+                    if (obj.hasId(id)) {
                         checkingObj = obj;
+                    } else {
+                        continue;
                     }
+                } else {
+                    checkingObj = obj;
+                }
 
-                    if (this.isNearby(checkingObj, 0)) {
-                        result.push(checkingObj);
-                        if (!grouped) break;
-                    }
+                if (this.isNearby(checkingObj, 0)) {
+                    result.push(checkingObj);
+                    if (!grouped) break;
                 }
             }
-            return result.length > 1 ? result : result[0];
+        }
+        return result.length > 1 ? result : result[0];
     };
 
     /* Pass bounds obj (x1, x2, y1, y2) or GameObject and optional radius
@@ -352,7 +352,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
     // Any performance problems with these are mostly likely due to the collisions rather than rendering.
     function Bullet(tex, x, y, angle) {
-        GameObject.call();
+        GameObject.call(this);
         this.x = x;
         this.y = y;
         this.speedX = Math.cos(angle);
@@ -422,7 +422,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     // Weapon applies the element and upgrades onto the bullets it generates
     // Also controls ammo reloading system + graphics
     function Weapon() {
-        GameObject.call();
+        GameObject.call(this);
         this.availableElements = ['fire', 'ice', 'lightning'];
     }
     Weapon.prototype = new GameObject();
@@ -544,7 +544,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
 
     function PinShooter() {
-        Weapon.call();
+        Weapon.call(this);
     }
     PinShooter.prototype = new Weapon();
     PinShooter.prototype.constructor = PinShooter;
@@ -578,7 +578,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     };
 
     function Shotgun() {
-        Weapon.call();
+        Weapon.call(this);
     }
     Shotgun.prototype = new Weapon();
     Shotgun.prototype.constructor = Shotgun;
@@ -611,7 +611,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     };
 
     function Rifle() {
-        Weapon.call();
+        Weapon.call(this);
     }
     Rifle.prototype = new Weapon();
     Rifle.prototype.constructor = Rifle;
@@ -645,7 +645,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
 
     function Bubble(armor, x, y, angle) {
-        GameObject.call();
+        GameObject.call(this);
         this.x = x;
         this.y = y;
 
