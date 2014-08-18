@@ -1394,6 +1394,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
 
     return {
+        BasicObject: BasicObject,
         GameObject: GameObject,
         Timer: Timer,
         Weapon: Weapon, // should only be used for instanceof checks
