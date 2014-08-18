@@ -2,6 +2,102 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
     var GameObject = objects.GameObject;
 
+    var UiObject = function() {
+        GameObject.call(this);
+        this._relativeX = 0;
+        this._relativeY = 0;
+    };
+        UiObject.prototype = Object.create(GameObject.prototype);
+        UiObject.prototype.constructor = UiObject;
+
+        UiObject.prototype.init = function(state) {
+            GameObject.prototype.init.call(this, state);
+            this.updateUiExclusionArea();
+        };
+
+        UiObject.prototype.destroy = function(state) {
+            GameObject.prototype.destroy.call(this, state);
+            input.mouse.removeUiExclusionArea(this.excludeRect);
+        };
+
+        UiObject.prototype.update = function(delta) {
+            GameObject.prototype.update.call(this, delta);
+
+            if (this.disabled) return;
+
+            // Disable exclusion areas while ui uses input methods. Enable at the end of update.
+            input.mouse.disableUi = false;
+
+            this.inputUpdate(delta);
+
+            input.mouse.disableUi = true;
+        };
+
+        // Called during update when exclusion areas are disabled. This is where input handling should go.
+        UiObject.prototype.inputUpdate = function(delta) {};
+
+        // Sets positions relative to parent
+        UiObject.prototype.setUiPos = function(x, y) {
+            var parentX = 0, parentY = 0;
+            if (this.parent) {
+                var parentPos = this.parent.getScreenPos();
+                parentX = parentPos.x;
+                parentY = parentPos.y;
+            }
+
+            this.x = parentX + x;
+            this.y = parentY + y;
+            this._relativeX = x;
+            this._relativeY = y;
+
+            for (var i=0; i<this.children.length; ++i) {
+                this.children[i].updateUiPos();
+            }
+
+            this.updateUiExclusionArea();
+        };
+
+        // Gets position relative to parent.
+        UiObject.prototype.getRelativePos = function() {
+            return {
+                x: this._relativeX,
+                y: this._relativeY,
+            };
+        };
+
+        // Gets the position this object should appear on screen. (parent pos + relative pos)
+        UiObject.prototype.getScreenPos = function() {
+            var parentX = 0, parentY = 0;
+            if (this.parent) {
+                var parentPos = this.parent.getScreenPos();
+                parentX = parentPos.x;
+                parentY = parentPos.y;
+            }
+
+            return {
+                x: parentX + this._relativeX,
+                y: parentY + this._relativeY,
+            };
+        };
+
+        // Updates screen position (x, y). Used when a parent's position has changed.
+        UiObject.prototype.updateUiPos = function() {
+            this.setUiPos(this._relativeX, this._relativeY);
+        };
+
+        UiObject.prototype.addChild = function(object) {
+            objects.BasicObject.prototype.addChild.call(this, object);
+            object.updateUiPos();
+        };
+
+        // Removes current exclusion rectangle then adds a new one with the current x,y and width, height.
+        UiObject.prototype.updateUiExclusionArea = function(object) {
+            if (this.excludeRect) {
+                input.mouse.removeUiExclusionArea(this.excludeRect);
+            }
+            this.excludeRect = input.mouse.addUiExclusionArea(this.x, this.y, this.width, this.height);
+        };
+
     var BasicButton = function(x, y, w, h) {
         GameObject.call(this);
         this.x = x;
@@ -333,6 +429,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         };
 
     return {
+        UiObject: UiObject,
         Button: Button,
         TextField: TextField,
         FloatText: FloatText,
