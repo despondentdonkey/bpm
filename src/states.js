@@ -758,7 +758,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 start: new ui.Button('Start', this.buttonStyle, function() { setState(new TownMenu()); }, this),
             }
 
-            this.buttons.start.setPos(gfx.width / 2 - 5, gfx.height / 2);
+            this.buttons.start.setUiPos(gfx.width / 2 - 5, gfx.height / 2);
 
             this.add(_.values(this.buttons));
         };
@@ -999,8 +999,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }, this);
             this.add([this.purchaseButton, refundButton]);
 
-            this.purchaseButton.setPos(gfx.width - this.purchaseButton.width - 5, gfx.height - 50);
-            refundButton.setPos(this.purchaseButton.x - refundButton.width - 32, gfx.height - 50);
+            this.purchaseButton.setUiPos(gfx.width - this.purchaseButton.width - 5, gfx.height - 50);
+            refundButton.setUiPos(this.purchaseButton.x - refundButton.width - 32, gfx.height - 50);
         };
 
         SmithMenu.prototype.updateDescription = function(upgrade) {
@@ -1072,7 +1072,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     }, this);
                 }, this))(upgrade);
 
-                newButton.setPos(50, 100 + 50 * i);
+                newButton.setUiPos(50, 100 + 50 * i);
                 this.tabObjects.push(newButton);
             }
 
@@ -1110,7 +1110,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                                 }, this);
                             }, this))(upgrade);
 
-                            button.setPos(gfx.width/2, 100 + 50 * i);
+                            button.setUiPos(gfx.width/2, 100 + 50 * i);
                             upgradeButtons.push(button);
                             this.tabObjects.push(button);
                             this.add(button);
@@ -1122,7 +1122,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
 
             _.each(weaponButtons, function(b, i) {
-                b.setPos(50, 100 + 50 * i);
+                b.setUiPos(50, 100 + 50 * i);
                 this.tabObjects.push(b);
             }, this);
 
@@ -1226,8 +1226,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }, this);
             this.add([this.purchaseButton, refundButton]);
 
-            this.purchaseButton.setPos(gfx.width - this.purchaseButton.width - 5, gfx.height - 50);
-            refundButton.setPos(this.purchaseButton.x - refundButton.width - 32, gfx.height - 50);
+            this.purchaseButton.setUiPos(gfx.width - this.purchaseButton.width - 5, gfx.height - 50);
+            refundButton.setUiPos(this.purchaseButton.x - refundButton.width - 32, gfx.height - 50);
         };
 
         WizardMenu.prototype.updateDescription = function(upgrade) {
@@ -1314,7 +1314,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     }, this);
                 }, this))(upgrade);
 
-                newButton.setPos(50, 100 + 50 * i);
+                newButton.setUiPos(50, 100 + 50 * i);
                 this.tabObjects.push(newButton);
             }
 
@@ -1352,7 +1352,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                                 }, this);
                             }, this))(upgrade);
 
-                            button.setPos(gfx.width/2, 60 + 50 * i);
+                            button.setUiPos(gfx.width/2, 60 + 50 * i);
                             upgradeButtons.push(button);
                             this.tabObjects.push(button);
                             this.add(button);
@@ -1364,7 +1364,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
 
             _.each(elementButtons, function(b, i) {
-                b.setPos(50, 100 + 50 * i);
+                b.setUiPos(50, 100 + 50 * i);
                 this.tabObjects.push(b);
             }, this);
 
