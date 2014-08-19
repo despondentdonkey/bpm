@@ -6,6 +6,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         GameObject.call(this);
         this._relativeX = 0;
         this._relativeY = 0;
+        this.enableUiExclusionAreas = false;
     };
         UiObject.prototype = Object.create(GameObject.prototype);
         UiObject.prototype.constructor = UiObject;
@@ -26,7 +27,9 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             if (this.disabled) return;
 
             // Disable exclusion areas while ui uses input methods. Enable at the end of update.
-            input.mouse.disableUi = false;
+            if (this.enableUiExclusionAreas) {
+                input.mouse.disableUi = false;
+            }
 
             this.inputUpdate(delta);
 
@@ -92,41 +95,27 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
         // Removes current exclusion rectangle then adds a new one with the current x,y and width, height.
         UiObject.prototype.updateUiExclusionArea = function(object) {
-            if (this.excludeRect) {
-                input.mouse.removeUiExclusionArea(this.excludeRect);
+            if (this.enableUiExclusionAreas) {
+                if (this.excludeRect) {
+                    input.mouse.removeUiExclusionArea(this.excludeRect);
+                }
+                this.excludeRect = input.mouse.addUiExclusionArea(this.x, this.y, this.width, this.height);
             }
-            this.excludeRect = input.mouse.addUiExclusionArea(this.x, this.y, this.width, this.height);
         };
 
     var BasicButton = function(x, y, w, h) {
-        GameObject.call(this);
+        UiObject.call(this);
         this.x = x;
         this.y = y;
         this.width = w;
         this.height = h;
         this.status = 'up';
+        this.enableUiExclusionAreas = true;
     };
-        BasicButton.prototype = Object.create(GameObject.prototype);
+        BasicButton.prototype = Object.create(UiObject.prototype);
         BasicButton.prototype.constructor = BasicButton;
 
-        BasicButton.prototype.init = function(state) {
-            GameObject.prototype.init.call(this, state);
-            this.excludeRect = input.mouse.addUiExclusionArea(this.x, this.y, this.width, this.height);
-        };
-
-        BasicButton.prototype.destroy = function(state) {
-            GameObject.prototype.destroy.call(this, state);
-            input.mouse.removeUiExclusionArea(this.excludeRect);
-        };
-
-        BasicButton.prototype.update = function(delta) {
-            GameObject.prototype.update.call(this, delta);
-
-            if (this.disabled) return;
-
-            // Disable exclusion areas while ui uses input methods. Enable at the end of update.
-            input.mouse.disableUi = false;
-
+        BasicButton.prototype.inputUpdate = function(delta) {
             var isHovering = input.mouse.isColliding(this.x, this.y, this.x+this.width, this.y+this.height);
 
             if (isHovering) {
@@ -157,8 +146,6 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 }
                 this.status = isHovering ? 'hover' : 'up';
             }
-
-            input.mouse.disableUi = true;
         };
 
         BasicButton.prototype.enable = function() {
@@ -267,14 +254,9 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             this.current = obj;
         };
 
-        Button.prototype.setPos = function(x, y) {
-            this.x = x;
-            this.y = y;
-        };
-
     // w, h optional. If w is specified then word wrap will be enabled to that length.
     var TextField = function(text, x, y, w, h) {
-        GameObject.call(this);
+        UiObject.call(this);
         this._text = text;
         this.x = x;
         this.y = y;
@@ -305,11 +287,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             },
         });
     };
-        TextField.prototype = Object.create(GameObject.prototype);
+        TextField.prototype = Object.create(UiObject.prototype);
         TextField.prototype.constructor = TextField;
 
         TextField.prototype.init = function(state) {
-            GameObject.prototype.init.call(this, state);
+            UiObject.prototype.init.call(this, state);
 
             this.displayText.depth = -10;
             this.displayText.x = this.x + this.padding/2;
@@ -332,7 +314,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         };
 
     var FloatText = function(text, textOptions) {
-        GameObject.call(this);
+        UiObject.call(this);
         this.displayText = new gfx.pixi.Text(text, _.defaults(textOptions || {}, {
             stroke: 'black',
             strokeThickness: 3,
@@ -342,11 +324,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         }));
         this.displayText.depth = gfx.layers.gui;
     };
-        FloatText.prototype = Object.create(GameObject.prototype);
+        FloatText.prototype = Object.create(UiObject.prototype);
         FloatText.prototype.constructor = FloatText;
 
         FloatText.prototype.init = function(state) {
-            GameObject.prototype.init.call(this, state);
+            UiObject.prototype.init.call(this, state);
 
             this.addDisplay(this.displayText);
 
@@ -361,7 +343,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         };
 
     var StatusBar = function StatusBar(back, front, width, height) {
-        GameObject.call(this);
+        UiObject.call(this);
         this.backSliceTextures = back;
         this.frontSliceTextures = front;
         this.width = width;
@@ -375,11 +357,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             },
         });
     };
-        StatusBar.prototype = Object.create(GameObject.prototype);
+        StatusBar.prototype = Object.create(UiObject.prototype);
         StatusBar.prototype.constructor = StatusBar;
 
         StatusBar.prototype.init = function(state) {
-            GameObject.prototype.init.call(this, state);
+            UiObject.prototype.init.call(this, state);
             this.backSlice = new gfx.NineSlice(this.backSliceTextures);
             this.frontSlice = new gfx.NineSlice(this.frontSliceTextures);
 
@@ -405,7 +387,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         };
 
         StatusBar.prototype.update = function(delta) {
-            GameObject.prototype.update.call(this, delta);
+            UiObject.prototype.update.call(this, delta);
 
             if (this.updateDepth) {
                 this.backSlice.depth = this.depth+1;
