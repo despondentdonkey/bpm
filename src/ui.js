@@ -6,6 +6,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         GameObject.call(this);
         this._relativeX = 0;
         this._relativeY = 0;
+        this.relativeToParent = true;
         this.enableUiExclusionAreas = false;
     };
         UiObject.prototype = Object.create(GameObject.prototype);
@@ -42,7 +43,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         // Sets positions relative to parent
         UiObject.prototype.setUiPos = function(x, y) {
             var parentX = 0, parentY = 0;
-            if (this.parent) {
+            if (this.relativeToParent && this.parent) {
                 var parentPos = this.parent.getScreenPos();
                 parentX = parentPos.x;
                 parentY = parentPos.y;
@@ -71,7 +72,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         // Gets the position this object should appear on screen. (parent pos + relative pos)
         UiObject.prototype.getScreenPos = function() {
             var parentX = 0, parentY = 0;
-            if (this.parent) {
+            if (this.relativeToParent && this.parent) {
                 var parentPos = this.parent.getScreenPos();
                 parentX = parentPos.x;
                 parentY = parentPos.y;
@@ -105,8 +106,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
     var BasicButton = function(x, y, w, h) {
         UiObject.call(this);
-        this.x = x;
-        this.y = y;
+        this.setUiPos(x, y);
         this.width = w;
         this.height = h;
         this.status = 'up';
@@ -121,6 +121,9 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             if (isHovering) {
                 if (input.mouse.isPressed(input.MOUSE_LEFT)) {
                     this.status = 'down';
+                    if (this.onInitialClick) {
+                        this.onInitialClick();
+                    }
                 }
 
                 if (this.status === 'upactive') {
@@ -410,11 +413,167 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             }
         };
 
+    var ScrollField = function ScrollField(x, y, width, height) {
+        UiObject.call(this);
+        this.setUiPos(x, y);
+        this.width = width;
+        this.height = height;
+
+        this.initialX = x;
+        this.initialY = y;
+
+        this.initialClickY = 0; // Where the y position was since last click.
+        this.scrollPos = 0; // Current position of the scroll.
+        this.prevScrollPos = 0; // Position of the scroll since last click.
+
+        this.clipRect = { x: this.initialX, y: this.initialY, w: this.width, h: this.height }; // Dimensions of the clipping rectangle.
+    };
+        ScrollField.prototype = Object.create(UiObject.prototype);
+        ScrollField.prototype.constructor = ScrollField;
+
+        ScrollField.prototype.init = function(state) {
+            UiObject.prototype.init.call(this, state);
+
+            // Create clipping mask.
+            var mask = new gfx.pixi.Graphics();
+            mask.beginFill();
+            mask.drawRect(this.clipRect.x, this.clipRect.y, this.clipRect.w, this.clipRect.h);
+            mask.endFill();
+
+            // A button for the main scroll area.
+            this.clipButton = new BasicButton(this.clipRect.x, this.clipRect.y, this.clipRect.w, this.clipRect.h);
+            this.clipButton.relativeToParent = false;
+            this.clipButton.onInitialClick = _.bind(function() {
+                this.initialClickY = input.mouse.y;
+                this.prevScrollPos = this.scrollPos;
+            }, this);
+            this.addChild(this.clipButton);
+
+            // Set mask, depth for all displays including displays from children.
+            var allDisplays = this.getNestedDisplayObjects();
+            for (var i=0; i<allDisplays.length; ++i) {
+                var display = allDisplays[i];
+                display.mask = mask;
+                display.depth = this.depth;
+            }
+
+            this.calcScrollHeight();
+
+            if (this.scrollHeight > 0) {
+                var pos = this.getScreenPos();
+
+                // Dimensions of the scroll bar.
+                this.scrollBarRect = {
+                    x: pos.x + this.width + 8,
+                    y: pos.y + 16,
+                    w: 16,
+                    h: this.height - 16
+                };
+
+                // The scroll bar background.
+                var scrollHeightGraphic = new gfx.pixi.Graphics();
+                scrollHeightGraphic.beginFill(0xa0a0a0);
+                scrollHeightGraphic.drawRect(this.scrollBarRect.x, this.scrollBarRect.y, this.scrollBarRect.w, this.scrollBarRect.h);
+                scrollHeightGraphic.endFill();
+                scrollHeightGraphic.syncGameObjectProperties = {position: false};
+                scrollHeightGraphic.depth = this.depth;
+                this.addDisplay(scrollHeightGraphic);
+
+                // The scroller graphic.
+                this.scrollGraphic = new gfx.pixi.Graphics();
+                this.scrollGraphic.syncGameObjectProperties = {position: false};
+                this.scrollGraphic.depth = this.depth;
+                this.drawScrollGraphic(0);
+                this.addDisplay(this.scrollGraphic);
+
+                // A button for the scroll bar.
+                this.scrollButton = new BasicButton(this.scrollBarRect.x, this.scrollBarRect.y, this.scrollBarRect.w, this.scrollBarRect.h);
+                this.scrollButton.relativeToParent = false;
+                this.addChild(this.scrollButton);
+            }
+
+        };
+
+        ScrollField.prototype.inputUpdate = function(delta) {
+            if (this.scrollButton.status === 'down' || this.scrollButton.status === 'upactive') {
+                // ratio of the y mouse position between the top of the scroll field and the bottom.
+                var ratio = (input.mouse.y - this.initialY) / this.height;
+                this.setScrollPos(16 - ratio * this.scrollHeight); // temp - 16 is half of the height of the scrolling graphic
+                return;
+            }
+
+            if (this.clipButton.status === 'down' || this.clipButton.status === 'upactive') {
+                var preScrollPos = input.mouse.y - this.initialClickY + this.prevScrollPos;
+                this.setScrollPos(preScrollPos);
+            }
+        };
+
+        // Finds the largest vertical object and calculates the scroll height.
+        ScrollField.prototype.calcScrollHeight = function() {
+            var largestObject = null;
+
+            // Find the largest object (vertically) from the children of the object specified.
+            function getLargest(object) {
+                for (var i=0; i<object.children.length; ++i) {
+                    var child = object.children[i];
+
+                    var y = child.getScreenPos().y;
+                    var height = child.height || 0;
+                    var sum = y + height;
+
+                    if (largestObject === null || sum > largestObject.getScreenPos().y + largestObject.height) {
+                        largestObject = child;
+                    }
+
+                    getLargest(child);
+                }
+            }
+
+            getLargest(this);
+
+            this.scrollHeight = largestObject.getScreenPos().y + largestObject.height - this.height - this.initialY;
+        };
+
+        // Draw the scroller graphic to the specified scroll position.
+        ScrollField.prototype.drawScrollGraphic = function(scrollPos) {
+            this.scrollGraphic.clear();
+            this.scrollGraphic.beginFill(0x303030);
+
+            var ratio = -scrollPos / this.scrollHeight;
+            var yPos = (ratio * this.height) + 16;
+            if (ratio * this.height >= this.height - 48) {
+                yPos = this.height - 32;
+            }
+            this.scrollGraphic.drawRect(this.initialX + this.width + 8, this.initialY + yPos, 16, 32);
+
+            this.scrollGraphic.endFill();
+        };
+
+        // Sets the scroll position and updates positions.
+        ScrollField.prototype.setScrollPos = function(preScrollPos) {
+            if (-preScrollPos < this.scrollHeight && -preScrollPos > 0) {
+                this.scrollPos = preScrollPos;
+            } else if (-preScrollPos > this.scrollHeight) {
+                this.scrollPos = -this.scrollHeight;
+            } else if (-preScrollPos < 0) {
+                this.scrollPos = 0;
+            }
+
+            var pos = this.getRelativePos();
+            this.setUiPos(pos.x, this.scrollPos + this.initialY);
+
+            this.scrollGraphic.clear();
+            this.scrollGraphic.beginFill(0x303030);
+
+            this.drawScrollGraphic(this.scrollPos);
+        };
+
     return {
         UiObject: UiObject,
         Button: Button,
         TextField: TextField,
         FloatText: FloatText,
-        StatusBar: StatusBar
+        StatusBar: StatusBar,
+        ScrollField: ScrollField
     };
 });
