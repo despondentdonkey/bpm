@@ -349,6 +349,15 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     return closest;
         };
 
+        // returns all display objects of all children and their children.
+        GameObject.prototype.getNestedDisplayObjects = function() {
+            var displays = [];
+            for (var i=0; i<this.children.length; ++i) {
+                var child = this.children[i];
+                displays = displays.concat(child.displayObjects, child.getNestedDisplayObjects());
+            }
+            return displays;
+        };
 
     // Any performance problems with these are mostly likely due to the collisions rather than rendering.
     function Bullet(tex, x, y, angle) {
