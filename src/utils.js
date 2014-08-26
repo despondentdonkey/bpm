@@ -1,6 +1,50 @@
 var DEG2RAD = Math.PI / 180;
 var RAD2DEG = 180 / Math.PI;
 
+var Point = function(x, y) {
+    this.x = x;
+    this.y = y;
+};
+    Object.defineProperty(Point.prototype, 'x', {
+        set: function(val) { this._x = val; },
+        get: function() { return this._x; }
+    });
+    Object.defineProperty(Point.prototype, 'y', {
+        set: function(val) { this._y = val; },
+        get: function() { return this._y; }
+    });
+
+var Rect = function(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+};
+    Object.defineProperty(Rect.prototype, 'x', {
+        set: function(val) { this._x = val; },
+        get: function() { return this._x; }
+    });
+    Object.defineProperty(Rect.prototype, 'y', {
+        set: function(val) { this._y = val; },
+        get: function() { return this._y; }
+    });
+    Object.defineProperty(Rect.prototype, 'w', {
+        set: function(val) { this._w = val; },
+        get: function() { return this._w; }
+    });
+    Object.defineProperty(Rect.prototype, 'h', {
+        set: function(val) { this._h = val; },
+        get: function() { return this._h; }
+    });
+    Object.defineProperty(Rect.prototype, 'x2', {
+        set: function(val) { this.w = val - this.x; },
+        get: function() { return this.x + this.w; }
+    });
+    Object.defineProperty(Rect.prototype, 'y2', {
+        set: function(val) { this.h = val - this.y; },
+        get: function() { return this.y + this.h; }
+    });
+
 function randomRange(min, max) {
     return Math.random() * (max - min) + min;
 }
