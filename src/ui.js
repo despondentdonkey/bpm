@@ -78,10 +78,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 parentY = parentPos.y;
             }
 
-            return {
-                x: parentX + this._relativeX,
-                y: parentY + this._relativeY,
-            };
+            return new Point(parentX + this._relativeX, parentY + this._relativeY);
         };
 
         // Updates screen position (x, y). Used when a parent's position has changed.
@@ -426,7 +423,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this.scrollPos = 0; // Current position of the scroll.
         this.prevScrollPos = 0; // Position of the scroll since last click.
 
-        this.clipRect = { x: this.initialX, y: this.initialY, w: this.width, h: this.height }; // Dimensions of the clipping rectangle.
+        this.clipRect = new Rect(this.initialX, this.initialY, this.width, this.height); // Dimensions of the clipping rectangle.
     };
         ScrollField.prototype = Object.create(UiObject.prototype);
         ScrollField.prototype.constructor = ScrollField;
@@ -463,12 +460,12 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 var pos = this.getScreenPos();
 
                 // Dimensions of the scroll bar.
-                this.scrollBarRect = {
-                    x: pos.x + this.width + 8,
-                    y: pos.y + 16,
-                    w: 16,
-                    h: this.height - 16
-                };
+                this.scrollBarRect = new Rect(
+                    pos.x + this.width + 8,
+                    pos.y + 16,
+                    16,
+                    this.height - 16
+                );
 
                 // The scroll bar background.
                 var scrollHeightGraphic = new gfx.pixi.Graphics();
