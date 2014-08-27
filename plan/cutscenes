@@ -1,0 +1,75 @@
+=== What does a cutscene need to do? ===
+
+    Introduce new chracter
+    Fade character out
+    Switch facial expression for chracter or artwork
+    Visual effects (e.g. screen shake, character bounce)
+    Change Background
+
+
+=== Demo ===
+
+{
+    backgrounds: [
+        somePlace: 'place.jpg'
+        black: 'black.jpg'
+        bubbleLand: 'bubbleLand.jpg'
+    ]
+
+    characters: [
+        blacksmith: 'blacksmith.png'
+        creep: 'creep.png'
+        kingBubs: 'kingBubs.png'
+    ]
+}
+
+{
+    myCutscene: [{
+            speaker: "Blacksmith"
+            dialog: "Hi I'm the Blacksmith"
+            background: 'somePlace', // Will fade to new background
+            addChars: ['blacksmith'] // Will fade in character
+        }, {
+            speaker: "Creep"
+            dialog: "Psst hey!"
+        }, {
+            speaker: "Creep"
+            dialog: "This guy here is ripping you off!"
+            addChars: ['creep']
+        }, {
+            speaker: "Blacksmith"
+            dialog: "GET BACK HERE!"
+            removeChars: ['creep'] // Will fade out character
+            emotion: {
+                'blacksmith': 'angry' // Switch emotion to angry probably automate so it uses blacksmith-angry.png
+            }
+            actions: { // Actions, stuff like shaking a character, or the screen, or idk.
+                'shake': 'blacksmith' // Shake the blacksmith
+            }
+        }, {
+            // Having no dialog will just create a blank dialog box for you to skip. Useful for pacing.
+            removeChars: ['blacksmith']
+        }, {
+            speaker: "Blacksmith"
+            dialog: "Hey sorry about that!"
+            addChars: ['blacksmith']
+            emotion: {
+                'blacksmith': 'embarrassed'
+            }
+        }, {
+            speaker: 'Blacksmith'
+            dialog: 'Anyway let me show you my wares.'
+            emotion: {
+                'blacksmith': 'default'
+            }
+        }, {
+            background: 'black'
+            dialog: "Meanwhile in Bubble Land..."
+        }, {
+            background: 'bubbleLand'
+            speaker: 'King Bubs'
+            dialog: 'Hm it seems our little friend is becoming stronger. He'll see very soon what he's dealing with. Mwuahahahaha!'
+            addChar: ['kingBubs']
+        }
+    ]
+}
