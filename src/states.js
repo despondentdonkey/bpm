@@ -107,6 +107,10 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     this.objects[i].update(delta);
                 }
             }
+
+            if (input.key.isPressed('G')) {
+                this.showCutscene('myCutscene');
+            }
         };
 
         State.prototype.add = function(obj) {
@@ -191,8 +195,14 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }
         };
 
-        State.prototype.onPause = function() {},
-        State.prototype.onRestore = function() {}
+        State.prototype.showCutscene = function(name) {
+            console.log('Starting cutscene');
+            var cutscene = new CutsceneState(this, name);
+            this.pause(cutscene);
+        };
+
+        State.prototype.onPause = function() {};
+        State.prototype.onRestore = function() {};
 
 
     var Field = function() {
@@ -614,13 +624,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         };
 
         Menu.prototype.close = function() {
-            if (this.prevMenu) {
-                setState(this.prevMenu);
-            } else if (this.cachedState) {
-                setState(this.cachedState, { initNew: false });
-                this.cachedState.paused = false;
-                this.cachedState.onRestore();
-            }
+            setState(this.prevState, { initNew: false });
+            this.prevState.paused = false;
+            this.prevState.onRestore();
         };
 
 
@@ -1512,6 +1518,122 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.addDisplay(completeText);
         };
 
+    var CutsceneState = function(prevState, cutsceneName) {
+        Menu.call(this, prevState);
+        this.phaseIndex = -1; // Current phase index
+        this.phases = CutsceneState.cutscenes[cutsceneName];
+        if (_.isUndefined(this.phases)) {
+            console.error("The cutscene '" + cutsceneName + "' does not exist.");
+        }
+    };
+        CutsceneState.parseCutscenes = function(jsonString) { CutsceneState.cutscenes = JSON.parse(jsonString); };
+        CutsceneState.prototype = Object.create(Menu.prototype);
+        CutsceneState.prototype.constructor = CutsceneState;
+
+        CutsceneState.prototype.init = function() {
+            Menu.prototype.init.call(this);
+
+            this.background = new gfx.pixi.Graphics();
+            this.background.beginFill('0', 0.5);
+            this.background.drawRect(0, 0, gfx.width, gfx.height);
+            this.background.endFill();
+
+            var fieldRect = new Rect(5, gfx.height - 160, gfx.width - 24, 130);
+
+            var phase = this.getCurrentPhase();
+
+            this.speakerText = new gfx.pixi.Text('speaker', {
+                stroke: 'black',
+                strokeThickness: 4,
+                align: 'center',
+                fill: 'white',
+                font: 'bold 16px arial',
+            });
+
+            this.speakerText.x = fieldRect.x + 5;
+            this.speakerText.y = fieldRect.y + 5;
+            this.speakerText.depth = gfx.layers.gui - 10;
+            this.dialogText = new gfx.pixi.Text('dialog', {
+                stroke: 'black',
+                strokeThickness: 3,
+                fill: 'white',
+                font: 'bold 16px arial',
+                wordWrap: true,
+                wordWrapWidth: fieldRect.w,
+            });
+
+            this.dialogText.x = fieldRect.x + 5;
+            this.dialogText.y = this.speakerText.y + this.speakerText.height + 5;
+            this.dialogText.depth = this.speakerText.depth;
+
+            var textFieldBack = new ui.TextField('', 5, gfx.height - 160, gfx.width - 10, 155);
+            this.add(textFieldBack);
+
+            var skipButton = new ui.Button('skip', {}, function() {
+                this.close();
+            }, this);
+            skipButton.x = gfx.width - skipButton.width;
+            this.add(skipButton);
+
+            this.addDisplay(this.background);
+            this.addDisplay(this.speakerText);
+            this.addDisplay(this.dialogText);
+
+            // Start the first phase.
+            this.nextPhase();
+        };
+
+        CutsceneState.prototype.update = function(delta) {
+            Menu.prototype.update.call(this, delta);
+
+            if (input.mouse.isPressed(input.MOUSE_LEFT)) {
+                if (this.phaseIndex+1 >= this.phases.length) {
+                    // Exit cutscene after last phase.
+                    this.close();
+                } else {
+                    this.nextPhase();
+                }
+            }
+        };
+
+        CutsceneState.prototype.getCurrentPhase = function() {
+            return this.phases[this.phaseIndex];
+        };
+
+        // Starts the next phase in the sequence.
+        CutsceneState.prototype.nextPhase = function() {
+            this.phaseIndex++;
+            var phase = this.getCurrentPhase();
+
+            if (!_.isUndefined(phase.background)) {
+                this.setBackground(phase.background);
+            }
+
+            this.speakerText.setText(phase.speaker);
+            this.dialogText.setText(phase.dialog);
+
+            return phase;
+        };
+
+        // Sets the background for the cutscene.
+        CutsceneState.prototype.setBackground = function(texName) {
+            if (this.background) {
+                this.removeDisplay(this.background);
+            }
+
+            if (_.isNull(texName)) {
+                this.background = new gfx.pixi.Graphics();
+                this.background.beginFill('0', 0.5);
+                this.background.drawRect(0, 0, gfx.width, gfx.height);
+                this.background.endFill();
+            } else {
+                this.background = new gfx.pixi.Sprite(res.tex[texName]);
+            }
+
+            this.background.depth = gfx.layers.background;
+            this.addDisplay(this.background);
+        };
+
     return {
         global: global,
         setState: setState,
@@ -1519,5 +1641,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         State: State,
         MainMenu: MainMenu,
         TownMenu: TownMenu,
+        CutsceneState: CutsceneState,
     };
 });

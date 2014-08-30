@@ -36,6 +36,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades',
                 perks: res.json.perks.data,
                 elements: res.json.elements.data,
             });
+            states.CutsceneState.parseCutscenes(res.json.cutscenes.data);
 
             // Switches to the Field with the training quest as default
             //bpm.player.currentQuest = quests.all["s00"];
