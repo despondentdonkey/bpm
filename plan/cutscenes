@@ -6,8 +6,7 @@
     Visual effects (e.g. screen shake, character bounce)
     Change Background
 
-
-=== Demo ===
+=== Cutscene Creation Demo ===
 
 {
     backgrounds: [
@@ -25,6 +24,7 @@
 
 {
     myCutscene: [{
+            // This will be called a phase
             speaker: "Blacksmith"
             dialog: "Hi I'm the Blacksmith"
             background: 'somePlace', // Will fade to new background
@@ -73,3 +73,11 @@
         }
     ]
 }
+
+=== Triggering a Cutscene Demo ===
+
+To trigger a cutscene we could have a function in State:
+
+    myState.showCutscene('myCutscene');
+
+This would use a custom Menu state and switch to that state. The state would then read from the json and learn the details of the cutscene, and then executing the phases of the cutscene. Once the cutscene is finished it could go back to the previous state or maybe it would switch to a specified state in 'showCutscene'.

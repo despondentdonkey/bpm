@@ -1,0 +1,14 @@
+{
+    "myCutscene": [{
+        "speaker": "Blacksmith",
+        "dialog": "Hello I'm the blacksmith! I'm not really working right now, instead I'm trying to test out how the word wrap will look in really long dialog. Like really long, like enough dialog to get off the text box. Okay so now I'm just gonna spout gibberish like blaghaha booga blah blah omg is this enough yet? Yes."
+    }, {
+        "background": "background",
+        "speaker": "Wizard",
+        "dialog": "Hey I'm the wizard!"
+    }, {
+        "background": null,
+        "speaker": "Greg",
+        "dialog": "Hey I'm greg!"
+    }]
+}
