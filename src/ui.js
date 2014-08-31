@@ -274,7 +274,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             align: 'left',
             font: 'bold 18px arial',
             wordWrap: (wordWrapWidth !== undefined),
-            wordWrapWidth: wordWrapWidth,
+            wordWrapWidth: wordWrapWidth - this.padding,
         };
 
         this.displayText = new gfx.pixi.Text(text, this.textStyle);
@@ -294,15 +294,12 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             UiObject.prototype.init.call(this, state);
 
             this.displayText.depth = -10;
-            this.displayText.x = this.x + this.padding/2;
-            this.displayText.y = this.y + this.padding/2;
-
-            this.width = (this.width || this.displayText.width) + this.padding;
-            this.height = (this.height || this.displayText.height) + this.padding;
+            this.displayText.x = this.x + this.padding;
+            this.displayText.y = this.y + this.padding;
 
             this.back = new gfx.NineSlice(res.slices.textBox);
-            this.back.width = this.width;
-            this.back.height = this.height;
+            this.back.width = this.width - this.back.sprites.right.width;
+            this.back.height = this.height - this.back.sprites.bottom.height;
             this.back.update();
             this.back.depth = -9;
 
