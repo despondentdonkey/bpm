@@ -96,6 +96,10 @@ define(['gfx'], function(gfx) {
             cursorShotgun: 'cursor-shotgun.png',
             cursorCannon: 'cursor-cannon.png',
             cursorRifle: 'cursor-rifle.png',
+
+            mayor: 'chars/mayor.png',
+            blacksmith: 'chars/blacksmith.png',
+            wizard: 'chars/wizard.png',
         });
 
         // Creates a list of textures to be used with PIXI.MovieClip. [cellWidth, cellHeight]

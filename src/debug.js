@@ -74,6 +74,8 @@ dbg.addCheats = function(bpm, states) {
     section('Other');
     cheat('dbg.fpsMonitorShow=!dbg.fpsMonitorShow', 'Toggle FPS Monitor');
     cheat("bpm.player.money += 10000");
+    section('Cutscenes');
+    cheat("states.global.current.showCutscene('testCutscene')", 'Test');
 
     document.getElementById('bpmCheats').appendChild(div);
 };
