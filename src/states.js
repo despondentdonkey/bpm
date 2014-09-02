@@ -107,10 +107,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     this.objects[i].update(delta);
                 }
             }
-
-            if (input.key.isPressed('G')) {
-                this.showCutscene('myCutscene');
-            }
         };
 
         State.prototype.add = function(obj) {
@@ -1525,6 +1521,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         if (_.isUndefined(this.phases)) {
             console.error("The cutscene '" + cutsceneName + "' does not exist.");
         }
+
+        this.chars = []; // Visible characters
     };
         CutsceneState.parseCutscenes = function(jsonString) { CutsceneState.cutscenes = JSON.parse(jsonString); };
         CutsceneState.prototype = Object.create(Menu.prototype);
@@ -1609,8 +1607,56 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 this.setBackground(phase.background);
             }
 
-            this.speakerText.setText(phase.speaker);
+            if (phase.speaker) { this.speakerText.setText(phase.speaker); }
+            if (!phase.dialog) { phase.dialog = ''; };
             this.dialogText.setText(phase.dialog);
+
+            // TODO: Partition text; if text exceeds text box height then inject another phase containing the extra text.
+            // Updates a lot of stuff. Needed to get current line height. Use this for the above todo.
+            this.dialogText.updateText();
+
+            var removedChars = [];
+            if (phase.removeChars) {
+                for (var i=0; i<phase.removeChars.length; ++i) {
+                    var charName = phase.removeChars[i];
+                    if (this.charExists(charName)) {
+                        removedChars.push(this.removeChar(charName));
+                    }
+                }
+            }
+
+            var addedChars = [];
+            if (phase.addChars) {
+                for (var i=0; i<phase.addChars.length; ++i) {
+                    var charName = phase.addChars[i];
+                    if (!this.charExists(charName)) {
+                        addedChars.push(this.addChar(charName));
+                    }
+                }
+            }
+
+            for (var i=0; i<removedChars.length; ++i) {
+                this.removeDisplay(removedChars[i].sprite);
+            }
+
+            for (var i=0; i<addedChars.length; ++i) {
+                var sprite = addedChars[i].sprite;
+                sprite.anchor.x = 0.5;
+                sprite.y = this.speakerText.y - sprite.height;
+                this.addDisplay(sprite);
+            }
+
+            // Adjust x position of characters.
+            for (var i=0; i<this.chars.length; ++i) {
+                var sprite = this.chars[i].sprite;
+                if (this.chars.length === 1) {
+                    sprite.x = gfx.width/2;
+                } else if (this.chars.length === 2) {
+                    sprite.x = (gfx.width/2 * i) + gfx.width/4;
+                } else if (this.chars.length === 3) {
+                    sprite.x = (gfx.width/4 * i) + gfx.width/4;
+                }
+            }
 
             return phase;
         };
@@ -1632,6 +1678,41 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             this.background.depth = gfx.layers.background;
             this.addDisplay(this.background);
+        };
+
+        CutsceneState.prototype.addChar = function(texName) {
+            var character = {
+                name: texName,
+                sprite: new gfx.pixi.Sprite(res.tex[texName]),
+            };
+            this.chars.push(character);
+            return character;
+        };
+
+        CutsceneState.prototype.getCharIndex = function(name) {
+            for (var i=0; i<this.chars.length; ++i) {
+                if (this.chars[i].name === name) {
+                    return i;
+                }
+            }
+            return null;
+        };
+
+        CutsceneState.prototype.getChar = function(name) {
+            return this.chars[this.getCharIndex(name)];
+        };
+
+        CutsceneState.prototype.charExists = function(name) {
+            return _.isNumber(this.getCharIndex(name));
+        };
+
+        CutsceneState.prototype.removeChar = function(name) {
+            var removeIndex = this.getCharIndex(name);
+            if (_.isNumber(removeIndex)) {
+                var removedChar = this.chars[removeIndex];
+                this.chars.splice(removeIndex, 1);
+                return removedChar;
+            }
         };
 
     return {

@@ -1,14 +1,17 @@
 {
-    "myCutscene": [{
-        "speaker": "Blacksmith",
-        "dialog": "Hello I'm the blacksmith! I'm not really working right now, instead I'm trying to test out how the word wrap will look in really long dialog. Like really long, like enough dialog to get off the text box. Okay so now I'm just gonna spout gibberish like blaghaha booga blah blah omg is this enough yet? Yes."
+    "testCutscene": [{
+        "addChars": ["blacksmith", "mayor", "wizard"],
+        "speaker": "Mayor",
+        "dialog": "Hello I'm the Mayor! This phase shows what 3 people look like. K bye now."
     }, {
+        "removeChars": ["mayor"],
         "background": "background",
         "speaker": "Wizard",
-        "dialog": "Hey I'm the wizard!"
+        "dialog": "Hey I'm the wizard! This phase shows what 2 people look like and that backgrounds can change."
     }, {
         "background": null,
-        "speaker": "Greg",
-        "dialog": "Hey I'm greg!"
+        "removeChars": ["wizard"],
+        "speaker": "Blacksmith",
+        "dialog": "Hey I'm the blacksmith! This phase shows what 1 person looks like and that you can reset the background."
     }]
 }
