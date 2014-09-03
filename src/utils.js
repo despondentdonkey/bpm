@@ -67,6 +67,11 @@ function roundN(number, n) {
     return applyDecimal(number, n, Math.round);
 }
 
+// Returns a clone of the object.
+function cloneObject(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
 // Error Handling
 
 function error(message, trace) {

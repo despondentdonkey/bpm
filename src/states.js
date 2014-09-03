@@ -1517,10 +1517,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
     var CutsceneState = function(prevState, cutsceneName) {
         Menu.call(this, prevState);
         this.phaseIndex = -1; // Current phase index
-        this.phases = CutsceneState.cutscenes[cutsceneName];
+        this.phases = cloneObject(CutsceneState.cutscenes[cutsceneName]);
         if (_.isUndefined(this.phases)) {
             console.error("The cutscene '" + cutsceneName + "' does not exist.");
         }
+
+        this.lineMax = 5; // If text exceeds this line count then it will be partitioned.
 
         this.chars = []; // Visible characters
     };
@@ -1564,8 +1566,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.dialogText.y = this.speakerText.y + this.speakerText.height + 5;
             this.dialogText.depth = this.speakerText.depth;
 
-            var textFieldBack = new ui.TextField('', 5, gfx.height - 160, gfx.width - 10, 155);
-            this.add(textFieldBack);
+            this.textFieldBack = new ui.TextField('', 5, gfx.height - 160, gfx.width - 10, 155);
+            this.add(this.textFieldBack);
 
             var skipButton = new ui.Button('skip', {}, function() {
                 this.close();
@@ -1603,6 +1605,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.phaseIndex++;
             var phase = this.getCurrentPhase();
 
+            console.log('Phase ' + this.phaseIndex + ' started');
+
             if (!_.isUndefined(phase.background)) {
                 this.setBackground(phase.background);
             }
@@ -1610,10 +1614,31 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             if (phase.speaker) { this.speakerText.setText(phase.speaker); }
             if (!phase.dialog) { phase.dialog = ''; };
             this.dialogText.setText(phase.dialog);
+            this.dialogText.updateText(); // Will update text height.
 
-            // TODO: Partition text; if text exceeds text box height then inject another phase containing the extra text.
-            // Updates a lot of stuff. Needed to get current line height. Use this for the above todo.
-            this.dialogText.updateText();
+            if (this.speakerText.height + this.dialogText.height >= this.textFieldBack.height) {
+                console.log('Exceeding text found! Partitioning into another phase.');
+
+                // Get word wrapped text; split text into lines.
+                var wordWrappedText = this.dialogText.wordWrap(this.dialogText.text)
+                var lines = wordWrappedText.split(/(?:\r\n|\r|\n)/);
+
+                // Append lines past lineMax to newDialog.
+                var newDialog = '';
+                for (var i=this.lineMax; i<lines.length; ++i) {
+                    newDialog += (i > this.lineMax ? ' ' : '') + lines[i];
+                }
+
+                // Remove exceeding text from current phase dialog.
+                this.dialogText.setText(phase.dialog.replace(newDialog, ''));
+
+                // Clone current phase and set new changes.
+                var newPhase = cloneObject(phase);
+                newPhase.dialog = newDialog;
+
+                // Insert the new phase in front of the current phase.
+                this.phases.splice(this.phaseIndex+1, 0, newPhase);
+            }
 
             var removedChars = [];
             if (phase.removeChars) {
