@@ -2,7 +2,7 @@
     "testCutscene": [{
         "addChars": ["blacksmith", "mayor", "wizard"],
         "speaker": "Mayor",
-        "dialog": "Hello I'm the Mayor! This phase shows what 3 people look like. K bye now."
+        "dialog": "Hello I'm the Mayor! This phase shows what 3 people look like. K bye now. Hello I'm the Mayor! This phase shows what 3 people look like. K bye now."
     }, {
         "removeChars": ["mayor"],
         "background": "background",
@@ -13,5 +13,10 @@
         "removeChars": ["wizard"],
         "speaker": "Blacksmith",
         "dialog": "Hey I'm the blacksmith! This phase shows what 1 person looks like and that you can reset the background."
+    }, {
+        "removeChars": ["blacksmith"],
+        "addChars": ["mayor"],
+        "speaker": "Mayor",
+        "dialog": "Hey it's the Mayor again! I'm here to demo text partitioning. So when text exceeds a certain line limit we create a new phase ahead of this phase which contains the rest of the text. This is useful so you don't have to create a new phase manually and check back and forth to see if the text even passes the line limit. Hm, this is holding quite a bit of text. Hopefully this feature will actually be used, but this much text is kinda ugly. So I'm not sure. Wow still going eh? Hm I might have to start speaking gibberish like goaa;lj l;kaset asldfk jwtixzc jasdlkt asdf. Oh wait it just started working! Yay so this is text partitioning. "
     }]
 }
