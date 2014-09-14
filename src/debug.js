@@ -136,3 +136,5 @@ dbg.buyAllUpgrades = function(upgrades) {
         upgrade.setLevel(upgrade.length);
     }
 }
+
+//bairy was here
