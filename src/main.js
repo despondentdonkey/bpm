@@ -1,3 +1,4 @@
+#bairy was here
 requirejs.config({
     paths: {
         lib: '../lib/'
