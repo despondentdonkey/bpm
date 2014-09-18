@@ -1,21 +1,21 @@
 {
 
     "ma00": {
-        "name": "My Quest",
-        "description": "Hello, are you willing to take on this quest?",
+        "name": "First Quest",
+        "description": "Hello, are you willing to take on your first quest?",
         "reward": 100,
         "bonus": 100,
         "time": 20,
         "unlocks": ["ma01"],
+        "startCutscene": "firstQuestCutscene",
         "objectives": {
-            "multiplier": 3,
             "popBubbles": 10
         }
     },
 
     "ma01": {
         "name": "Another Quest",
-        "description": "This is pretty much the same thing.",
+        "description": "Here's another thing you can do.",
         "reward": 200,
         "objectives": {
             "multiplier": 4
