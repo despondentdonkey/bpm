@@ -18,5 +18,13 @@
         "addChars": ["mayor"],
         "speaker": "Mayor",
         "dialog": "Hey it's the Mayor again! I'm here to demo text partitioning. So when text exceeds a certain line limit we create a new phase ahead of this phase which contains the rest of the text. This is useful so you don't have to create a new phase manually and check back and forth to see if the text even passes the line limit. Hm, this is holding quite a bit of text. Hopefully this feature will actually be used, but this much text is kinda ugly. So I'm not sure. Wow still going eh? Hm I might have to start speaking gibberish like goaa;lj l;kaset asldfk jwtixzc jasdlkt asdf. Oh wait it just started working! Yay so this is text partitioning. "
+    }],
+
+    "firstQuestCutscene": [{
+        "addChars": ["mayor"],
+        "speaker": "Mayor",
+        "dialog": "Hello thanks for helping us out today."
+    }, {
+        "dialog": "DESTROY ALL OF THEM!"
     }]
 }

@@ -402,6 +402,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         Field.prototype.update = function(delta) {
             State.prototype.update.call(this, delta);
 
+            if (!this.startCutsceneShown) {
+                if (this.currentQuest.startCutscene) {
+                    this.showCutscene(this.currentQuest.startCutscene);
+                }
+                this.startCutsceneShown = true;
+            }
+
             this.statusText.setText('XP: ' + this.xp);
 
             this.updateCombo(delta);
