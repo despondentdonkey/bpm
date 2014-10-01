@@ -59,6 +59,8 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             }
 
             this.updateUiExclusionArea();
+
+            this.triggerEvent('onUiPosChanged');
         };
 
         // Gets position relative to parent.
@@ -199,6 +201,17 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this.disabledSlice.update();
         this.disabledSlice.depth = this.up.depth;
         this.disabledSlice.visible = false;
+
+        this.addListener('onUiPosChanged', function() {
+            this.displayText.x = this.x + this.padding/2;
+            this.displayText.y = this.y + this.padding/2;
+            this.up.x = this.x;
+            this.up.y = this.y;
+            this.down.x = this.x;
+            this.down.y = this.y;
+            this.disabledSlice.x = this.x;
+            this.disabledSlice.y = this.y;
+        });
     };
         Button.prototype = Object.create(BasicButton.prototype);
         Button.prototype.constructor = Button;
@@ -220,8 +233,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         Button.prototype.update = function(delta) {
             BasicButton.prototype.update.call(this, delta);
 
-            this.displayText.x = this.x + this.padding/2;
-            this.displayText.y = this.y + this.padding/2;
+            // depth is sometimes undefined for some reason!?
+            // seems to be a problem when adding this to a scroll field.
+            if (!this.displayText.depth) {
+                this.displayText.depth = gfx.layers.gui;
+            }
 
             if (this.disabled) {
                 if (this.current !== this.disabledSlice) {
@@ -489,11 +505,13 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         };
 
         ScrollField.prototype.inputUpdate = function(delta) {
-            if (this.scrollButton.status === 'down' || this.scrollButton.status === 'upactive') {
-                // ratio of the y mouse position between the top of the scroll field and the bottom.
-                var ratio = (input.mouse.y - this.initialY) / this.height;
-                this.setScrollPos(16 - ratio * this.scrollHeight); // temp - 16 is half of the height of the scrolling graphic
-                return;
+            if (this.scrollButton) {
+                if (this.scrollButton.status === 'down' || this.scrollButton.status === 'upactive') {
+                    // ratio of the y mouse position between the top of the scroll field and the bottom.
+                    var ratio = (input.mouse.y - this.initialY) / this.height;
+                    this.setScrollPos(16 - ratio * this.scrollHeight); // temp - 16 is half of the height of the scrolling graphic
+                    return;
+                }
             }
 
             if (this.clipButton.status === 'down' || this.clipButton.status === 'upactive') {
@@ -545,6 +563,8 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
         // Sets the scroll position and updates positions.
         ScrollField.prototype.setScrollPos = function(preScrollPos) {
+            if (this.scrollHeight <= 0) return;
+
             if (-preScrollPos < this.scrollHeight && -preScrollPos > 0) {
                 this.scrollPos = preScrollPos;
             } else if (-preScrollPos > this.scrollHeight) {
