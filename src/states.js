@@ -266,10 +266,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             var pauseButton = new ui.Button('Pause Game', {font: 'bold 12px arial'}, _.bind(function() {
                 this.onBlur();
             }, this));
-            pauseButton.x = gfx.width - pauseButton.width - 5;
-            pauseButton.y = gfx.height - pauseButton.height - 5;
+            pauseButton.setUiPos(gfx.width - pauseButton.width - 5, gfx.height - pauseButton.height - 5);
             this.add(pauseButton);
-
 
             this.setWeapon(bpm.player.currentWeapon);
 
@@ -420,8 +418,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     var skipDayButton = new ui.Button('End Day', {}, function() {
                         setState(new RoundCompleteMenu(null, this));
                     }, this);
-                    skipDayButton.x = gfx.width - skipDayButton.width - 16;
-                    skipDayButton.y = 100;
+                    skipDayButton.setUiPos(gfx.width - skipDayButton.width - 16, 100);
                     skipDayButton.depth = gfx.layers.gui;
                     this.add(skipDayButton);
                     this.skipDay = true;
@@ -746,8 +743,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 this.prevState.destroy();
                 setState(new RoundCompleteMenu(null, this.prevState));
             }, this);
-            button.x = gfx.width/2 - button.width/2;
-            button.y = text.y + text.height;
+            button.setUiPos(gfx.width/2 - button.width/2, text.y + text.height);
             button.up.depth = back.depth - 1;
             button.down.depth = button.up.depth;
             button.displayText.depth = button.up.depth-1;
@@ -808,7 +804,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             var prevTab = index > 0 ? this.tabs[index-1] : null;
 
             if (prevTab) {
-                newTab.x = prevTab.x + prevTab.width + 32;
+                newTab.setUiPos(prevTab.x + prevTab.width + 32, newTab.y);
             }
 
             this.add(newTab);
@@ -861,15 +857,13 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                     this.close();
                 }, this);
 
-                continueButton.x = gfx.width - continueButton.width - 10;
-                continueButton.y = gfx.height - continueButton.height - 10;
+                continueButton.setUiPos(gfx.width - continueButton.width - 10, gfx.height - continueButton.height - 10);
 
                 var endDayButton = new ui.Button(bpm.player.currentQuest.completed ? 'End Day' : 'Abandon Quest', this.buttonStyle, function() {
                     setState(new RoundCompleteMenu(null, this.cachedState));
                 }, this);
 
-                endDayButton.x = continueButton.x - endDayButton.width - 20;
-                endDayButton.y = gfx.height - endDayButton.height - 10;
+                endDayButton.setUiPos(continueButton.x - endDayButton.width - 20, gfx.height - endDayButton.height - 10);
 
                 this.add([continueButton, endDayButton]);
 
@@ -879,6 +873,9 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             } else { // This is not a pause menu for Field so we treat it as a round selector.
                 var selectedButton = null;
                 var selectedButtonText = '';
+                var questScrollField = new ui.ScrollField(0, 100, 300, gfx.height - 164);
+                this.add(questScrollField);
+
                 for (var i=0; i<bpm.player.quests.length; ++i) {
                     var quest = quests.all[bpm.player.quests[i]];
 
@@ -913,9 +910,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                             questDescription.text = description;
                         }, this);
 
-                        qButton.x = 32;
-                        qButton.y = 100 + ((qButton.height+10) * i);
-                        this.add(qButton);
+                        qButton.setUiPos(32, (qButton.height+10) * i);
+                        questScrollField.addChild(qButton);
                     }, this))(quest);
                 }
             }
@@ -968,10 +964,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 }
             }, this);
 
-            generalTab.x = 16;
-            generalTab.y = 50;
-            weaponTab.x = generalTab.x + weaponTab.width;
-            weaponTab.y = 50;
+            generalTab.setUiPos(16, 50);
+            weaponTab.setUiPos(generalTab.x + weaponTab.width, 50);
             this.add([generalTab, weaponTab]);
 
             this.addGeneralContent();
@@ -1199,10 +1193,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 }
             }, this);
 
-            perksTab.x = 16;
-            perksTab.y = 50;
-            elementTab.x = perksTab.x + elementTab.width;
-            elementTab.y = 50;
+            perksTab.setUiPos(16, 50);
+            elementTab.setUiPos(perksTab.x + elementTab.width, 50);
             this.add([perksTab, elementTab]);
 
             this.addPerkContent();
@@ -1458,8 +1450,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             var button = new ui.Button('Continue', this.buttonStyle, function() {
                 setState(new TownMenu());
             });
-            button.x = gfx.width - button.width - 10;
-            button.y = gfx.height - button.height - 10;
+            button.setUiPos(gfx.width - button.width - 10, gfx.height - button.height - 10);
             this.add(button);
 
             // Quest status
@@ -1579,7 +1570,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             var skipButton = new ui.Button('skip', {}, function() {
                 this.close();
             }, this);
-            skipButton.x = gfx.width - skipButton.width;
+            skipButton.setUiPos(gfx.width - skipButton.width, skipButton.y);
             this.add(skipButton);
 
             this.addDisplay(this.background);

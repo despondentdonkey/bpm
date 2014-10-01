@@ -9,6 +9,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     })();
 
     function BasicObject() {
+        events.EventHandler.call(this);
         this.state = null;
         this.id = getID();
 
