@@ -263,8 +263,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             this.background.depth = gfx.layers.background;
 
 
-            var pauseButton = new ui.Button('Pause Game', {font: 'bold 12px arial'}, _.bind(function() {
-                this.onBlur();
+            var pauseButton = new ui.Button('Menu', {font: 'bold 12px arial'}, _.bind(function() {
+                this.pause(TownMenu);
             }, this));
             pauseButton.setUiPos(gfx.width - pauseButton.width - 5, gfx.height - pauseButton.height - 5);
             this.add(pauseButton);
@@ -645,7 +645,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             back.drawRect(0, 0, gfx.width, gfx.height);
             back.endFill();
 
-            var text = new gfx.pixi.Text('Paused\nMIDDLE CLICK', {
+            var text = new gfx.pixi.Text('Paused', {
                 stroke: 'black',
                 strokeThickness: 8,
                 align: 'center',
@@ -663,49 +663,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
         FieldPauseMenu.prototype.update = function(delta) {
             Menu.prototype.update.call(this, delta);
-
-            if (input.mouse.isReleased(input.MOUSE_MIDDLE)) {
-                setState(new AnotherPauseMenu(this));
-            }
-
             if (input.mouse.isPressed(input.MOUSE_LEFT)) {
-                this.close();
-            }
-        };
-
-    var AnotherPauseMenu = function(prevState) {
-        Menu.call(this, prevState);
-    };
-        AnotherPauseMenu.prototype = Object.create(Menu.prototype);
-        AnotherPauseMenu.prototype.constructor = AnotherPauseMenu;
-
-        AnotherPauseMenu.prototype.init = function() {
-            Menu.prototype.init.call(this);
-
-            var back = new gfx.pixi.Graphics();
-            back.beginFill('0', 0.5);
-            back.drawRect(0, 0, gfx.width, gfx.height);
-            back.endFill();
-
-            var text = new gfx.pixi.Text('Another Menu!!!\nMIDDLE CLICK', {
-                stroke: 'black',
-                strokeThickness: 8,
-                align: 'center',
-                fill: 'white',
-                font: 'bold 64px arial',
-            });
-
-            text.anchor.x = text.anchor.y = 0.5;
-            text.x = gfx.width/2;
-            text.y = gfx.height/2;
-
-            this.addDisplay(back);
-            this.addDisplay(text);
-        };
-
-        AnotherPauseMenu.prototype.update = function(delta) {
-            Menu.prototype.update.call(this, delta);
-            if (input.mouse.isReleased(input.MOUSE_MIDDLE)) {
                 this.close();
             }
         };
