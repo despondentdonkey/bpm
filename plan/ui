@@ -1,0 +1,64 @@
+Features we need:
+    Handle input for children first then handle input for parent.
+
+UiObject
+    Features:
+        Adding other UiObjects to this as children.
+        Managing screen, relative positioning
+        Width, height, and dimension rect
+        Input management could go here. Would be based off dimension rect.
+
+
+Frame
+    Features:
+        Format children objects
+        (May be more effort for what it's worth.)
+
+        a, = one element
+        aaaa = one element stretched
+
+        Horizontal Frame
+        width: 5
+        a, a, a, a, a
+        b, b, b
+
+        Vertical Frame
+        height: 3
+        a, b,
+        a, b
+        a,
+
+        Horizontal Frame w/ stretching
+        (The objects will stretch to the width of the frame)
+        width: 5
+        max: 3 elements
+        aaaaa
+        __or with 2 elements
+        aa bb
+        __or with 4 elements (3 is max so it'll create a new line after 3 objects)
+        a b c
+        ddddd
+
+        Horizontal Frame w/ adaptive width
+        adding elements will format them horizontally but never wrap like default.
+
+        Clipping objects that exceed boundaries of the frame. Also disabling input from objects outside of the frame's boundaries.
+
+    updateLayout():
+        Should call after adding or removing children.
+        This will update this and child x/y/width/height to the current layout rules.
+
+    override addChild or onAddChild event:
+        if this frame is initialized then call updateLayout()
+
+    override removeChild or onRemoveChild event:
+        if this frame is initialized then call updateLayout()
+
+    Improve layout creation design
+
+ScrollFrame (vertical) inherits Frame
+    Features:
+        Calc scroll height.
+        Allowing scrolliing to the height by dragging inside the frame.
+        Creates a vertical scroll bar.
+        Allow scrolling to the height by using the scroll bar.
