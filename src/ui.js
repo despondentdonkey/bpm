@@ -8,6 +8,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this._relativeY = 0;
         this.relativeToParent = true;
         this.enableUiExclusionAreas = false;
+        this.enableInput = true; // Enables input for all children.
     };
         UiObject.prototype = Object.create(GameObject.prototype);
         UiObject.prototype.constructor = UiObject;
@@ -32,7 +33,9 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 input.mouse.disableUi = false;
             }
 
-            this.inputUpdate(delta);
+            if (!this.parent || (this.parent && this.parent.enableInput)) {
+                this.inputUpdate(delta);
+            }
 
             input.mouse.disableUi = true;
         };
@@ -114,6 +117,16 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         BasicButton.prototype = Object.create(UiObject.prototype);
         BasicButton.prototype.constructor = BasicButton;
 
+        BasicButton.prototype.update = function(delta) {
+            UiObject.prototype.update.call(this, delta);
+
+            // Still handle mouse release input even if disabled.
+            // Useful for scroll fields to allow for the clipButton to be released outside of the field.
+            if (this.parent && !this.parent.enableInput) {
+                this.handleMouseRelease();
+            }
+        };
+
         BasicButton.prototype.inputUpdate = function(delta) {
             var isHovering = input.mouse.isColliding(this.x, this.y, this.x+this.width, this.y+this.height);
 
@@ -140,14 +153,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
                 }
             }
 
-            if (input.mouse.isReleased(input.MOUSE_LEFT)) {
-                if (this.status === 'down') {
-                    if (this.onRelease) {
-                        this.onRelease();
-                    }
-                }
-                this.status = isHovering ? 'hover' : 'up';
-            }
+            this.handleMouseRelease();
         };
 
         BasicButton.prototype.enable = function() {
@@ -156,6 +162,19 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
         BasicButton.prototype.disable = function() {
             this.disabled = true;
+        };
+
+        // Handles the actions that occur when you release the mouse button.
+        BasicButton.prototype.handleMouseRelease = function() {
+            if (input.mouse.isReleased(input.MOUSE_LEFT)) {
+                var isHovering = input.mouse.isColliding(this.x, this.y, this.x+this.width, this.y+this.height);
+                if (this.status === 'down') {
+                    if (this.onRelease) {
+                        this.onRelease();
+                    }
+                }
+                this.status = isHovering ? 'hover' : 'up';
+            }
         };
 
     var Button = function(text, style, onRelease, context) {
@@ -474,7 +493,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
                 // Dimensions of the scroll bar.
                 this.scrollBarRect = new Rect(
-                    pos.x + this.width + 8,
+                    pos.x + this.width - 16,
                     pos.y + 16,
                     16,
                     this.height - 16
@@ -505,6 +524,9 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         };
 
         ScrollField.prototype.inputUpdate = function(delta) {
+            // Enable children input if the mouse is inside the clipping rectangle.
+            this.enableInput = input.mouse.isColliding(this.clipRect.x, this.clipRect.y, this.clipRect.x + this.clipRect.w, this.clipRect.y + this.clipRect.h);
+
             if (this.scrollButton) {
                 if (this.scrollButton.status === 'down' || this.scrollButton.status === 'upactive') {
                     // ratio of the y mouse position between the top of the scroll field and the bottom.
@@ -556,7 +578,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             if (ratio * this.height >= this.height - 48) {
                 yPos = this.height - 32;
             }
-            this.scrollGraphic.drawRect(this.initialX + this.width + 8, this.initialY + yPos, 16, 32);
+            this.scrollGraphic.drawRect(this.initialX + this.width - 16, this.initialY + yPos, 16, 32);
 
             this.scrollGraphic.endFill();
         };
