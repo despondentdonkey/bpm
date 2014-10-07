@@ -546,7 +546,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         // make sure the returned bullet of this function is used in children's invocations
         Weapon.prototype.spawnBullet = function(tex, x, y, angle) {
             var b = new Bullet(tex, x, y, angle);
-            console.log(b, b.id);
             if (this.currentElement)
                 b.currentElement = this.currentElement;
             return b;
@@ -631,7 +630,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this.ammo = bpm.player.rifle.ammo;
             this.ammoMax = bpm.player.rifle.ammoMax;
             this.setAmmoTimer(3000);
-            console.log(this);
         };
 
         Rifle.prototype.spawnBullet = function(x, y, angle) {
@@ -643,8 +641,6 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 b.lifeTime = 6000;
                 b.lifeTimer = b.lifeTime;
             };
-
-            console.log(this, b);
 
             return b;
         };
