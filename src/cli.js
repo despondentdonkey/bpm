@@ -25,13 +25,20 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
     var commandList = {
         // need to specify all contructor args in optStr OR in defaults[objects[obj]] (ie, defaults['Bubble'])
         'spawn': function(amtStr, objStr, optStr) {
-            objStr = capitalize(objStr.toLowerCase());
-            var st = states.global.current;
             var amt = Number(amtStr);
-            var opt = optStr ? parseObject(optStr) : {};
+            objStr = capitalize(objStr.toLowerCase());
             var obj = objects[capitalize(objStr)];
+            var st = states.global.current;
 
-            _(opt).defaults(typeof defaults[objStr] === 'object' ? defaults[objStr] : {});
+            // Setup arguments
+            var opt = optStr.split(' ');
+            var def = _.isArray(defaults(objStr)) ? defaults(objStr) : [[],[]];
+            var args = [];
+
+            var iter = Math.max(opt.length, def.length);
+            _(iter).times(function(i) {
+
+            });
 
             var warnMessages = [];
             if (!st)
