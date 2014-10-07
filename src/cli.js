@@ -57,7 +57,7 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
     /* Default Object configuration
         * if passed arguments do not satisfy an object's arity,
         * fill in the blanks with the defaults provided here */
-    var defaults = function() {
+    var defaults = function(objStr) {
         // (this is a function so we can use random values and other fns)
         return {
             // Use arrays instead of objects so we can maintain order
@@ -65,11 +65,34 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
                 ['armor', 'x', 'y', 'angle'],
                 [0, randomRange(32, gfx.width-32), randomRange(-128, gfx.height / 4), Math.random() * 360]
             ]
-        };
+        }[objStr];
     };
 
-    var parseObject = function(str) {
+    /* Named Argument Parsing
+        * takes an array of strings, matches against a regex */
+    var parseArgs = function(optArr) {
+        var parsed = [[], []];
+        var operator = /[:|=]/;
+        var word = /(\w+)/;
+        var validCommand = new RegExp("(?:"+ word + operator +")?"+ word);
+        var kwStart = false;
 
+        _(optArr).each(function(opt, i) {
+            var matches = opt.match(validCommand);
+            if (matches) {
+                var kw = matches[1];
+                var arg = matches[2];
+
+                if (kw) kwStart = true;
+                if (!kw && kwStart)
+                    throw '\tCLI:InvalidArgument: Positional arguments passed named arguments.';
+
+                parsed[0].push[kw];
+                parsed[1].push[arg];
+            }
+        });
+
+        return parsed;
     };
 
 
