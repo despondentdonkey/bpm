@@ -1,9 +1,27 @@
+/*  CLI Guide
+    *
+    *  Syntax:
+    *    command <args>
+    *    command <pos_args> <named_args>
+    *
+    *  Commands
+    *    spawn <amount> <object> <arguments>
+    *      - spawns an object from objects.js
+    *
+    *
+    *
+    *
+    *
+    */
+
+
 define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, states) {
     'use-strict';
-    // default configurations for constructors
-        // describe what the default command should do if no additional args are provided
-        // for example, if 'spawn 10 Bubble' is called, Bubble's armor, x, y, and angle properties need to be defined here
-
+    /* default configurations for constructors
+        * describe what the default command should do if no additional args are provided
+            * for example, if 'spawn 10 Bubble' is called, Bubble's
+            * armor, x, y, and angle properties need to be defined here
+        */
     var commandList = {
         // need to specify all contructor args in optStr OR in defaults[objects[obj]] (ie, defaults['Bubble'])
         'spawn': function(amtStr, objStr, optStr) {
@@ -28,8 +46,7 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
                 warnMessages.push(JSON.stringify(opt)+' does not match the argument requirements for the constructor ' + obj.name);
 
             if (warnMessages.length > 0) {
-                var warning = getWarning('spawn', _.toArray(arguments), warnMessages);
-                warning();
+                warning('spawn', _.toArray(arguments), warnMessages);
                 return -1;
             }
 
@@ -48,9 +65,9 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
     };
 
 
-    // Generates a warning message
-    // String command, Array args, Array messages
-    var getWarning = function(command, args, messages) {
+    /* Generates a warning message
+        * String command, Array args, Array messages */
+    var warning = function(command, args, messages) {
         args = args.join(' ');
         var warning = ["CLI('"+command+" "+args+"') > "];
 
@@ -58,12 +75,11 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
             warning.push('\t' + m);
         });
 
-        return function() {
-            console.warn(warning.join('\n'));
-        };
+        console.warn(warning.join('\n'));
     };
 
-    // Calls a space delimited command from a command defined in the commandList; format: CLI('<command> <arguments>', this);
+    /* Calls a space delimited command from a command defined in the commandList
+        * format: CLI('<command> <arguments>', this) */
     function CLI(commandWithArgs, context) {
         var parsed = commandWithArgs.split(' ');
         var command = parsed[0];
