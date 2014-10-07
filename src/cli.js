@@ -54,10 +54,18 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
         },
     };
 
-    var defaults = {
-        'Bubble': {
-
-        }
+    /* Default Object configuration
+        * if passed arguments do not satisfy an object's arity,
+        * fill in the blanks with the defaults provided here */
+    var defaults = function() {
+        // (this is a function so we can use random values and other fns)
+        return {
+            // Use arrays instead of objects so we can maintain order
+            'Bubble': [
+                ['armor', 'x', 'y', 'angle'],
+                [0, randomRange(32, gfx.width-32), randomRange(-128, gfx.height / 4), Math.random() * 360]
+            ]
+        };
     };
 
     var parseObject = function(str) {
