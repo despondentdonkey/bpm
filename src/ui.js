@@ -367,22 +367,16 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
         // Nineslices
         this.up = new gfx.NineSlice(res.slices.buttonUp);
-        this.up.width = this.width;
-        this.up.height = this.height;
-        this.up.update();
+        this.up.setSize(this.width, this.height);
         this.up.depth = gfx.layers.gui + 1;
 
         this.down = new gfx.NineSlice(res.slices.buttonDown);
-        this.down.width = this.width;
-        this.down.height = this.height;
-        this.down.update();
+        this.down.setSize(this.width, this.height);
         this.down.depth = this.up.depth;
         this.down.visible = false;
 
         this.disabledSlice = new gfx.NineSlice(res.slices.buttonDisabled);
-        this.disabledSlice.width = this.width;
-        this.disabledSlice.height = this.height;
-        this.disabledSlice.update();
+        this.disabledSlice.setSize(this.width, this.height);
         this.disabledSlice.depth = this.up.depth;
         this.disabledSlice.visible = false;
 
@@ -498,9 +492,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             this.displayText.y = this.y + this.padding;
 
             this.back = new gfx.NineSlice(res.slices.textBox);
-            this.back.width = this.width - this.back.sprites.right.width;
-            this.back.height = this.height - this.back.sprites.bottom.height;
-            this.back.update();
+            this.back.setSize(this.width - this.back.sprites.right.width, this.height - this.back.sprites.bottom.height);
             this.back.depth = -9;
 
             this.addDisplay(this.back);
@@ -565,17 +557,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             this.backSlice.depth = this.depth+1;
             this.frontSlice.depth = this.depth;
 
-            this.backSlice.width = this.width;
-            this.backSlice.height = this.height;
-
-            this.frontSlice.width = this.width;
-            this.frontSlice.height = this.height;
+            this.backSlice.setSize(this.width, this.height);
+            this.frontSlice.setSize(this.width, this.height);
 
             this.addDisplay(this.backSlice);
             this.addDisplay(this.frontSlice);
-
-            this.frontSlice.update();
-            this.backSlice.update();
         };
 
         StatusBar.prototype.setRatio = function(ratio) {
@@ -593,10 +579,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             }
 
             if (this.updateRatio) {
-                this.frontSlice.width = this.ratio * this.width;
-
-                this.frontSlice.update();
-                this.backSlice.update();
+                this.frontSlice.setSize(this.ratio * this.width, this.height);
 
                 if (this.ratio <= 0.05) { // A slight offset, when the ratio is too small it gets ugly.
                     this.frontSlice.visible = false;

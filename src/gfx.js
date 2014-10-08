@@ -79,6 +79,12 @@ define(['lib/pixi'], function(pixi) {
             this.sprites[key].depth = this.depth;
             this.addChild(this.sprites[key]);
         }
+
+        // NineSlice Width/Height
+        // Using seperate width/height to not conflict with Pixi.
+        // With 1.6 Pixi children positions affect the parents width/height and we do not want this here.
+        this._nsWidth = 0;
+        this._nsHeight = 0;
     };
         NineSlice.prototype = Object.create(pixi.DisplayObjectContainer.prototype);
         NineSlice.prototype.constructor = NineSlice;
@@ -103,7 +109,15 @@ define(['lib/pixi'], function(pixi) {
         };
 
         NineSlice.prototype.update = function() {
-            this.updatePositions(this.sprites, this.x, this.y, this.width, this.height);
+            this.updatePositions(this.sprites, this.x, this.y, this._nsWidth, this._nsHeight);
+        };
+
+        NineSlice.prototype.setSize = function(width, height, noUpdate) {
+            this._nsWidth = width;
+            this._nsHeight = height;
+            if (_.isUndefined(noUpdate) || noUpdate === false) {
+                this.update();
+            }
         };
 
     return {
