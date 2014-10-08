@@ -127,6 +127,146 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             var screenPos = this.getScreenPos();
             return new Rect(screenPos.x, screenPos.y, this.width, this.height);
         };
+
+    var Frame = function() {
+        UiObject.call(this);
+    };
+        Frame.prototype = Object.create(UiObject.prototype);
+        Frame.prototype.constructor = UiObject;
+
+        Frame.prototype.updateLayout = function() {
+            if (this.layout) {
+                this.layout();
+            }
+        };
+
+        // A dynamic layout is one which will adjust the size of the frame if more objects are added or removed.
+        Frame.prototype.genDynamicLayout = function(type, opt) {
+            return (function() {
+                opt = opt || {};
+
+                var horizontal;
+                if (type === 'horizontal') {
+                    horizontal = true;
+                } else if (type === 'vertical') {
+                    horizontal = false;
+                } else {
+                    console.error("Unsupported layout type '" + type + "'.");
+                    return;
+                }
+
+                var totalSpace = 0;
+                var padding = opt.padding || 5;
+                for (var i=0; i<this.children.length; ++i) {
+                    var child = this.children[i];
+                    var prevChild = this.children[i-1];
+                    var lastElement = (i >= this.children.length-1);
+
+                    var newPos = totalSpace;
+                    var childLength = horizontal ? child.width : child.height;
+
+                    totalSpace += childLength + (lastElement ? 0 : padding);
+
+                    var relativePos = child.getRelativePos();
+                    if (horizontal) {
+                        child.setUiPos(newPos, relativePos.y);
+                    } else {
+                        child.setUiPos(relativePos.x, newPos);
+                    }
+                }
+
+                if (horizontal) {
+                    this.width = totalSpace;
+                    this.height = this.getLargestHeight();
+                } else {
+                    this.width = this.getLargestWidth();
+                    this.height = totalSpace;
+                }
+            });
+        };
+
+        // A stretch layout will stretch ui objects to the size of the frame.
+        // Need to clean this up to allow easy support for horizontal, vertical, and both layouts.
+        Frame.prototype.genStretchLayout = function(type, opt) {
+            return (function() {
+                opt = opt || {};
+
+                var horizontal, dimension;
+                if (type === 'horizontal') {
+                    horizontal = true;
+                    dimension = 'width';
+                } else if (type === 'vertical') {
+                    horizontal = false;
+                    dimension = 'height';
+                } else {
+                    console.error("Unsupported layout type '" + type + "'.");
+                    return;
+                }
+
+                var totalSpace = 0;
+                var padding = opt.padding || 5;
+                for (var i=0; i<this.children.length; ++i) {
+                    var child = this.children[i];
+                    var prevChild = this.children[i-1];
+                    var lastElement = (i >= this.children.length-1);
+
+                    totalSpace += padding;
+                    if (i > 0) {
+                        totalSpace += padding;
+                    }
+                    var newPos = totalSpace;
+                    child[dimension] = (this[dimension] / this.children.length - padding*2);
+
+                    totalSpace += child[dimension];
+
+                    var relativePos = child.getRelativePos();
+                    if (horizontal) {
+                        child.setUiPos(newPos, relativePos.y);
+                    } else {
+                        child.setUiPos(relativePos.x, newPos);
+                    }
+                }
+
+                if (horizontal) {
+                    this.height = this.getLargestHeight();
+                } else {
+                    this.width = this.getLargestWidth();
+                }
+            });
+        };
+
+        // Returns the largest width found from all children objects.
+        Frame.prototype.getLargestWidth = function() {
+            return this.getLargestChildProperty('width');
+        };
+
+        // Returns the largest height found from all children objects.
+        Frame.prototype.getLargestHeight = function() {
+            return this.getLargestChildProperty('height');
+        };
+
+        // Returns the largest property found from all deep children objects.
+        Frame.prototype.getLargestChildProperty = function(propertyName) {
+            var largestObject = null;
+
+            // Find the object with the greatest property value from the children of the object specified.
+            function getLargest(object) {
+                for (var i=0; i<object.children.length; ++i) {
+                    var child = object.children[i];
+
+                    if (largestObject === null || child[propertyName] > largestObject[propertyName]) {
+                        largestObject = child;
+                    }
+
+                    getLargest(child);
+                }
+            }
+
+            getLargest(this);
+
+            return largestObject[propertyName];
+        };
+
     var BasicButton = function(x, y, w, h) {
         UiObject.call(this);
         this.setUiPos(x, y);
@@ -636,6 +776,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
     return {
         UiObject: UiObject,
+        Frame: Frame,
         Button: Button,
         TextField: TextField,
         FloatText: FloatText,
