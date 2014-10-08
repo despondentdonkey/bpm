@@ -6,9 +6,13 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         GameObject.call(this);
         this._relativeX = 0;
         this._relativeY = 0;
+        this.width = 0;
+        this.height = 0;
         this.relativeToParent = true;
         this.enableUiExclusionAreas = false;
-        this.enableInput = true; // Enables input for all children.
+        this.enableInput = false; // Enables input for this object.
+        this.enableChildInput = true; // Enables input for all children.
+        this.enableInputBlock = false; // This object will block input from the parent if mouse is over.
     };
         UiObject.prototype = Object.create(GameObject.prototype);
         UiObject.prototype.constructor = UiObject;
@@ -26,21 +30,40 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         UiObject.prototype.update = function(delta) {
             GameObject.prototype.update.call(this, delta);
 
-            if (this.disabled) return;
+            if (this.disabled) return; // deprecated in favor for enableInput; remove when buttons are ported.
+            if (!this.enableInput) return;
 
             // Disable exclusion areas while ui uses input methods. Enable at the end of update.
             if (this.enableUiExclusionAreas) {
                 input.mouse.disableUi = false;
             }
 
-            if (!this.parent || (this.parent && this.parent.enableInput)) {
-                this.inputUpdate(delta);
+            if (!this.parent || (this.parent && this.parent.enableChildInput)) {
+                var shouldUpdate = true;
+
+                // Do not update input if over a child that wants input.
+                if (this.children.length > 0) {
+                    for (var i=0; i<this.children.length; ++i) {
+                        var child = this.children[i];
+                        if (child.enableInput && child.enableInputBlock) {
+                            var geo = child.getGeometry();
+                            if (input.mouse.isColliding(geo.x, geo.y, geo.x2, geo.y2)) {
+                                shouldUpdate = false;
+                            }
+                        }
+                    }
+                }
+
+                if (this.enableInput && shouldUpdate) {
+                    this.inputUpdate(delta);
+                }
             }
 
             input.mouse.disableUi = true;
         };
 
         // Called during update when exclusion areas are disabled. This is where input handling should go.
+        // TODO: Pass a boolean telling if the mouse is hovering over the object.
         UiObject.prototype.inputUpdate = function(delta) {};
 
         // Sets positions relative to parent
@@ -76,14 +99,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
         // Gets the position this object should appear on screen. (parent pos + relative pos)
         UiObject.prototype.getScreenPos = function() {
-            var parentX = 0, parentY = 0;
-            if (this.relativeToParent && this.parent) {
-                var parentPos = this.parent.getScreenPos();
-                parentX = parentPos.x;
-                parentY = parentPos.y;
-            }
-
-            return new Point(parentX + this._relativeX, parentY + this._relativeY);
+            return new Point(this.x, this.y);
         };
 
         // Updates screen position (x, y). Used when a parent's position has changed.
@@ -106,6 +122,11 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             }
         };
 
+        // Returns a rectangle containing the screen positions and width/height.
+        UiObject.prototype.getGeometry = function() {
+            var screenPos = this.getScreenPos();
+            return new Rect(screenPos.x, screenPos.y, this.width, this.height);
+        };
     var BasicButton = function(x, y, w, h) {
         UiObject.call(this);
         this.setUiPos(x, y);
@@ -113,6 +134,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this.height = h;
         this.status = 'up';
         this.enableUiExclusionAreas = true;
+        this.enableInput = true; // Enable input for all buttons by default.
     };
         BasicButton.prototype = Object.create(UiObject.prototype);
         BasicButton.prototype.constructor = BasicButton;
@@ -122,7 +144,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
             // Still handle mouse release input even if disabled.
             // Useful for scroll fields to allow for the clipButton to be released outside of the field.
-            if (this.parent && !this.parent.enableInput) {
+            if (this.parent && !this.parent.enableChildInput) {
                 this.handleMouseRelease();
             }
         };
@@ -177,10 +199,13 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             }
         };
 
+    // Performance problem with >50 buttons on the WebGLRenderer. Works fine with the CanvasRenderer.
     var Button = function(text, style, onRelease, context) {
         BasicButton.call(this, 0, 0, 0, 0);
 
         this.onRelease = context ? _.bind(onRelease, context) : onRelease;
+
+        this.enableInputBlock = true;
 
         // Text
         this.text = text;
@@ -456,6 +481,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         this.prevScrollPos = 0; // Position of the scroll since last click.
 
         this.clipRect = new Rect(this.initialX, this.initialY, this.width, this.height); // Dimensions of the clipping rectangle.
+        this.enableInput = true;
     };
         ScrollField.prototype = Object.create(UiObject.prototype);
         ScrollField.prototype.constructor = ScrollField;
@@ -472,6 +498,7 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
             // A button for the main scroll area.
             this.clipButton = new BasicButton(this.clipRect.x, this.clipRect.y, this.clipRect.w, this.clipRect.h);
             this.clipButton.relativeToParent = false;
+            this.clipButton.enableInputBlock = false;
             this.clipButton.onInitialClick = _.bind(function() {
                 this.initialClickY = input.mouse.y;
                 this.prevScrollPos = this.scrollPos;
@@ -523,10 +550,13 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
 
         };
 
-        ScrollField.prototype.inputUpdate = function(delta) {
+        ScrollField.prototype.update = function(delta) {
+            UiObject.prototype.update.call(this, delta);
             // Enable children input if the mouse is inside the clipping rectangle.
-            this.enableInput = input.mouse.isColliding(this.clipRect.x, this.clipRect.y, this.clipRect.x + this.clipRect.w, this.clipRect.y + this.clipRect.h);
+            this.enableChildInput = input.mouse.isColliding(this.clipRect.x, this.clipRect.y, this.clipRect.x + this.clipRect.w, this.clipRect.y + this.clipRect.h);
+        };
 
+        ScrollField.prototype.inputUpdate = function(delta) {
             if (this.scrollButton) {
                 if (this.scrollButton.status === 'down' || this.scrollButton.status === 'upactive') {
                     // ratio of the y mouse position between the top of the scroll field and the bottom.
@@ -610,6 +640,6 @@ define(['objects', 'res', 'gfx', 'input'], function(objects, res, gfx, input) {
         TextField: TextField,
         FloatText: FloatText,
         StatusBar: StatusBar,
-        ScrollField: ScrollField
+        ScrollField: ScrollField,
     };
 });
