@@ -5,12 +5,6 @@ define(['lib/pixi'], function(pixi) {
         this.stage = new pixi.Stage(0x505050);
         this.renderer = pixi.autoDetectRenderer(this.width, this.height);
 
-        if (this.renderer instanceof pixi.WebGLRenderer) {
-            console.log('Using WebGLRenderer');
-        } else if (this.renderer instanceof pixi.CanvasRenderer) {
-            console.log('Using CanvasRenderer');
-        }
-
         this.sortStageDisplays = false;
 
         // Custom depth property for pixi display objects.
