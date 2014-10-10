@@ -23,34 +23,24 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
             * armor, x, y, and angle properties need to be defined here
         */
     var commandList = {
-        // need to specify all contructor args in optStr OR in defaults[objects[obj]] (ie, defaults['Bubble'])
-        'spawn': function(amtStr, objStr, optStr) {
+        // need to specify all contructor args in argStr OR in defaults[objects[obj]] (ie, defaults['Bubble'])
+        'spawn': function(amtStr, objStr) {
+            var warnMessages = [];
             var amt = Number(amtStr);
             objStr = capitalize(objStr.toLowerCase());
-            var obj = objects[capitalize(objStr)];
+            var obj = objects[objStr];
             var st = states.global.current;
+            var argStr = _(arguments).tail(2).join(' ');
+            var args = parseArgs(objStr, argStr);
 
-            // Setup arguments
-            var opt = optStr.split(' ');
-            var def = _.isArray(defaults(objStr)) ? defaults(objStr) : [[],[]];
-            var args = [];
-
-            var iter = Math.max(opt.length, def.length);
-            _(iter).times(function(i) {
-
-            });
-
-            var warnMessages = [];
             if (!st)
                 warnMessages.push('states.global.current is not defined');
-            if (typeof opt !== 'object')
-                warnMessages.push('options is not an object. Error in CLI.js::parseObject or in CLI call')
             if (!obj instanceof objects.GameObject)
                 warnMessages.push('"'+obj+'" is not defined as a GameObject in objects');
             if (typeof amt !== 'number')
                 warnMessages.push(amt+' is not a number.');
-            if (opt.length !== obj.length)
-                warnMessages.push(JSON.stringify(opt)+' does not match the argument requirements for the constructor ' + obj.name);
+            if (args.length !== obj.length)
+                warnMessages.push(args.toString()+' does not match the argument requirements for the constructor ' + obj.name);
 
             if (warnMessages.length > 0) {
                 warning('spawn', _.toArray(arguments), warnMessages);
@@ -66,6 +56,7 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
         * fill in the blanks with the defaults provided here */
     var defaults = function(objStr) {
         // (this is a function so we can use random values and other fns)
+        var gfx = require('gfx');
         return {
             // Use arrays instead of objects so we can maintain order
             'Bubble': [
@@ -75,16 +66,41 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
         }[objStr];
     };
 
-    /* Named Argument Parsing
-        * takes an array of strings, matches against a regex */
-    var parseArgs = function(optArr) {
+    /* Argument Parser
+        * Takes an object string and a space delimited string of positional and/or named arguments
+        * Parses string and creates arguments array for application to object */
+    var parseArgs = function(objStr, argStr) {
+        var args = _.isString(argStr) ? parseArgStr(argStr.split(' ')) : [[], []];
+        var def = _.isArray(defaults(objStr)) ? defaults(objStr) : [[],[]];
+
+        if (def[0].length < 1 && args[0].length > 0)
+            warnMessages.push('InvalidArgument: default not defined; '+
+                'named arguments are only supported with defined defaults in cli.js');
+
+        // get the names of the constructor's parameters to compare with args and def
+        // >>>>>>>>> these regexes are beastly - check here first if any bugs appear in the CLI <<<<<<<<<
+        var ctorParams = objects[objStr].toString()
+                                        .replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/)|(\s))/mg,'')
+                                        .match(/^function\s*[^\(]*\(\s*([^\)]*)\)/m)[1]
+                                        .split(/,/);
+
+        var objArgs = _(args[0]).chain().zip(args[1]).object().value();
+        return _(ctorParams).map(function(named, i) {
+            // named argument, positional, or default
+            return objArgs[named] || args[1][i] || def[1][i];
+        });
+    };
+
+    /* Named Argument String Parsing
+        * takes an array of strings, matches against a regex,
+        * returns 2d array of [name, value] argument pairs
+        * for positionals name is the numerical position */
+    var parseArgStr = function(argArr) {
         var parsed = [[], []];
-        var operator = /[:|=]/;
-        var word = /(\w+)/;
-        var validCommand = new RegExp("(?:"+ word + operator +")?"+ word);
+        var validCommand = /(?:(\w+)[:|=])?(\w+)/;
         var kwStart = false;
 
-        _(optArr).each(function(opt, i) {
+        _(argArr).each(function(opt, i) {
             var matches = opt.match(validCommand);
             if (matches) {
                 var kw = matches[1];
@@ -93,9 +109,10 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
                 if (kw) kwStart = true;
                 if (!kw && kwStart)
                     throw '\tCLI:InvalidArgument: Positional arguments passed named arguments.';
+                if (!kw) kw = i;
 
-                parsed[0].push[kw];
-                parsed[1].push[arg];
+                parsed[0].push(kw);
+                parsed[1].push(arg);
             }
         });
 
@@ -122,7 +139,6 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
         var parsed = commandWithArgs.split(' ');
         var command = parsed[0];
         var args = _(parsed).tail();
-
 
         if (typeof commandList[command] === 'function')
             return commandList[command].apply(context, args);
