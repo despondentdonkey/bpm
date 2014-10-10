@@ -47,7 +47,14 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
                 return -1;
             }
 
-            _(amt).times(function() { st.add(new obj.apply(null, opt)); });
+            _(amt).times(function() {
+                // re-parse args to retrigger defaults()
+                args = parseArgs(objStr, argStr);
+                // Create a temporary constructor in order to apply array of args to new obj
+                var newObj = Object.create(obj.prototype);
+                var ctor = obj.apply(newObj, args);
+                st.add(ctor || newObj);
+            });
         },
     };
 
