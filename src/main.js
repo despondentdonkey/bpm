@@ -14,7 +14,6 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades',
                            || window.msRequestAnimationFrame
                            || function(func) { setTimeout(func, 1000/60) };
 
-    window.CLI = CLI;
     function run() {
         states.setState(new states.TownMenu());
 
@@ -24,6 +23,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades',
             input.init(gfx.renderer.view);
             dbg.addStateButtons(states);
             dbg.addCheats(bpm, states);
+            dbg.addCLI(CLI);
 
             bpm.player = bpm.createNewPlayer();
             bpm.difficulty = bpm.genDifficultyStats(bpm.player.difficultyLevel);
