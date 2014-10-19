@@ -10,6 +10,11 @@
         "startCutscene": "firstQuestCutscene",
         "objectives": {
             "popBubbles": 10
+        },
+        "events": {
+            "0..100": "spawn 1000 bubble",
+            "0": "spawn 150 bubble 2",
+            "50": "spawn 50 bubble 4"
         }
     },
 
