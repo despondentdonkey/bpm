@@ -1,4 +1,4 @@
-define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgrades'], function(bpm, objects, gfx, res, input, ui, events, quests, upgrades) {
+define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgrades', 'cli'], function(bpm, objects, gfx, res, input, ui, events, quests, upgrades, CLI) {
     var global = {
         current: null,
         previous: null,
@@ -25,6 +25,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             // Set the current state to the new state, initialize and clear the new state.
             global.current = newState;
+            bpm.currentState = global.current;
             if (options.initNew) {
                 global.current.init();
             }
@@ -382,15 +383,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             });
             this.add(this.bubbleEmitter);
 
-/*            var i;
-            for (i=0; i<0; ++i) {
-                this.add(randBub(8));
-            }
-
-            for (i=0; i<40; i++) {
-                this.add(randBub(3));
-            }*/
-
+            CLI('spawn 100 bubble');
 
             // Need to bind event callbacks, otherwise `this === window` on call
             _.bindAll(this, 'onBlur', 'onFocus');

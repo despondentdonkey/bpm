@@ -15,18 +15,18 @@
     */
 
 
-define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, states) {
-    'use-strict';
+define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
     /* default configurations for constructors
         * describe what the default command should do if no additional args are provided
             * for example, if 'spawn 10 Bubble' is called, Bubble's
-            * armor, x, y, and angle properties need to be defined here
-        */
-    var commandList = {
+            * armor, x, y, and angle properties need to be defined here */
+    var commands = {
         // need to specify all contructor args in argStr OR in defaults[objects[obj]] (ie, defaults['Bubble'])
         'spawn': function(amtStr, objStr) {
             var warnMessages = [];
             var amt = Number(amtStr);
+            var st = bpm.currentState;
+
             objStr = capitalize(objStr.toLowerCase());
             var obj = objects[objStr];
             var st = states.global.current;
@@ -126,7 +126,6 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
         return parsed;
     };
 
-
     /* Generates a warning message
         * String command, Array args, Array messages */
     var warning = function(command, args, messages) {
@@ -140,15 +139,17 @@ define(['events', 'objects', 'bpm', 'states'], function(events, objects, bpm, st
         console.warn(warning.join('\n'));
     };
 
-    /* Calls a space delimited command from a command defined in the commandList
+    /* Calls a space delimited command from a command defined in commands
         * format: CLI('<command> <arguments>', this) */
     function CLI(commandWithArgs, context) {
         var parsed = commandWithArgs.split(' ');
         var command = parsed[0];
         var args = _(parsed).tail();
 
-        if (typeof commandList[command] === 'function')
-            return commandList[command].apply(context, args);
+        if (typeof commands[command] === 'function')
+            return commands[command].apply(context, args);
+        else
+            throw new CLIError('Command "' + command + '" not found.');
     }
 
     return CLI;
