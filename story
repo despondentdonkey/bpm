@@ -2,11 +2,10 @@ In the quiet city of Pinville a dark evil approaches.
 
 0 -- Characters and Locations
     The Mayor
-        Fancy, Seemingly Crazy, Scatterbrained, Hates Bubbles with an odd passion
+        Has a moustache. Fancy, Seemingly Crazy, Scatterbrained, Hates Bubbles with an odd passion
 
     The Blacksmith
-        Pirate or western cowboy - possibly both, Mr. Krabs-level cheap, loves money and steel
-        Wears cowboy hat, eye patch. Owns a parrot and a horse.
+        Mr. Krabs-level cheap, loves money and steel
 
     The Wizard
         Mysterious, communicates via telepathy, controls the main forcefield protecting the town.
@@ -61,28 +60,30 @@ In the quiet city of Pinville a dark evil approaches.
             ** Quest End **
                 Any dialog here will show after quest is turned in
 
-1 -- Introduction
+a -- Introduction
     Mayor: "Thank the heavens you've arrived!"
             "Without you, our peaceful city of Pinville would be ruined!"
-            "Take this. It will aid you in your valiant quest against the unspeakable evil approaching us as we speak."
+            "Take this. It will aid you in your valiant quest against the unspeakable evil that is approaching us."
             * Receive Pin Shooter *
 
     # Quest Main: Kill all of the bubbles before they reach the village!
-        Mayor: "Prepare yourself! The battle royale awaits!"
+        Mayor: "Prepare yourself! The battle begins now!!"
 
+ma00
     ** Quest Start - a few normal bubbles **
         Mayor: "Look at those hideous monstrosities!"
                 "SHOOT THEM! KILL THEM ALL!"
+                * Mayor lets out a battle cry *
+                * Play intense battle music - orchestral awesomeness and such *
 
         * Show basic gameplay tutorial *
         * checkpoint (if you die, start here; skip dialog) *
 
     ** Quest End **
 
-         Mayor: "Ewwwww, they got their... residue everywhere!"
-                "Here is your reward, soldier. Our citizens thank you for your heroic deeds."
+         Mayor: "Good work, soldier. Our citizens thank you for your heroic effort."
                 * Receive 1 gold *
-                "Why don't you head on down to the blacksmith and get yourself a taco?"
+                "Why don't you head down to the armory and meet our famouse blacksmith?"
 
     * Instructions on how to navigate the UI *
     * Make user go to blacksmith *
@@ -92,26 +93,30 @@ In the quiet city of Pinville a dark evil approaches.
 
     * Display shop window and tutorial on how to navigate the shop *
 
-                "Wait - you have how much gold?"
-                "..."
-                "Get out."
+                "Oh... You only have one gold... Go see the mayor for more cash."
 
-    # Quest Main: Kill all of the bubbles before they reach the village!
-             Gold: Achieve 6x combo
-             Silver: 4x combo
-             Bronze: 3x combo
+ma01
+    # Quest Main: Kill all of the bubbles before they reach the village! And find the mayor's moustache!
 
-        Mayor: "*muttering to himself*"
-               "Oh! I didn't see you there. Come, quickly! The demons have returned!"
+        Mayor (now missing moustache): "These scounderels broke into my house and stole my moustache!! KILL. THEM."
 
     ** Quest Start - All normal bubbles **
         * Combo tutorial *
         * Checkpoint *
     ** Quest End **
 
+        Find Mayor's moustache in bubble's guts
+            * play Zelda-like acquiring music, spin moustache on screen with shiny effects emanating from the epic 'stache *
+
+        Mayor: "You retrieved my 'stache?! Thank the Gods!"
+               "Our citizens have seen your acts of heroism and also require your help! You can find additional quests in my office."
+
+ma02
     # Quest Main:
-    # Quest Side
-    # Quest Side
+sa00
+    # Quest Side - citizen quest 
+sa01
+    # Quest Side - citizen quest
 
     * Bubbles begin to increase in frequency *
 
@@ -173,11 +178,11 @@ In the quiet city of Pinville a dark evil approaches.
         -- Tower entry
             Wizard: "Greetings, traveller. Welcome to my tower."
 
-2 -- Bubble Brains Become Apparent
+b -- Bubble Brains Become Apparent
     Mayor: "Are those... Brains??"
     Wizard: "Traveller, collect as many brains as possible so we can learn more about these bubbles"
 
-3 -- Bubbles' intelligence becomes apparent
+c -- Bubbles' intelligence becomes apparent
     * Town Meeting - Blacksmith, Wizard, and Mayor are gathered *
     Mayor: begins to show concern over the bubbles armor
     Wizard: "We believe the bubbles have adapted to wearing armor to protect their brains"
@@ -189,11 +194,11 @@ In the quiet city of Pinville a dark evil approaches.
 
     - Why do we pop?
 
-5 -- Mayor/town is seemingly evil
+d -- Mayor/town is seemingly evil
 
     - give mayor evil laugh/mannerisms
 
-6 -- Meet Bubble King in BubbleLand
+e -- Meet Bubble King in BubbleLand
     - Receive invite to bubble land in the form of a wave of bubbles
         (need to write out "Come to BubbleLand
                                 <3 K. Bubbs"
@@ -206,6 +211,6 @@ In the quiet city of Pinville a dark evil approaches.
     -- Discover Bubbles' true intentions
     - Meet bubble royalty and learn bubbly things
 
-10 -- Destroying BubbleLand and K. Bubbs
+f -- Destroying BubbleLand and K. Bubbs
 
     -
