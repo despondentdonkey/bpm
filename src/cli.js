@@ -23,29 +23,25 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
     var commands = {
         // need to specify all contructor args in argStr OR in defaults[objects[obj]] (ie, defaults['Bubble'])
         'spawn': function(amtStr, objStr) {
-            var warnMessages = [];
             var amt = Number(amtStr);
             var st = bpm.currentState;
 
             objStr = capitalize(objStr.toLowerCase());
             var obj = objects[objStr];
-            var st = states.global.current;
-            var argStr = _(arguments).tail(2).join(' ');
-            var args = parseArgs(objStr, argStr);
 
-            if (!st)
-                warnMessages.push('states.global.current is not defined');
-            if (!obj instanceof objects.GameObject)
-                warnMessages.push('"'+obj+'" is not defined as a GameObject in objects');
+            var args, argStr = _(arguments).tail(2).join(' ');
+
+            if (!(st && st.commandEnabled['spawn']))
+                throw new CLIError('You cannot spawn here or the current state is undefined.');
             if (typeof amt !== 'number')
-                warnMessages.push(amt+' is not a number.');
-            if (args.length !== obj.length)
-                warnMessages.push(args.toString()+' does not match the argument requirements for the constructor ' + obj.name);
+                throw new CLIError(amt+' is not a number.');
+            // parseArgs requires obj to be a valid constructor in order to get named params
+            if (!(obj && (obj.prototype instanceof objects.GameObject)))
+                throw new CLIError('"'+objStr+'" is not defined as a GameObject in objects.js');
 
-            if (warnMessages.length > 0) {
-                warning('spawn', _.toArray(arguments), warnMessages);
-                return -1;
-            }
+            args = parseArgs(objStr, argStr);
+            if (args.length !== obj.length)
+                throw new CLIError('the arguments "'+args.toString()+'" do not match the requirements for the constructor ' + obj.name);
 
             _(amt).times(function() {
                 // re-parse args to retrigger defaults()
@@ -60,7 +56,8 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
 
     /* Default Object configuration
         * if passed arguments do not satisfy an object's arity,
-        * fill in the blanks with the defaults provided here */
+        * fill in the blanks with the defaults provided here 
+        * ** Rely on parseArgs to call this. */
     var defaults = function(objStr) {
         // (this is a function so we can use random values and other fns)
         var gfx = require('gfx');
@@ -127,16 +124,27 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
     };
 
     /* Generates a warning message
-        * String command, Array args, Array messages */
-    var warning = function(command, args, messages) {
-        args = args.join(' ');
-        var warning = ["CLI('"+command+" "+args+"') > "];
+        * message: String or Array (default: CLIError: Unknown Error); 
+        * arguments: command, args */
+    function CLIError(message) {
+        this.message = _.isArray(message) ? message : [message || 'Unknown Error'];
+        var args = _(arguments).tail(1);
+        this.command = args.join(' ');
+    }
+    CLIError.prototype = Object.create(Error);
+    CLIError.prototype.constructor = CLIError;
+    CLIError.prototype.toString = function() {
+        var warning = [];
 
-        _(messages).each(function(m) {
-            warning.push('\t' + m);
+        var label = 'CLIError: ';
+        if (this.command)
+            label += 'CLI('+this.command+') > ';
+
+        _(this.message).each(function(m) {
+            warning.push(label + m);
         });
 
-        console.warn(warning.join('\n'));
+        return warning.join('\n');
     };
 
     /* Calls a space delimited command from a command defined in commands

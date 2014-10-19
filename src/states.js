@@ -42,6 +42,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         this.paused = false;
 
         this.initialized = false;
+
+        // Use this to regulate when/where commands can run
+        // See src/cli.js for implementations
+        this.commandEnabled = {
+            'spawn': false
+        };
     };
         State.prototype = Object.create(events.EventHandler.prototype);
         State.prototype.constructor = State;
@@ -241,6 +247,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             weapons: bpm.hotkeys.weapons,
             actions: bpm.hotkeys.actions
         };
+
+        this.commandEnabled['spawn'] = true;
     };
         Field.prototype = Object.create(State.prototype);
         Field.prototype.constructor = Field;
