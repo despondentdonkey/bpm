@@ -59,7 +59,7 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
 
     /* Default Object configuration
         * if passed arguments do not satisfy an object's arity,
-        * fill in the blanks with the defaults provided here 
+        * fill in the blanks with the defaults provided here
         * ** Rely on parseArgs to call this. */
     var defaults = function(objStr) {
         // (this is a function so we can use random values and other fns)
@@ -127,7 +127,7 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
     };
 
     /* Generates a warning message
-        * message: String or Array (default: CLIError: Unknown Error); 
+        * message: String or Array (default: CLIError: Unknown Error);
         * arguments: command, args */
     function CLIError(message) {
         this.message = _.isArray(message) ? message : [message || 'Unknown Error'];

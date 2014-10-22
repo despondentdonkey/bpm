@@ -144,6 +144,7 @@ define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
 
     // apply this function to a quest to setup and add an event handler to the object.
     var addEvents = function() {
+        this.eventHandler = new events.EventHandler();
         if (!this.events) return;
         for (var time in this.events) {
             setupEvent.apply(this, [time, this.events[time]]);
@@ -161,9 +162,6 @@ define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
 
         if (!(_.isNumber(time) || (_.isArray(range) && _(range).all(_.isNumber))))
             throw 'Error processing quest JSON. Invalid time in quests.json: ' + time.toString();
-
-        if (!this.eventHandler)
-            this.eventHandler = new events.EventHandler();
 
         this.eventHandler.addListener('cliEvent', function(t) {
             var inRange = range && t > range[0] && t < range[1];
