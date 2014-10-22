@@ -52,6 +52,9 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
                 st.add(ctor || newObj);
             });
         },
+        't': function(time) {
+            bpm.player.currentQuest.eventHandler.triggerEvent('cliEvent', Number(time));
+        }
     };
 
     /* Default Object configuration
@@ -65,7 +68,7 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
             // Use arrays instead of objects so we can maintain order
             'Bubble': [
                 ['armor', 'x', 'y', 'angle'],
-                [0, randomRange(32, gfx.width-32), randomRange(-128, gfx.height / 4), Math.random() * 360]
+                [0, randomRange(32, gfx.width-32), randomRange(-320, -32), Math.random() * 360]
             ]
         }[objStr];
     };
