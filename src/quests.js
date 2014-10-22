@@ -1,4 +1,4 @@
-define(['bpm'], function(bpm) {
+define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
     // Contains all quests
     this.all = {};
 
@@ -137,7 +137,42 @@ define(['bpm'], function(bpm) {
             quest.objectives[key] = objective;
         }
 
+        addEvents.apply(quest)
+
         this.all[id] = quest;
+    };
+
+    // apply this function to a quest to setup and add an event handler to the object.
+    var addEvents = function() {
+        if (!this.events) return;
+        for (var time in this.events) {
+            setupEvent.apply(this, [time, this.events[time]]);
+        }
+    }
+
+    // Apply this function to a quest object to parse events and add event listeners to the quest.
+    var setupEvent = function(time, command) {
+        var range = time.match(/(\d+)\.\.(\d+)/);
+        // Convert to numbers for comparisons
+        if (range)
+            range = [Number(range[1]), Number(range[2])];
+        else
+            time = Number(time);
+
+        if (!(_.isNumber(time) || (_.isArray(range) && _(range).all(_.isNumber))))
+            throw 'Error processing quest JSON. Invalid time in quests.json: ' + time.toString();
+
+        if (!this.eventHandler)
+            this.eventHandler = new events.EventHandler();
+
+        this.eventHandler.addListener('cliEvent', function(t) {
+            var inRange = range && t > range[0] && t < range[1];
+            var onTime = t == time;
+            if (inRange || onTime) {
+                console.log('calling event listener', t, command);
+                CLI(command);
+            }
+        }, false);
     };
 
     // Parses JSON for quest data and adds them.
