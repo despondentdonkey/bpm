@@ -24,8 +24,10 @@ src/*.vim
 bower.json
 node_modules/*
 
-
 Gruntfile.js
 
 # resources
 res/gfx/*
+res/*.xcf
+res/*.ttf
+res/*.png
