@@ -1,4 +1,4 @@
-define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgrades'], function(bpm, objects, gfx, res, input, ui, events, quests, upgrades) {
+define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgrades', 'cli'], function(bpm, objects, gfx, res, input, ui, events, quests, upgrades, CLI) {
     var global = {
         current: null,
         previous: null,
@@ -25,6 +25,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
 
             // Set the current state to the new state, initialize and clear the new state.
             global.current = newState;
+            bpm.currentState = global.current;
             if (options.initNew) {
                 global.current.init();
             }
@@ -41,6 +42,12 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
         this.paused = false;
 
         this.initialized = false;
+
+        // Use this to regulate when/where commands can run
+        // See src/cli.js for implementations
+        this.commandEnabled = {
+            'spawn': false
+        };
     };
         State.prototype = Object.create(events.EventHandler.prototype);
         State.prototype.constructor = State;
@@ -240,6 +247,8 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             weapons: bpm.hotkeys.weapons,
             actions: bpm.hotkeys.actions
         };
+
+        this.commandEnabled['spawn'] = true;
     };
         Field.prototype = Object.create(State.prototype);
         Field.prototype.constructor = Field;
@@ -382,15 +391,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             });
             this.add(this.bubbleEmitter);
 
-/*            var i;
-            for (i=0; i<0; ++i) {
-                this.add(randBub(8));
-            }
-
-            for (i=0; i<40; i++) {
-                this.add(randBub(3));
-            }*/
-
+            CLI('spawn 100 bubble');
 
             // Need to bind event callbacks, otherwise `this === window` on call
             _.bindAll(this, 'onBlur', 'onFocus');

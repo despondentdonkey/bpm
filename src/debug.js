@@ -80,6 +80,20 @@ dbg.addCheats = function(bpm, states) {
     document.getElementById('bpmCheats').appendChild(div);
 };
 
+dbg.addCLI = function(CLI) {
+    CLI = CLI || window.CLI;
+    var cliInput = document.getElementById('cliElement');
+    cliInput.addEventListener('keydown', function(e) {
+        if (e.keyCode === 9) { // Tab
+            document.getElementsByTagName('canvas')[0].focus();
+        }
+        if (CLI && e.keyCode === 13) { // Enter key
+            CLI(cliInput.value);
+            cliInput.value = "";
+        }
+    });
+};
+
 dbg.fpsMonitorInit = false;
 dbg.fpsMonitorShow = true;
 dbg.fpsMonitor = function(gfx, time, state) {

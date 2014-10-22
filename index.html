@@ -15,37 +15,42 @@
 
             #wrapper {
                 position: relative;
-                width: 100%;
-                padding: 50px;
                 left: 0px;
                 top: 0px;
+                width: 100%;
+                padding: 11px;
+                overflow: hidden;
             }
 
             #buttonWrapper {
                 float: left;
-                position: absolute;
-                margin-right: 20px;
+                min-width: 235px;
+                max-width: 235px;
                 background: #b4b4b4;
             }
 
-            #canvas {
-                position: absolute;
-                left: 50%;
-                margin-left: -400px;
+            #canvasWrapper {
+                float: left;
                 cursor: none;
+                margin-right: 5px;
             }
-
+            #cliElement {
+                width: 100%;
+            }
 
         </style>
     </head>
 
     <body>
         <div id="wrapper">
+            <div id="canvasWrapper">
+                <div id="canvas"> </div>
+                <input type="text" id="cliElement" tabindex=0 placeholder="Command Line Interface"></input>
+            </div>
             <div id="buttonWrapper">
                 <div id="stateButtons"></div>
                 <div id="bpmCheats"></div>
             </div>
-            <div id="canvas"></div>
         </div>
     </body>
 </html>

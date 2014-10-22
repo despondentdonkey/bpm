@@ -363,8 +363,9 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
     // Any performance problems with these are mostly likely due to the collisions rather than rendering.
     function Bullet(tex, x, y, angle) {
         GameObject.call(this);
-        this.x = x;
-        this.y = y;
+        this.x = Number(x);
+        this.y = Number(y);
+        angle = Number(angle);
         this.speedX = Math.cos(angle);
         this.speedY = -Math.sin(angle);
         this.tex = tex;
@@ -652,10 +653,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
     function Bubble(armor, x, y, angle) {
         GameObject.call(this);
-        this.x = x;
-        this.y = y;
+        this.x = Number(x);
+        this.y = Number(y);
+        armor = Number(armor);
 
-        this.speedX = Math.cos(angle * DEG2RAD);
+        this.speedX = Math.cos(Number(angle) * DEG2RAD);
         this.speedY = 1;
 
         this.worth = 10;

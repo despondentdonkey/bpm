@@ -5,7 +5,8 @@ requirejs.config({
 });
 
 requirejs(['lib/pixi', 'lib/sfx', 'lib/lode', 'lib/underscore', 'debug', 'utils'], function() {
-requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades'], function(time, gfx, res, states, input, quests, bpm, upgrades) {
+requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades', 'cli'], function(time, gfx, res, states, input, quests, bpm, upgrades, CLI) {
+
     // Override default requestAnimationFrame for maximum compatibility.
     var requestAnimationFrame = window.requestAnimationFrame
                            || window.mozRequestAnimationFrame
@@ -22,6 +23,7 @@ requirejs(['time', 'gfx', 'res', 'states', 'input', 'quests', 'bpm', 'upgrades']
             input.init(gfx.renderer.view);
             dbg.addStateButtons(states);
             dbg.addCheats(bpm, states);
+            dbg.addCLI(CLI);
 
             bpm.player = bpm.createNewPlayer();
             bpm.difficulty = bpm.genDifficultyStats(bpm.player.difficultyLevel);

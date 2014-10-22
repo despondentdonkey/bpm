@@ -3,6 +3,8 @@ define(['lib/simpleStorage', 'upgrades'], function(simpleStorage, upgrades) {
 
     var devAmmo = 100000;
     return {
+        currentState: null,
+
         playerDefault: {
             money: 105000, // Currency for blacksmith
             levelPoints: 300, // Currency for wizard

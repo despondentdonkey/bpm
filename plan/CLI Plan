@@ -61,7 +61,7 @@ BPM Command Line Interface
         Manipulating Player Stats
         Trigger Cutscenes
 
-Quest CLI Interpreter
+CLI Interpreter
 
     Process CLI commands from the JSON based on specified time or event
     Add event-based commands to an event obj; add time-based commands to a time-based obj
@@ -71,7 +71,7 @@ Quest CLI Interpreter
         use event obj's key as the event and the value as the listener
 
     Add EventHandler.triggerEvent function to quest export obj to trigger events
-        usage: quests.triggerEvent('youLose');
+        usage: cli.triggerEvent('youLose');
 
     In the JSON, commands are specified like so:
     {
@@ -116,4 +116,17 @@ Quest CLI Interpreter
             Manipulate a property on bpm.player
 
         trigger <event>
-            Trigger an event on the quest.EventHandler object
+            Trigger an event on the cli.EventHandler object
+            (anything can bind to the EventHandler object)
+
+
+    Creating Commands
+
+        {
+            'commandName': function(params) {
+                do_stuff_here;
+            },
+
+            'spawn': function(state) {
+
+            },
