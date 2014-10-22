@@ -12,9 +12,9 @@
             "popBubbles": 10
         },
         "events": {
-            "0..100": "spawn 1 bubble",
+            "0..20": "spawn 1 bubble",
             "0": "spawn 150 bubble 2",
-            "50": "spawn 50 bubble 4"
+            "10": "spawn 50 bubble 4"
         }
     },
 
