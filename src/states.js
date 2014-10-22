@@ -313,10 +313,26 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 roundCirc.endFill();
             };
 
-            this.roundTimer.onTick = function(ratio) {
+            var lastTime = 0;
+            this.roundTimer.onTick = function(ratio, currentTime, totalTime) {
                 roundCirc.clear();
                 drawRoundCirc(1, 0x000000, 0.8);
                 drawRoundCirc(ratio, 0xffff00, 0.6);
+
+                // Make sure numbers stay two digits (necessary due to delta jumps)
+                currentTime = Number(currentTime.toString().slice(0, -3));
+                totalTime = Number(totalTime.toString().slice(0, -3));
+
+                // Loop through any missed seconds to adjust for lag
+                // may cause jumpiness, but prevents the user from missing important events due to lag
+                var last = (totalTime - 1) - lastTime;
+                var current = (totalTime - 1) - currentTime;
+                console.log(current, currentTime);
+                for (var i = last; i < current; i++) {
+                    console.log('\t', last, current, currentTime, lastTime);
+                    bpm.player.currentQuest.eventHandler.triggerEvent('cliEvent', i);
+                }
+                lastTime = currentTime;
             };
 
             this.add(this.roundTimer);
@@ -390,8 +406,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 maxRotationRate: 0,
             });
             this.add(this.bubbleEmitter);
-
-            CLI('spawn 100 bubble');
 
             // Need to bind event callbacks, otherwise `this === window` on call
             _.bindAll(this, 'onBlur', 'onFocus');
