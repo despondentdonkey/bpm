@@ -14,18 +14,8 @@
     *
     */
 
-
 define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
 
-    /* Allows us to make useful aliases for commands */
-    function aliasCommand(cmd, alias) {
-        if (commands[cmd])
-            commands[alias] = commands[cmd];
-        else
-            console.warn('CLI command ' + cmd + ' doesn\'t exist to create alias ' + alias + '.');
-    }
-
-    /* Commands are defined here! */
     var commands = {
         // need to specify all contructor args in argStr OR in defaults[objects[obj]] (ie, defaults['Bubble'])
         'spawn': function(amtStr, objStr) {
@@ -35,7 +25,7 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
             objStr = capitalize(objStr.toLowerCase());
             var obj = objects[objStr];
 
-            var args, argStr = _(arguments).tail(2).join(' ');
+            var argStr = _(arguments).tail(2).join(' ');
 
             if (!(st && st.commandEnabled['spawn']))
                 throw new CLIError('You cannot spawn here or the current state is undefined.');
@@ -45,13 +35,16 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
             if (!(obj && (obj.prototype instanceof objects.GameObject)))
                 throw new CLIError('"'+objStr+'" is not defined as a GameObject in objects.js');
 
-            args = parseArgs(objStr, argStr);
-            if (args.length !== obj.length)
-                throw new CLIError('the arguments "'+args.toString()+'" do not match the requirements for the constructor ' + obj.name);
+            var arityCheck = function(args) {
+                if (args.length !== obj.length)
+                    throw new CLIError('the arguments "'+args.toString()+'" do not match the requirements for the constructor ' + obj.name);
+            };
 
             _(amt).times(function() {
                 // re-parse args to retrigger defaults()
-                args = parseArgs(objStr, argStr);
+                var args = parseArgs(objStr, argStr);
+                arityCheck(args);
+
                 // Create a temporary constructor in order to apply array of args to new obj
                 var newObj = Object.create(obj.prototype);
                 var ctor = obj.apply(newObj, args);
@@ -62,6 +55,21 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
             bpm.player.currentQuest.eventHandler.triggerEvent('cliEvent', Number(time));
         }
     };
+
+    /* Allows us to make useful aliases for commands
+         * cmd can be a function that makes the CLI call for additional flexibility. */
+    function aliasCommand(cmd, alias) {
+        if (typeof cmd === 'function')
+            commands[alias] = cmd;
+        else
+            commands[alias] = CLI(cmd, null, true);
+    }
+
+    aliasCommand(function(amt, args) {
+        // nothing to see here...
+        args = args ? (_(args).isArray() ? args.join(' ') : args.toString()) : '';
+        return CLI('spawn ' + amt + ' Bubble ' + args);
+    }, 'b');
 
     /* Default constructor parameters
         * ** Rely on parseArgs to call this.
@@ -151,13 +159,20 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
     };
 
     /* Calls a space delimited command from a command defined in commands
-        * format: CLI('<command> <arguments>', this) */
-    function CLI(commandWithArgs, context) {
+        * CLI('<command> <space_delimited_arguments>')
+        * commandWithArgs: "'<command> <arguments>'" - Command and arg requirement defined in commands object.
+        * context: opt; Context to be applied to the command (assigns "this" in command definition)
+        * noCall: opt; Bool; If true, command function is not executed -
+        *   the specified context is bound to the command function and then returned. */
+    function CLI(commandWithArgs, context, noCall) {
         var parsed = commandWithArgs.split(' ');
         var command = parsed[0];
         var args = _(parsed).tail();
+        var isFn = typeof commands[command] === 'function';
 
-        if (typeof commands[command] === 'function')
+        if (isFn && noCall)
+            return _.bind(commands[command], context, args);
+        else if (isFn)
             return commands[command].apply(context, args);
         else
             throw new CLIError('Command "' + command + '" not found.');
