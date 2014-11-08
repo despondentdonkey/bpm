@@ -167,7 +167,6 @@ define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
             var inRange = range && t > range[0] && t < range[1];
             var onTime = t == time;
             if (inRange || onTime) {
-                console.log('calling event listener', t, command);
                 CLI(command);
             }
         }, false);

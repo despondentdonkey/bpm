@@ -16,10 +16,16 @@
 
 
 define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
-    /* default configurations for constructors
-        * describe what the default command should do if no additional args are provided
-            * for example, if 'spawn 10 Bubble' is called, Bubble's
-            * armor, x, y, and angle properties need to be defined here */
+
+    /* Allows us to make useful aliases for commands */
+    function aliasCommand(cmd, alias) {
+        if (commands[cmd])
+            commands[alias] = commands[cmd];
+        else
+            console.warn('CLI command ' + cmd + ' doesn\'t exist to create alias ' + alias + '.');
+    }
+
+    /* Commands are defined here! */
     var commands = {
         // need to specify all contructor args in argStr OR in defaults[objects[obj]] (ie, defaults['Bubble'])
         'spawn': function(amtStr, objStr) {
@@ -57,10 +63,11 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
         }
     };
 
-    /* Default Object configuration
-        * if passed arguments do not satisfy an object's arity,
-        * fill in the blanks with the defaults provided here
-        * ** Rely on parseArgs to call this. */
+    /* Default constructor parameters
+        * ** Rely on parseArgs to call this.
+        * describe what the command should do if no additional args are provided
+            * for example, if 'spawn 10 Bubble' is called, Bubble's
+            * armor, x, y, and angle properties need to be defined here */
     var defaults = function(objStr) {
         // (this is a function so we can use random values and other fns)
         var gfx = require('gfx');
@@ -81,11 +88,11 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
         var def = _.isArray(defaults(objStr)) ? defaults(objStr) : [[],[]];
 
         if (def[0].length < 1 && args[0].length > 0)
-            warnMessages.push('InvalidArgument: default not defined; '+
+            throw new CLIError('InvalidArgument: default not defined; '+
                 'named arguments are only supported with defined defaults in cli.js');
 
         // get the names of the constructor's parameters to compare with args and def
-        // >>>>>>>>> these regexes are beastly - check here first if any bugs appear in the CLI <<<<<<<<<
+        // >>>>>>>>> these regexes are beastly - check here first if any argument parsing bugs appear in the CLI <<<<<<<<<
         var ctorParams = objects[objStr].toString()
                                         .replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/)|(\s))/mg,'')
                                         .match(/^function\s*[^\(]*\(\s*([^\)]*)\)/m)[1]
@@ -104,7 +111,7 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
         * for positionals name is the numerical position */
     var parseArgStr = function(argArr) {
         var parsed = [[], []];
-        var validCommand = /(?:(\w+)[:|=])?(\w+)/;
+        var validCommand = /(?:(\w+)[:|=])?([+|-]?\w+)/;
         var kwStart = false;
 
         _(argArr).each(function(opt, i) {
@@ -115,7 +122,7 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
 
                 if (kw) kwStart = true;
                 if (!kw && kwStart)
-                    throw '\tCLI:InvalidArgument: Positional arguments passed named arguments.';
+                    throw new CLIError('InvalidArguments: Positional arguments found after named arguments.');
                 if (!kw) kw = i;
 
                 parsed[0].push(kw);
@@ -126,28 +133,21 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
         return parsed;
     };
 
-    /* Generates a warning message
-        * message: String or Array (default: CLIError: Unknown Error);
+    /* Custom CLI error handling
+        * message: String or Array (default: CLIError: Unknown Error); 
         * arguments: command, args */
     function CLIError(message) {
-        this.message = _.isArray(message) ? message : [message || 'Unknown Error'];
-        var args = _(arguments).tail(1);
-        this.command = args.join(' ');
+        this.message = message || 'Unknown Error';
+        this.command = _(arguments).tail(1).join(' ');
     }
     CLIError.prototype = Object.create(Error);
     CLIError.prototype.constructor = CLIError;
     CLIError.prototype.toString = function() {
-        var warning = [];
-
         var label = 'CLIError: ';
         if (this.command)
             label += 'CLI('+this.command+') > ';
 
-        _(this.message).each(function(m) {
-            warning.push(label + m);
-        });
-
-        return warning.join('\n');
+        return label + this.message;
     };
 
     /* Calls a space delimited command from a command defined in commands

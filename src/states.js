@@ -327,9 +327,7 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
                 // may cause jumpiness, but prevents the user from missing important events due to lag
                 var last = (totalTime - 1) - lastTime;
                 var current = (totalTime - 1) - currentTime;
-                console.log(current, currentTime);
                 for (var i = last; i < current; i++) {
-                    console.log('\t', last, current, currentTime, lastTime);
                     bpm.player.currentQuest.eventHandler.triggerEvent('cliEvent', i);
                 }
                 lastTime = currentTime;
