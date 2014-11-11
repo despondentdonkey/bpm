@@ -416,11 +416,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
 
                 var bounds = this.getBounds();
                 if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
-                    this.speedX = -this.speedX;
+                    this.reflectX();
                 }
 
                 if (bounds.y1 <= 0 || bounds.y2 >= gfx.height) {
-                    this.speedY = -this.speedY;
+                    this.reflectY();
                 }
 
                 var collidedBubble = this.getCollisions(this.state.bubbles);
@@ -429,9 +429,17 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 }
         };
 
-        Bullet.prototype.reflect = function() {
+        Bullet.prototype.reflectX = function() {
             this.speedX = -this.speedX;
+        };
+
+        Bullet.prototype.reflectY = function() {
             this.speedY = -this.speedY;
+        }
+
+        Bullet.prototype.reflect = function() {
+            this.reflectX();
+            this.reflectY();
         };
 
 
@@ -1192,7 +1200,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             if (bullet.y < this.y) {
                 Bubble.prototype.onBulletCollision.call(this, bullet);
             } else {
-                bullet.reflect();
+                bullet.reflectY();
             }
         };
 
