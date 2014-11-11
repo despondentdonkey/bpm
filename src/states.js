@@ -288,7 +288,6 @@ define(['bpm', 'objects', 'gfx', 'res', 'input', 'ui', 'events', 'quests', 'upgr
             }, this));
             //this.add(this.bubbleSpawner);
 
-
             // Circle round timer
             this.roundTimer = new objects.Timer((this.currentQuest.time || 60) * 1000, 'oneshot', _.bind(function() {
                 this.remove(this.bubbleSpawner);

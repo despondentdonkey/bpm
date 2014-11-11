@@ -22,7 +22,9 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
             var amt = Number(amtStr);
             var st = bpm.currentState;
 
-            objStr = capitalize(objStr.toLowerCase());
+            if (!objects[objStr]) {
+                objStr = capitalize(objStr.toLowerCase());
+            }
             var obj = objects[objStr];
 
             var argStr = _(arguments).tail(2).join(' ');
@@ -84,6 +86,10 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
             'Bubble': [
                 ['armor', 'x', 'y', 'angle'],
                 [0, randomRange(32, gfx.width-32), randomRange(-320, -32), Math.random() * 360]
+            ],
+            'WarriorBubble': [
+                ['armor', 'x', 'y', 'angle'],
+                [0, randomRange(32, gfx.width-32), randomRange(-320, -32), Math.random() * 360]
             ]
         }[objStr];
     };
@@ -142,7 +148,7 @@ define(['events', 'objects', 'bpm'], function(events, objects, bpm) {
     };
 
     /* Custom CLI error handling
-        * message: String or Array (default: CLIError: Unknown Error); 
+        * message: String or Array (default: CLIError: Unknown Error);
         * arguments: command, args */
     function CLIError(message) {
         this.message = message || 'Unknown Error';

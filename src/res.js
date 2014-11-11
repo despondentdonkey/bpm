@@ -66,6 +66,7 @@ define(['gfx'], function(gfx) {
             glare: 'bubbles/bubble-glare.png',
             cracks: 'bubbles/cracks-32x32-strip5.png',
             armor: 'bubbles/armor-32x32-strip9.png',
+            warrior: 'bubbles/warrior.png',
 
             pin: 'pin.png',
             shotgunBullet: 'shotgun-bullet.png',

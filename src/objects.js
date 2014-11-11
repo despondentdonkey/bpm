@@ -429,6 +429,11 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 }
         };
 
+        Bullet.prototype.reflect = function() {
+            this.speedX = -this.speedX;
+            this.speedY = -this.speedY;
+        };
+
 
     // Weapon applies the element and upgrades onto the bullets it generates
     // Also controls ammo reloading system + graphics
@@ -729,6 +734,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
             this.hp = this.hpMax;
             this.setSpeed(0.03);
 
+            this.overlays = new gfx.pixi.DisplayObjectContainer();
 
             // Armor
             if (this.armor > 0) {
@@ -739,6 +745,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 this.crack.anchor.x = this.crack.anchor.y = 0.5;
                 this.crack.animationSpeed = 0;
                 this.crack.play();
+
+                this.armorGraphic.addChild(this.overlays);
             } else {
                 // If not armored initially, set armorGraphic to null
                 this.armorGraphic = null;
@@ -778,6 +786,8 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                     // Add crack effect on first bullet collision.
                     if (this.armorStatus === 'normal') {
                         this.armorGraphic.addChild(this.crack);
+                        this.armorGraphic.removeChild(this.overlays);
+                        this.crack.addChild(this.overlays);
                         this.armorStatus = 'damaged';
                     }
                 }
@@ -785,6 +795,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 // Remove armor and crack effect. Add bubble displays.
                 if (this.hp <= 0) {
                     if (this.armorStatus === 'damaged') {
+                        this.crack.removeChild(this.overlays);
                         this.removeDisplay(this.armorGraphic);
                         this.addBubbleDisplays();
                         this.armorStatus = null;
@@ -858,6 +869,7 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         Bubble.prototype.addBubbleDisplays = function() {
             this.addDisplay(this.bubble, this.state.bubbleBatch);
             this.addDisplay(this.glare, this.state.glareBatch);
+            this.addDisplay(this.overlays);
             this.updateDisplayProperties([this.bubble, this.glare]);
         };
 
@@ -1160,8 +1172,29 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
                 } else {
                     this.lightning.visible = true;
                 }
+            }
         };
 
+    function WarriorBubble(armor, x, y, angle) {
+        Bubble.call(this, armor, x, y, angle);
+    }
+    WarriorBubble.prototype = Object.create(Bubble.prototype);
+    WarriorBubble.prototype.constructor = WarriorBubble;
+
+        WarriorBubble.prototype.init = function(state) {
+            Bubble.prototype.init.call(this, state);
+            var overlay = new gfx.pixi.Sprite(res.tex.warrior)
+            overlay.anchor.x = overlay.anchor.y = 0.5;
+            this.overlays.addChild(overlay);
+        };
+
+        WarriorBubble.prototype.onBulletCollision = function(bullet) {
+            if (bullet.y < this.y) {
+                Bubble.prototype.onBulletCollision.call(this, bullet);
+            } else {
+                bullet.reflect();
+            }
+        };
 
     function Particle(emitter, tex, opt) {
         this.x = opt.x;
@@ -1406,9 +1439,10 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         Timer: Timer,
         Weapon: Weapon, // should only be used for instanceof checks
         Bubble: Bubble,
+        WarriorBubble: WarriorBubble,
         Emitter: Emitter,
         PinShooter: PinShooter,
         Rifle: Rifle,
-        Shotgun: Shotgun
+        Shotgun: Shotgun,
     };
 });

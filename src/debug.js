@@ -83,11 +83,23 @@ dbg.addCheats = function(bpm, states) {
 dbg.addCLI = function(CLI) {
     CLI = CLI || window.CLI;
     var cliInput = document.getElementById('cliElement');
+    var commandHistory = [];
+    var lastCommandIndex = 0;
     cliInput.addEventListener('keydown', function(e) {
         if (e.keyCode === 9) { // Tab
             document.getElementsByTagName('canvas')[0].focus();
         }
+        if (e.keyCode === 38) { // Up arrow
+            if (lastCommandIndex > 0) lastCommandIndex--;
+            cliInput.value = commandHistory[lastCommandIndex];
+        }
+        if (e.keyCode === 40) { // Down arrow
+            if (lastCommandIndex < commandHistory.length-1) lastCommandIndex++;
+            cliInput.value = commandHistory[lastCommandIndex];
+        }
         if (CLI && e.keyCode === 13) { // Enter key
+            commandHistory.push(cliInput.value);
+            lastCommandIndex = commandHistory.length;
             CLI(cliInput.value);
             cliInput.value = "";
         }
