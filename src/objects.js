@@ -712,113 +712,113 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         Bubble.prototype.constructor = Bubble;
 
         Bubble.prototype.init = function(state) {
-                GameObject.prototype.init.call(this, state);
+            GameObject.prototype.init.call(this, state);
 
-                this.state.bubbles.push(this);
+            this.state.bubbles.push(this);
 
-                // Graphics / 2D Specs
-                this.addId('bubble');
-                this.bubble = new gfx.pixi.Sprite(res.tex.bubble);
-                this.glare = new gfx.pixi.Sprite(res.tex.glare);
+            // Graphics / 2D Specs
+            this.addId('bubble');
+            this.bubble = new gfx.pixi.Sprite(res.tex.bubble);
+            this.glare = new gfx.pixi.Sprite(res.tex.glare);
 
-                this.width = this.bubble.width;
-                this.height = this.bubble.width;
+            this.width = this.bubble.width;
+            this.height = this.bubble.width;
 
-                // Stats affected by upgrades/etc
-                this.hpMax = this.armor*2;
-                this.hp = this.hpMax;
-                this.setSpeed(0.03);
+            // Stats affected by upgrades/etc
+            this.hpMax = this.armor*2;
+            this.hp = this.hpMax;
+            this.setSpeed(0.03);
 
 
-                // Armor
-                if (this.armor > 0) {
-                    this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.sheets.armor[this.armor-1]), this.armorBatch);
-                    this.armorStatus = 'normal';
+            // Armor
+            if (this.armor > 0) {
+                this.armorGraphic = this.addDisplay(new gfx.pixi.Sprite(res.sheets.armor[this.armor-1]), this.armorBatch);
+                this.armorStatus = 'normal';
 
-                    this.crack = new gfx.pixi.MovieClip(res.sheets.cracks);
-                    this.crack.anchor.x = this.crack.anchor.y = 0.5;
-                    this.crack.animationSpeed = 0;
-                    this.crack.play();
-                } else {
-                    // If not armored initially, set armorGraphic to null
-                    this.armorGraphic = null;
-                    this.armorStatus = null;
-                    this.addBubbleDisplays();
-                }
+                this.crack = new gfx.pixi.MovieClip(res.sheets.cracks);
+                this.crack.anchor.x = this.crack.anchor.y = 0.5;
+                this.crack.animationSpeed = 0;
+                this.crack.play();
+            } else {
+                // If not armored initially, set armorGraphic to null
+                this.armorGraphic = null;
+                this.armorStatus = null;
+                this.addBubbleDisplays();
+            }
         };
 
         Bubble.prototype.destroy = function() {
-                this.state.bubbleEmitter.emit(this.x, this.y, 10);
-                this.state.bubbles.splice(this.state.bubbles.indexOf(this), 1);
+            this.state.bubbleEmitter.emit(this.x, this.y, 10);
+            this.state.bubbles.splice(this.state.bubbles.indexOf(this), 1);
 
-                // remove current element if it exists (fixes element flickering on destroy)
-                this.removeElement();
-                GameObject.prototype.destroy.call(this);
+            // remove current element if it exists (fixes element flickering on destroy)
+            this.removeElement();
+            GameObject.prototype.destroy.call(this);
         };
 
         Bubble.prototype.update = function(delta) {
-                GameObject.prototype.update.call(this, delta);
+            GameObject.prototype.update.call(this, delta);
 
-                var speed = this.speed * delta;
-                this.x += this.speedX * speed;
-                this.y += this.speedY * speed;
+            var speed = this.speed * delta;
+            this.x += this.speedX * speed;
+            this.y += this.speedY * speed;
 
-                var bounds = this.getBounds();
-                if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
-                    this.speedX = -this.speedX;
-                }
+            var bounds = this.getBounds();
+            if (bounds.x1 <= 0 || bounds.x2 >= gfx.width) {
+                this.speedX = -this.speedX;
+            }
 
-                if (bounds.y1 >= gfx.height) {
-                    this.state.remove(this);
-                }
+            if (bounds.y1 >= gfx.height) {
+                this.state.remove(this);
+            }
 
-                // Death/Armor Management
-                if (this.armor > 0) {
-                    if (this.hp < this.hpMax) {
-                        // Add crack effect on first bullet collision.
-                        if (this.armorStatus === 'normal') {
-                            this.armorGraphic.addChild(this.crack);
-                            this.armorStatus = 'damaged';
-                        }
-                    }
-
-                    // Remove armor and crack effect. Add bubble displays.
-                    if (this.hp <= 0) {
-                        if (this.armorStatus === 'damaged') {
-                            this.removeDisplay(this.armorGraphic);
-                            this.addBubbleDisplays();
-                            this.armorStatus = null;
-                        }
+            // Death/Armor Management
+            if (this.armor > 0) {
+                if (this.hp < this.hpMax) {
+                    // Add crack effect on first bullet collision.
+                    if (this.armorStatus === 'normal') {
+                        this.armorGraphic.addChild(this.crack);
+                        this.armorStatus = 'damaged';
                     }
                 }
 
-                if (this.hp <= -1) {
-                    this.state.xp += this.worth * this.state.multiplier;
-                    this.state.combo++;
-                    this.state.comboTimer = this.state.comboTime;
-                    this.state.triggerEvent('bubblePopped');
-                    this.state.remove(this);
-                } else {
-                    if (this.crack) {
-                        this.crack.currentFrame = Math.round((1 - (this.hp / this.hpMax)) * (this.crack.totalFrames-1));
+                // Remove armor and crack effect. Add bubble displays.
+                if (this.hp <= 0) {
+                    if (this.armorStatus === 'damaged') {
+                        this.removeDisplay(this.armorGraphic);
+                        this.addBubbleDisplays();
+                        this.armorStatus = null;
                     }
                 }
+            }
 
-                if (upgrades.getVal('lightningConduction') && this.lightningActive) {
-                    var collidedBubble = this.getCollisions(this.state.bubbles);
-                    if (collidedBubble) {
-                        if (collidedBubble.armor <= 0) {
-                            this.state.add(new LightningShockwave(this));
-                        }
+            if (this.hp <= -1) {
+                this.state.xp += this.worth * this.state.multiplier;
+                this.state.combo++;
+                this.state.comboTimer = this.state.comboTime;
+                this.state.triggerEvent('bubblePopped');
+                this.state.remove(this);
+            } else {
+                if (this.crack) {
+                    this.crack.currentFrame = Math.round((1 - (this.hp / this.hpMax)) * (this.crack.totalFrames-1));
+                }
+            }
+
+            if (upgrades.getVal('lightningConduction') && this.lightningActive) {
+                var collidedBubble = this.getCollisions(this.state.bubbles);
+                if (collidedBubble) {
+                    if (collidedBubble.armor <= 0) {
+                        this.state.add(new LightningShockwave(this));
                     }
                 }
+            }
 
-                this.updateElement();
+            this.updateElement();
         };
 
         Bubble.prototype.setSpeed = function(newSpeed) {
-                this._originalSpeed = newSpeed;
-                this.speed = newSpeed;
+            this._originalSpeed = newSpeed;
+            this.speed = newSpeed;
         };
 
         // Toggles speed to and from originalSpeed (last speed set by setSpeed)
@@ -826,141 +826,141 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         // toggle back by calling this.speedToggle without args.
         // Useful for lightning and ice elements
         Bubble.prototype.speedToggle = function(tempSpeed) {
-                if (!_.isNumber(this._originalSpeed)) {
-                    this._originalSpeed = this.speed;
-                    warn('Bubble.speedToggle: this._original speed was not set before attempting to toggle speed.\r'+
-                         'Defaulting to current speed of '+this.speed);
-                }
+            if (!_.isNumber(this._originalSpeed)) {
+                this._originalSpeed = this.speed;
+                warn('Bubble.speedToggle: this._original speed was not set before attempting to toggle speed.\r'+
+                     'Defaulting to current speed of '+this.speed);
+            }
 
-                if (!_.isNumber(tempSpeed)) {
-                    if (this.speed !== this._originalSpeed)
-                        this.speed = this._originalSpeed
-                } else {
-                    this.speed = tempSpeed;
-                }
+            if (!_.isNumber(tempSpeed)) {
+                if (this.speed !== this._originalSpeed)
+                    this.speed = this._originalSpeed
+            } else {
+                this.speed = tempSpeed;
+            }
         };
 
         Bubble.prototype.onBulletCollision = function(bullet) {
-                var damage = 1;
-                if (this.currentElement === 'ice' && upgrades.getVal('iceBrittle')) {
-                    damage *= 1+upgrades.getValPercent('iceBrittleDamage');
-                }
-                this.hp -= damage;
+            var damage = 1;
+            if (this.currentElement === 'ice' && upgrades.getVal('iceBrittle')) {
+                damage *= 1+upgrades.getValPercent('iceBrittleDamage');
+            }
+            this.hp -= damage;
 
-                this.applyElement.call(this, bullet.currentElement);
+            this.applyElement.call(this, bullet.currentElement);
 
-                if (this.hp > -1) {
-                    this.state.remove(bullet);
-                }
+            if (this.hp > -1) {
+                this.state.remove(bullet);
+            }
         };
 
         // Adds the displays for the raw bubble.
         Bubble.prototype.addBubbleDisplays = function() {
-                this.addDisplay(this.bubble, this.state.bubbleBatch);
-                this.addDisplay(this.glare, this.state.glareBatch);
-                this.updateDisplayProperties([this.bubble, this.glare]);
+            this.addDisplay(this.bubble, this.state.bubbleBatch);
+            this.addDisplay(this.glare, this.state.glareBatch);
+            this.updateDisplayProperties([this.bubble, this.glare]);
         };
 
         // Elements
         // Applied by bullets, anything defined here should be either passed from the pin
         // or should be related to the graphics/dimensions of the bubble
         Bubble.prototype.updateElement = function() {
-                this._getElementMethod('update', this.currentElement).apply(this);
+            this._getElementMethod('update', this.currentElement).apply(this);
         };
 
         Bubble.prototype.applyElement = function(element) {
-                if (!this.currentElement) {
-                    var method = this._getElementMethod('apply', element);
-                    return method.apply(this, _(arguments).tail());
-                }
+            if (!this.currentElement) {
+                var method = this._getElementMethod('apply', element);
+                return method.apply(this, _(arguments).tail());
+            }
         };
 
         Bubble.prototype.removeElement = function(element) {
-                // Make sure reference to state exists; this is necessary unless you like crashes
-                // might not actually be necessary after all. Leaving as-is just in case
-                // TODO: test if necessary, remove if not
-                if (this.state) {
-                    element = element || this[this.currentElement];
-                    if (element && element.parent) {
-                        this.removeDisplay(element);
-                        this[this.currentElement] = null;
-                    }
-
-                    this.currentElement = null;
+            // Make sure reference to state exists; this is necessary unless you like crashes
+            // might not actually be necessary after all. Leaving as-is just in case
+            // TODO: test if necessary, remove if not
+            if (this.state) {
+                element = element || this[this.currentElement];
+                if (element && element.parent) {
+                    this.removeDisplay(element);
+                    this[this.currentElement] = null;
                 }
+
+                this.currentElement = null;
+            }
         };
 
         // Used to get a type of private method from Bubble with a given element
         // relies heavily on convention!
         Bubble.prototype._getElementMethod = function(type, element) {
-                if (element) {
-                    var eleMethod = this['_' + type + capitalize(element)];
-                    if (_.isFunction(eleMethod)) {
-                        return eleMethod;
-                    }
+            if (element) {
+                var eleMethod = this['_' + type + capitalize(element)];
+                if (_.isFunction(eleMethod)) {
+                    return eleMethod;
                 }
-                return _.identity;
+            }
+            return _.identity;
         };
 
         // Configures the setup of all elements
         Bubble.prototype._setupElement = function(elemStr, elemObj) {
-                this.currentElement = elemStr;
-                return this;
+            this.currentElement = elemStr;
+            return this;
         };
 
         // Used by all elements to set up display-related stuff
         Bubble.prototype._displayElement = function(elemObj) {
-                elemObj = elemObj;
-                // Update display properties so it will have correct positions without having to wait another frame.
-                this.updateDisplayProperties([elemObj]);
-                this.addDisplay(elemObj);
-                return this;
+            elemObj = elemObj;
+            // Update display properties so it will have correct positions without having to wait another frame.
+            this.updateDisplayProperties([elemObj]);
+            this.addDisplay(elemObj);
+            return this;
         };
 
         Bubble.prototype._applyFire = function() {
-                if (this.hp > 0) {
-                    if (!this.fire) {
-                        this.fire = new gfx.pixi.MovieClip(res.sheets.fire);
-                        this.fire.play();
-                        this.fire.animationSpeed = 0.3;
+            if (this.hp > 0) {
+                if (!this.fire) {
+                    this.fire = new gfx.pixi.MovieClip(res.sheets.fire);
+                    this.fire.play();
+                    this.fire.animationSpeed = 0.3;
 
-                        this.fire.width = this.width;
-                        this.fire.height = this.height;
+                    this.fire.width = this.width;
+                    this.fire.height = this.height;
 
-                        this.fire.syncGameObjectProperties = { scale: false };
-                        this.fire.alpha = 0.7;
-                        this.fire.depth = -4;
-                    }
-
-                    this._setupElement('fire', this.fire)._displayElement(this.fire);
-
-                    // Add fire timer - destroys timer when duration is up
-                    var onFireComplete = _.bind(this.removeElement, this, this.fire);
-                    var fireTimer = new Timer(this.fireConfig.duration, 'oneshot', onFireComplete);
-                    this.state.add(fireTimer);
+                    this.fire.syncGameObjectProperties = { scale: false };
+                    this.fire.alpha = 0.7;
+                    this.fire.depth = -4;
                 }
+
+                this._setupElement('fire', this.fire)._displayElement(this.fire);
+
+                // Add fire timer - destroys timer when duration is up
+                var onFireComplete = _.bind(this.removeElement, this, this.fire);
+                var fireTimer = new Timer(this.fireConfig.duration, 'oneshot', onFireComplete);
+                this.state.add(fireTimer);
+            }
         };
 
         Bubble.prototype._updateFire = function() {
-                if (this.fireConfig) {
-                    this.hp -= this.fireConfig.damage;
+            if (this.fireConfig) {
+                this.hp -= this.fireConfig.damage;
 
-                    // Percentage chance to apply fire to collided bubbles
-                    // This helps with perf too, as collisions are only gathered when chance is in range
-                    var chance = randomRange(0, 100);
-                    if (chance <= this.fireConfig.applyChance && chance > 0) {
-                        var collidedBubble =  this.getCollisions(this.state.bubbles);
-                        if (collidedBubble) {
-                            collidedBubble.applyElement('fire');
-                        }
-                    }
-
-                    if (this.fireConfig.hasEmber) {
-                        if (chance <= this.fireConfig.emberChance && chance > 0) {
-                            this.state.add(new FireEmber(this));
-                        }
+                // Percentage chance to apply fire to collided bubbles
+                // This helps with perf too, as collisions are only gathered when chance is in range
+                var chance = randomRange(0, 100);
+                if (chance <= this.fireConfig.applyChance && chance > 0) {
+                    var collidedBubble =  this.getCollisions(this.state.bubbles);
+                    if (collidedBubble) {
+                        collidedBubble.applyElement('fire');
                     }
                 }
+
+                if (this.fireConfig.hasEmber) {
+                    if (chance <= this.fireConfig.emberChance && chance > 0) {
+                        this.state.add(new FireEmber(this));
+                    }
+                }
+            }
         };
 
         // TODO: Add to sprite batch
@@ -969,197 +969,196 @@ define(['bpm', 'res', 'gfx', 'input', 'events', 'upgrades'], function(bpm, res, 
         // TODO: Smoother fading (use a quadratic or logarithmic equation instead of a linear equation)
         // TODO: Smoother speed transition on fading
         Bubble.prototype._applyIce = function() {
-                if (!this.ice) {
-                    this.ice = new gfx.pixi.Sprite(res.tex.ice);
-                    this.ice.width = this.width;
-                    this.ice.height = this.height;
+            if (!this.ice) {
+                this.ice = new gfx.pixi.Sprite(res.tex.ice);
+                this.ice.width = this.width;
+                this.ice.height = this.height;
 
-                    this.ice.syncGameObjectProperties = { scale: false };
-                    this.ice.alpha = 0.85;
-                    this.ice.depth = -4;
-                }
+                this.ice.syncGameObjectProperties = { scale: false };
+                this.ice.alpha = 0.85;
+                this.ice.depth = -4;
+            }
 
-                this._setupElement('ice', this.ice)._displayElement(this.ice);
+            this._setupElement('ice', this.ice)._displayElement(this.ice);
 
-                // speedReduce of 100% == 1. when multiplying speed by 1, nothing happens :)
-                var speedReduce = this.iceConfig.speedReduce;
+            // speedReduce of 100% == 1. when multiplying speed by 1, nothing happens :)
+            var speedReduce = this.iceConfig.speedReduce;
 
-                this.iceConfig.oldSpeed = this.speed;
-                this.speed = this.speed * (1 - speedReduce);
-                var m = this.speed; // slope for fadeTick
+            this.iceConfig.oldSpeed = this.speed;
+            this.speed = this.speed * (1 - speedReduce);
+            var m = this.speed; // slope for fadeTick
 
-                var startFader = _.bind(function() {
-                    if (this.state)
-                        this.state.add(fadeTimer);
-                    else
-                        onIceComplete();
-                }, this);
+            var startFader = _.bind(function() {
+                if (this.state)
+                    this.state.add(fadeTimer);
+                else
+                    onIceComplete();
+            }, this);
 
-                var onFadeTick = _.bind(function(ratio, cur, dur) {
-                    if (this.ice)
-                        this.ice.alpha = this.ice.alpha * (1 - ratio);
-                    // TODO: insert speed change function here
-                }, this);
+            var onFadeTick = _.bind(function(ratio, cur, dur) {
+                if (this.ice)
+                    this.ice.alpha = this.ice.alpha * (1 - ratio);
+                // TODO: insert speed change function here
+            }, this);
 
-                var onIceComplete = _.bind(function() {
-                    this.speed = this.iceConfig.oldSpeed;
-                    this.removeElement(this.ice);
-                }, this);
+            var onIceComplete = _.bind(function() {
+                this.speed = this.iceConfig.oldSpeed;
+                this.removeElement(this.ice);
+            }, this);
 
-                var fadeDuration = this.iceConfig.fadeDuration;
-                var duration = this.iceConfig.duration;
+            var fadeDuration = this.iceConfig.fadeDuration;
+            var duration = this.iceConfig.duration;
 
-                var iceTimer = new Timer(duration, 'oneshot', startFader);
-                var fadeTimer = new Timer(fadeDuration, 'oneshot', onIceComplete, onFadeTick);
-                this.state.add(iceTimer);
+            var iceTimer = new Timer(duration, 'oneshot', startFader);
+            var fadeTimer = new Timer(fadeDuration, 'oneshot', onIceComplete, onFadeTick);
+            this.state.add(iceTimer);
         };
 
         Bubble.prototype._updateIce = function() {
-                //_(this.getNearby(10, this.state.bubbles)).invoke('applyElement', 'ice');
+            //_(this.getNearby(10, this.state.bubbles)).invoke('applyElement', 'ice');
         };
 
         // TODO: speed and cooldown based on chain length
         Bubble.prototype._applyLightning = function() {
-                if (upgrades.getVal('lightningConduction') && this.armor <= 0) {
-                    this.state.add(new LightningShockwave(this));
+            if (upgrades.getVal('lightningConduction') && this.armor <= 0) {
+                this.state.add(new LightningShockwave(this));
+            }
+
+            if (!this.lightningActive) {
+                this.lightningActive = true;
+                this.lightningActiveAnim = new gfx.pixi.MovieClip(res.sheets.lightningActive);
+                this.lightningActiveAnim.play();
+                this.lightningActiveAnim.animationSpeed = 0.3;
+
+                this.lightningActiveAnim.width = this.width;
+                this.lightningActiveAnim.height = this.height;
+
+                this.lightningActiveAnim.syncGameObjectProperties = { scale: false };
+                this.lightningActiveAnim.alpha = 0.7;
+                this.lightningActiveAnim.depth = -4;
+                this.addDisplay(this.lightningActiveAnim);
+
+                this.state.add(new Timer(this.lightningConfig.duration, 'oneshot', _.bind(function() {
+                    if (!this.state) { return; }
+                    if (this.lightningActiveAnim) {
+                        this.removeDisplay(this.lightningActiveAnim);
+                        this.lightningActiveAnim = null;
+                    }
+                    this.lightningActive = false;
+                }, this)));
+            }
+
+            // Don't apply if chain has been reached
+            if (this.lightningConfig.chain && this.lightningConfig.chain.length >= this.lightningConfig.chainLength)
+                return;
+
+            // Don't apply lightning on this bubble if it already has lightning
+            if (!this.lightning) {
+                function getClosest(c) {
+                    return this.getClosest(_(this.state.bubbles)
+                                           .chain()
+                                           .difference(c)
+                                           .reject(function(obj) {
+                                               // Prevent lightning from striking bubbles in a different chain
+                                               return obj.currentElement === 'lightning';
+                                           })
+                                           .value(), this.lightningConfig.range);
                 }
 
-                if (!this.lightningActive) {
-                    this.lightningActive = true;
-                    this.lightningActiveAnim = new gfx.pixi.MovieClip(res.sheets.lightningActive);
-                    this.lightningActiveAnim.play();
-                    this.lightningActiveAnim.animationSpeed = 0.3;
+                function generateLightning(closest) {
+                    this.lightning = new gfx.pixi.Sprite(res.tex.lightning);
+                    this.lightning.syncGameObjectProperties = { scale: false, position: false, rotation: false, anchor: false };
+                    this._setupElement('lightning', this.lightning);
+                    this._positionLightning(closest);
+                    this._displayElement(this.lightning);
+                }
 
-                    this.lightningActiveAnim.width = this.width;
-                    this.lightningActiveAnim.height = this.height;
+                if (!this.lightningConfig.chain) {
+                    this.lightningConfig.chain = [this];
+                }
 
-                    this.lightningActiveAnim.syncGameObjectProperties = { scale: false };
-                    this.lightningActiveAnim.alpha = 0.7;
-                    this.lightningActiveAnim.depth = -4;
-                    this.addDisplay(this.lightningActiveAnim);
+                var closest = getClosest.call(this, this.lightningConfig.chain);
 
-                    this.state.add(new Timer(this.lightningConfig.duration, 'oneshot', _.bind(function() {
-                        if (!this.state) { return; }
-                        if (this.lightningActiveAnim) {
-                            this.removeDisplay(this.lightningActiveAnim);
-                            this.lightningActiveAnim = null;
+                if (closest) {
+                    this.lightningConfig.chain.push(closest);
+
+                    generateLightning.call(this, closest);
+                    this.hp -= this.lightningConfig.damage;
+
+                    // Remove lightning display timer
+                    this.state.add(new Timer(this.lightningConfig.cooldown, 'oneshot', _.bind(function() {
+                        if (this.lightning) {
+                            this.removeElement(this.lightning);
                         }
-                        this.lightningActive = false;
+
+                        this.lightningConfig.chain = null;
+                    }, this)));
+
+                    // A small delay before applying lightning to the next bubble.
+                    this.state.add(new Timer(this.lightningConfig.speed, 'oneshot', _.bind(function() {
+                        // Remove lightning if closest is dead or if closest has lightning
+                        // Otherwise, apply lightning on closest
+                        if (!closest || !closest.state || !!closest.lightning) {
+                            this.removeElement(this.lightning);
+                        } else {
+                            closest.lightningConfig.chain = this.lightningConfig.chain;
+                            closest._applyLightning();
+                        }
                     }, this)));
                 }
-
-                // Don't apply if chain has been reached
-                if (this.lightningConfig.chain && this.lightningConfig.chain.length >= this.lightningConfig.chainLength)
-                    return;
-
-                // Don't apply lightning on this bubble if it already has lightning
-                if (!this.lightning) {
-                    function getClosest(c) {
-                        return this.getClosest(_(this.state.bubbles)
-                                               .chain()
-                                               .difference(c)
-                                               .reject(function(obj) {
-                                                   // Prevent lightning from striking bubbles in a different chain
-                                                   return obj.currentElement === 'lightning';
-                                               })
-                                               .value(), this.lightningConfig.range);
-                    }
-
-                    function generateLightning(closest) {
-                        this.lightning = new gfx.pixi.Sprite(res.tex.lightning);
-                        this.lightning.syncGameObjectProperties = { scale: false, position: false, rotation: false, anchor: false };
-                        this._setupElement('lightning', this.lightning);
-                        this._positionLightning(closest);
-                        this._displayElement(this.lightning);
-                    }
-
-                    if (!this.lightningConfig.chain) {
-                        this.lightningConfig.chain = [this];
-                    }
-
-                    var closest = getClosest.call(this, this.lightningConfig.chain);
-
-                    if (closest) {
-                        this.lightningConfig.chain.push(closest);
-
-                        generateLightning.call(this, closest);
-                        this.hp -= this.lightningConfig.damage;
-
-                        // Remove lightning display timer
-                        this.state.add(new Timer(this.lightningConfig.cooldown, 'oneshot', _.bind(function() {
-                            if (this.lightning) {
-                                this.removeElement(this.lightning);
-                            }
-
-                            this.lightningConfig.chain = null;
-                        }, this)));
-
-                        // A small delay before applying lightning to the next bubble.
-                        this.state.add(new Timer(this.lightningConfig.speed, 'oneshot', _.bind(function() {
-                            // Remove lightning if closest is dead or if closest has lightning
-                            // Otherwise, apply lightning on closest
-                            if (!closest || !closest.state || !!closest.lightning) {
-                                this.removeElement(this.lightning);
-                            } else {
-                                closest.lightningConfig.chain = this.lightningConfig.chain;
-                                closest._applyLightning();
-                            }
-                        }, this)));
-                    }
-                }
+            }
         };
 
         Bubble.prototype._updateLightning = function() {
-                var closest, chain = this.lightningConfig.chain;
-                if (chain)
-                    closest = chain[chain.indexOf(this) + 1];
+            var closest, chain = this.lightningConfig.chain;
+            if (chain)
+                closest = chain[chain.indexOf(this) + 1];
 
-                if (closest) {
-                    this._positionLightning(closest);
-                } else if (this.lightning) {
-                    this.removeElement(this.lightning);
-                }
+            if (closest) {
+                this._positionLightning(closest);
+            } else if (this.lightning) {
+                this.removeElement(this.lightning);
+            }
         };
 
         // setup lightning to scale + angle towards closest bubble
         // this.lightning must be defined beforehand
         Bubble.prototype._positionLightning = function(closest) {
-                if (this.lightning) {
-                    // measurements n such
-                    var radiusX = this.width / 2;
-                    var radiusY = this.height / 2;
-                    var centerX = this.x + radiusX;
-                    var centerY = this.y + radiusY;
-                    // closest object's center values
-                    var centerX2 = closest.x + (closest.width / 2);
-                    var centerY2 = closest.y + (closest.height / 2);
+            if (this.lightning) {
+                // measurements n such
+                var radiusX = this.width / 2;
+                var radiusY = this.height / 2;
+                var centerX = this.x + radiusX;
+                var centerY = this.y + radiusY;
+                // closest object's center values
+                var centerX2 = closest.x + (closest.width / 2);
+                var centerY2 = closest.y + (closest.height / 2);
 
-                    // get angle and distance from the center of the closest object
-                    var distance = this.getDistance(centerX, centerY, centerX2, centerY2);
-                    var angle = Math.atan2(centerY2 - centerY, centerX2 - centerX);
+                // get angle and distance from the center of the closest object
+                var distance = this.getDistance(centerX, centerY, centerX2, centerY2);
+                var angle = Math.atan2(centerY2 - centerY, centerX2 - centerX);
 
-                    var polarX = radiusX * Math.cos(angle);
-                    var polarY = radiusY * Math.sin(angle);
+                var polarX = radiusX * Math.cos(angle);
+                var polarY = radiusY * Math.sin(angle);
 
-                    var positionOffset = {
-                        'x': centerX + polarX - radiusX,
-                        'y': centerY + polarY - radiusY
-                    };
+                var positionOffset = {
+                    'x': centerX + polarX - radiusX,
+                    'y': centerY + polarY - radiusY
+                };
 
-                    this.lightning.anchor.x = 0;
-                    this.lightning.anchor.y = 0.5;
+                this.lightning.anchor.x = 0;
+                this.lightning.anchor.y = 0.5;
 
-                    this.lightning.scale = {x: (distance - this.width) / this.lightning.texture.width, y: 1};
-                    this.lightning.position = positionOffset;
-                    this.lightning.rotation = angle;
-                    this.lightning.depth = -4;
+                this.lightning.scale = {x: (distance - this.width) / this.lightning.texture.width, y: 1};
+                this.lightning.position = positionOffset;
+                this.lightning.rotation = angle;
+                this.lightning.depth = -4;
 
-                    // don't display lightning if it is colliding
-                    if (this.isNearby(closest)) {
-                        this.lightning.visible = false;
-                    } else {
-                        this.lightning.visible = true;
-                    }
+                // don't display lightning if it is colliding
+                if (this.isNearby(closest)) {
+                    this.lightning.visible = false;
+                } else {
+                    this.lightning.visible = true;
                 }
         };
 
