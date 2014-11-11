@@ -1,0 +1,50 @@
+We should be to create ~2-5 different quests out of these topics.
+
+Thief Quest:
+    Thief bubble has increased speed
+    When thief bubble goes to town it will come back with treasure
+        gotta kill the bubble either before it goes to town or before it returns the treasure to bubble land.
+        var treasureTaken = amount of treasure taken to bubble land
+
+    details:
+        Kill 10 thief bubbles
+        Keep taken treasure under 500
+
+Warrior Quest:
+    Warrior bubbles reflect bullets unless shot in the back.
+    details:
+        Kill 10 warrior bubbles
+
+Guarded Quest:
+    Noble bubbles can have warrior bubbles as guards.
+        When assigned the warrior bubbles will surround the noble equally and move with it.
+
+    details:
+        Kill 2 noble bubbles.
+        Kill 1 noble bubble before killing one of it's guards.
+
+Boss Quest:
+    Fight a unique boss.
+
+    details:
+        Kill da boss
+        Maybe some other stuff: pop 10 bubs, x4 multi, etc.
+
+Bubble Catch:
+    Shoot a sticky net which catches bubbles.
+        Only have like 2 shots or something then you can use your weapons.
+        Still have to defend from bubbles that don't make it on the net.
+        Be sure to not shoot bubbles on the net.
+
+    details:
+        Catch 10 bubbles
+        Catch 3 warrior bubbles
+        Catch 1 thief bubble
+        etc
+
+Bubble Manhattan Project (side quest only probably):
+    You got 1 shot with a nuke.
+        Try to get the most bubbles in one spot before you launch it.
+
+    details:
+        Destroy 100 bubbles with the nuke.
