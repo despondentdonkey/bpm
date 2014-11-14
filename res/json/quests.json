@@ -31,7 +31,7 @@
         "name": "Training",
         "description": "Gather some experience by shooting bubbles for the day.",
         "reward": 0,
-        "time": 60,
+        "time": 6000,
         "unlocks": ["s00"],
         "objectives": {
             "training": true
