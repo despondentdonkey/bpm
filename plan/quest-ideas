@@ -36,6 +36,9 @@ Bubble Catch:
         Still have to defend from bubbles that don't make it on the net.
         Be sure to not shoot bubbles on the net.
 
+        Maybe make it so shooting the net makes it bigger or something.
+            This encourages continually shooting and strategy so you don't hit bubbles.
+
     details:
         Catch 10 bubbles
         Catch 3 warrior bubbles
@@ -48,3 +51,36 @@ Bubble Manhattan Project (side quest only probably):
 
     details:
         Destroy 100 bubbles with the nuke.
+
+Combo Quest:
+    Get a really high combo.
+    details:
+        Achieve a multiplier of 10.
+        or
+        Achieve a combo of 1000.
+
+Espionage:
+    Send in a 'spy' bubble into the bubble homeland. It'll first be sent to retrieve data then it must return back to town. This has to happend for x amount of times.
+    Be sure not to kill the 'spy' bubble.
+
+    details:
+        Allow the spy bubble to retrieve 3 sets of information.
+
+Additional enemy types:
+    These can be added into quests for more variety:
+        Bubble spawner:
+            A bubble which spawns more bubbles.
+
+        Bubble glutton:
+            Eats bullets but element applies to it. Only way to kill it is through elements.
+
+        Bubble archer:
+            Shoots arrows (or something more creative) into town.
+
+Bubble configurations:
+    Bubble wall:
+        A horizontal line of bubbles.
+
+    Sine bubbles:
+        Bubbles that move in a sine wave pattern.
+        Also can have a vertical line of bubbles doing this.
