@@ -53,8 +53,9 @@
             }
 */
 
-define(function() {
-    upgrades = {};
+import _ from 'underscore'
+let upgrades = (function() {
+    let upgrades = {};
     upgrades.abilities = {};
     upgrades.all = [];
     upgrades.general = [];
@@ -496,4 +497,5 @@ define(function() {
         };
 
     return upgrades;
-});
+})();
+export default upgrades;

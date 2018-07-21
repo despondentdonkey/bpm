@@ -1,0 +1,44 @@
+.App {
+  display: flex;
+  justify-content: center;
+  margin-top: 10%;
+}
+
+body {
+  font-family: arial;
+  background: #2b2b2b;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+div {
+  display: block;
+}
+
+#wrapper {
+  position: relative;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  padding: 11px;
+  overflow: hidden;
+}
+
+#buttonWrapper {
+  float: left;
+  min-width: 235px;
+  max-width: 235px;
+  background: #b4b4b4;
+}
+
+#canvasWrapper {
+  float: left;
+  cursor: none;
+  margin-right: 5px;
+}
+#cliElement {
+  width: 100%;
+}

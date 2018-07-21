@@ -1,4 +1,5 @@
-define(function() {
+var time = null;
+export default time = new (function() {
     /*
         ### time.js ###
         Useful methods for time.
@@ -24,8 +25,8 @@ define(function() {
         }
         fpsCounter++;
 
-        time = get();
-        deltaTime = (time - lastFrame);
+        let time = get();
+        let deltaTime = (time - lastFrame);
         lastFrame = time;
         if (!(deltaTime >= time)) {
             this.delta = deltaTime;
@@ -38,4 +39,4 @@ define(function() {
         get: get,
         update: update,
     };
-});
+})();

@@ -102,3 +102,5 @@ LODE.createLoader = function() {
         }
     };
 };
+
+export default LODE;

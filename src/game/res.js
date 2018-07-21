@@ -1,4 +1,7 @@
-define(['gfx'], function(gfx) {
+import gfx from './gfx.js'
+import LODE from './lode.js'
+var res = null;
+export default res = (function() {
     var result = {
         load: load,
         tex: {},
@@ -140,4 +143,4 @@ define(['gfx'], function(gfx) {
     }
 
     return result;
-});
+})();

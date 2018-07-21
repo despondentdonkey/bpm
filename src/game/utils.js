@@ -1,7 +1,9 @@
-var DEG2RAD = Math.PI / 180;
-var RAD2DEG = 180 / Math.PI;
+import _ from 'underscore'
 
-var Point = function(x, y) {
+export var DEG2RAD = Math.PI / 180;
+export var RAD2DEG = 180 / Math.PI;
+
+export var Point = function(x, y) {
     this.x = x;
     this.y = y;
 };
@@ -14,7 +16,7 @@ var Point = function(x, y) {
         get: function() { return this._y; }
     });
 
-var Rect = function(x, y, w, h) {
+export var Rect = function(x, y, w, h) {
     this.x = x;
     this.y = y;
     this.w = w;
@@ -45,36 +47,36 @@ var Rect = function(x, y, w, h) {
         get: function() { return this.y + this.h; }
     });
 
-function randomRange(min, max) {
+export function randomRange(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-function randomInt(min, max) {
+export function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function capitalize(str) {
+export function capitalize(str) {
     return str[0].toUpperCase() + str.slice(1);
 }
 
-function applyDecimal(number, n, func) {
+export function applyDecimal(number, n, func) {
     var inflate = Math.pow(10, n);
     var deflate = Math.pow(10, -n);
     return func(number * inflate) * deflate;
 }
 
-function roundN(number, n) {
+export function roundN(number, n) {
     return applyDecimal(number, n, Math.round);
 }
 
 // Returns a clone of the object.
-function cloneObject(obj) {
+export function cloneObject(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
 
 // Error Handling
 
-function error(message, trace) {
+export function error(message, trace) {
     if (trace)
         console.trace();
     throw new Error('BPM2 -- Error > ' + message);
@@ -82,7 +84,7 @@ function error(message, trace) {
 
 //function typeError
 
-function warn(trace, message) {
+export function warn(trace, message) {
     // wrapper for console.warn
     // can use to track bugs during alpha, beta, into prod
     console.warn.apply(console, _BPMSetupLogMessage('Warning', trace, message, arguments));
@@ -90,13 +92,13 @@ function warn(trace, message) {
         console.trace();
 }
 
-function log(trace, message) {
+export function log(trace, message) {
     console.log.apply(console, _BPMSetupLogMessage('Message', trace, message, arguments));
     if (trace === true)
         console.trace();
 }
 
-function _BPMSetupLogMessage(type, trace, message, args) {
+export function _BPMSetupLogMessage(type, trace, message, args) {
     var finalMessage = message;
     var i = (trace === true) ? 1 : 0;
 

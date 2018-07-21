@@ -1,10 +1,29 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
 # Ignore all archives
 *.7z
 *.zip
 *.rar
-
-# Ignore Windows scripts
-*.bat
 
 # dogpantz files
 dailyvim
@@ -19,15 +38,8 @@ lib/sfxlib/
 lib/underscore/
 src/*.vim
 
-# project files
-.bowerrc
-bower.json
-node_modules/*
-
-Gruntfile.js
-
 # resources
-res/gfx/*
-res/*.xcf
-res/*.ttf
-res/*.png
+public/res/gfx/*
+public/res/*.xcf
+public/res/*.ttf
+public/res/*.png

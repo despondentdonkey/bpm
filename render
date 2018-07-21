@@ -1,3 +1,0 @@
-=== Ideas on how to improve rendering performance. ===
-
-Rasterize the glare and bubble textures into one texture. Either do this manually or through Pixi. Use PIXI.RenderTexture

@@ -1,3 +1,5 @@
+import _ from 'underscore'
+
 var dbg = {};
 
 
@@ -162,3 +164,5 @@ dbg.buyAllUpgrades = function(upgrades) {
         upgrade.setLevel(upgrade.length);
     }
 }
+
+export default dbg;

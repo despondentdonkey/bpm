@@ -1,4 +1,9 @@
-define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
+import bpm from './bpm.js'
+import events from './events.js'
+import utils from './utils.js'
+import _ from 'underscore'
+
+let quests = new (function() {
     // Contains all quests
     this.all = {};
 
@@ -23,10 +28,10 @@ define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
     this.idComparator = function(a, b) {
         var stringRegex = /[a-z]+/;
         var numberRegex = /[0-9]+/;
-        stringA = stringRegex.exec(a)[0];
-        stringB = stringRegex.exec(b)[0];
-        numberA = parseInt(numberRegex.exec(a)[0], 10);
-        numberB = parseInt(numberRegex.exec(b)[0], 10);
+        let stringA = stringRegex.exec(a)[0];
+        let stringB = stringRegex.exec(b)[0];
+        let numberA = parseInt(numberRegex.exec(a)[0], 10);
+        let numberB = parseInt(numberRegex.exec(b)[0], 10);
 
         for (var i=0; i<priorityIds.length; ++i) {
             var str = priorityIds[i];
@@ -42,7 +47,7 @@ define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
     };
 
     // Creates a new objective for quests and puts it in quests.objectives.
-    var addObjective = function(name, update, genDescription, extension) {
+    var addObjective = (name, update, genDescription, extension) => {
         this.objectives[name] = _.extend({
             name: name,
             update: update,
@@ -51,7 +56,7 @@ define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
     };
 
     // Creates a new quest instance and puts it in quests.all.
-    var addQuest = function(id, quest) {
+    var addQuest = (id, quest) => {
         quest.id = id;
         quest.completed = false;
         quest.completedObjectives = [];
@@ -137,39 +142,7 @@ define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
             quest.objectives[key] = objective;
         }
 
-        addEvents.apply(quest)
-
         this.all[id] = quest;
-    };
-
-    // apply this function to a quest to setup and add an event handler to the object.
-    var addEvents = function() {
-        this.eventHandler = new events.EventHandler();
-        if (!this.events) return;
-        for (var time in this.events) {
-            setupEvent.apply(this, [time, this.events[time]]);
-        }
-    }
-
-    // Apply this function to a quest object to parse events and add event listeners to the quest.
-    var setupEvent = function(time, command) {
-        var range = time.match(/(\d+)\.\.(\d+)/);
-        // Convert to numbers for comparisons
-        if (range)
-            range = [Number(range[1]), Number(range[2])];
-        else
-            time = Number(time);
-
-        if (!(_.isNumber(time) || (_.isArray(range) && _(range).all(_.isNumber))))
-            throw 'Error processing quest JSON. Invalid time in quests.json: ' + time.toString();
-
-        this.eventHandler.addListener('cliEvent', function(t) {
-            var inRange = range && t > range[0] && t < range[1];
-            var onTime = t == time;
-            if (inRange || onTime) {
-                CLI(command);
-            }
-        }, false);
     };
 
     // Parses JSON for quest data and adds them.
@@ -203,4 +176,5 @@ define(['bpm', 'events', 'cli'], function(bpm, events, CLI) {
         idComparator: this.idComparator,
         addJsonQuests: this.addJsonQuests,
     };
-});
+})();
+export default quests;
